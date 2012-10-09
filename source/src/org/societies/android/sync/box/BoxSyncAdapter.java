@@ -15,6 +15,7 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 /**
@@ -27,6 +28,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	private static final String TAG = "BoxSyncAdapter";
 	
 	private AccountManager mAccountManager;
+	private final Handler mHandler;
 
 	/**
 	 * Initiates a new BoxSyncAdapter.
@@ -37,6 +39,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		super(context, autoInitialize);
 		
 		mAccountManager = AccountManager.get(context);
+		mHandler = new Handler();
 	}
 
 	@Override
@@ -47,27 +50,30 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			ContentProviderClient provider,
 			SyncResult syncResult
 	) {
-		String authToken = null;
 		
 		try {
-			authToken = mAccountManager.blockingGetAuthToken(
-					account,
-					BoxConstants.AUTH_TOKEN_FLAG,
-					true);
+			final String authToken = mAccountManager.blockingGetAuthToken(
+										account,
+										BoxConstants.AUTH_TOKEN_FLAG,
+										true);
 			
-			Log.i(TAG, "(onPerformSync) authToken: " + authToken);
-			
-			Box.getInstance(BoxConstants.API_KEY).getAccountInfo(authToken, new GetAccountInfoListener() {
-				public void onIOException(IOException e) {
-					Log.e(TAG, e.getMessage());
-				}
+			mHandler.post(new Runnable() {
 				
-				public void onComplete(User user, String status) {
-					if (user != null)
-						Log.i(TAG, "User: " + user.getLogin());
+				public void run() {
+					Box.getInstance(BoxConstants.API_KEY).getAccountInfo(authToken, new GetAccountInfoListener() {
+						public void onIOException(IOException e) {
+							Log.e(TAG, e.getMessage(), e);
+						}
+						
+						public void onComplete(User user, String status) {
+							if (user != null)
+								Log.i(TAG, "User: " + user.getLogin());
+						}
+					});
 				}
 			});
 		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 
