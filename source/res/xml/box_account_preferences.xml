@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="@string/box_preference_category_title" />
+
+    <PreferenceScreen
+        android:key="account_settings"
+        android:title="@string/box_preference_title"
+        android:summary="@string/box_preference_summary" >
+        
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="org.societies.android.platform"
+            android:targetClass="org.societies.android.account.box.BoxPreferencesActivity" />
+    </PreferenceScreen>
+    
+</PreferenceScreen>

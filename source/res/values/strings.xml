@@ -8,4 +8,14 @@
     <string name="provider_write_permission">Write social data</string>
     <string name="provider_read_permission_desc">Allows the application to read data related to groups and contacts.</string>
     <string name="provider_write_permission_desc">Allows the application to modify or delete data related to groups and contacts.</string>
+    <string name="box_login_failed">Failed to log into Box.</string>
+    <string name="box_account_type">org.societies.android.account.box</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_box_preferences">Box Preferences</string>
+    <string name="box_preference_summary">Configure Sync Settings</string>
+    <string name="box_preference_title">Box Account Settings</string>
+    <string name="box_preference_category_title">Account Settings</string>
+    <string name="box_account_name">Box</string>
+
 </resources>
