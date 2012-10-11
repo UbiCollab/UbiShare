@@ -55,7 +55,7 @@ public class SocialDataSet {
 	}
     private void populateMe(){
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Me.GLOBAL_ID , "knutredcrossorg");
+		initialValues.put(SocialContract.Me.GLOBAL_ID , "knut@redcross.org");
 		initialValues.put(SocialContract.Me.NAME , "Knut Roedhale");
 		initialValues.put(SocialContract.Me.DISPLAY_NAME , "knut@redcross");
 		initialValues.put(SocialContract.Me.USER_NAME , "knutr");
