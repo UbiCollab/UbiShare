@@ -45,6 +45,9 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 	
 	//This is the mock resolver that will do all the tests:
 	private MockContentResolver resolver;
+	private LocalDBAdapter adapter;
+	private TestDataPopulator testPop;
+	private RenamingDelegatingContext context;
 	//This is the mock context where the provider runs:
 	//private IsolatedContext context;
 	
@@ -62,8 +65,8 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 		
 		//Delegate context so that files and DBs during 
 		//testing get a test_ prefix:
-		RenamingDelegatingContext context 
-        = new RenamingDelegatingContext(getContext(), "test_");
+		//Also store the value of the context:
+		context = new RenamingDelegatingContext(getContext(), "test_");
 		//Store the value of the mock resolver:
 		resolver = getMockContentResolver();
 		//context = getMockContext();
@@ -131,6 +134,7 @@ public void testInsertMeQueryWithID(){
 		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
 		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	}
 
 /**
@@ -181,6 +185,7 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
 		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	}
 //	public void testDelete(){
 //	//TODO: probably add a CisRecord, then delete it.	
@@ -248,6 +253,7 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
 		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	}
 
 	public void testUpdateMe(){
@@ -280,6 +286,7 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Me.NAME , cursor.getString(1));
 		returnedValues.put(SocialContract.Me.DISPLAY_NAME , cursor.getString(2));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	
 	}
 
@@ -332,6 +339,7 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Communities.DESCRIPTION , cursor.getString(3));
 		returnedValues.put(SocialContract.Communities.ORIGIN , cursor.getString(4));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 
 	}
 
@@ -393,6 +401,7 @@ public void testInsertMeQueryWithGlobalID(){
 		//TODO: Find a more elegant way to test this.
 		initialValues.put(SocialContract.Communities.GLOBAL_ID , "Pending");
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	}
 	/**
 	 * Test whether Communities record can be inserted and can
@@ -456,6 +465,7 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Services.CONFIG , cursor.getString(8));
 		returnedValues.put(SocialContract.Services.URL , cursor.getString(9));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 
 	}
 
@@ -533,6 +543,7 @@ public void testInsertMeQueryWithGlobalID(){
 		
 		initialValues.put(SocialContract.Services.GLOBAL_ID , "Pending");
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
 	}
 /**
 	 * Add a membership, then check and see if it was added correctly.
@@ -574,5 +585,99 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY , cursor.getString(1));
 		returnedValues.put(SocialContract.Membership.TYPE , cursor.getString(2));
 		assertEquals(returnedValues,initialValues);
+		cursor.close();
+	}
+	/**
+	 * Test if you can read the people from test data.
+	 */
+	public void testInsertPeopleWithGlobalID(){
+		//First, build the test DB:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+		
+		//Then build a local contentvalues to hold the comparison data: 
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.People.GLOBAL_ID , "ID1@societies.org");
+		initialValues.put(SocialContract.People.NAME , "Person1");
+		initialValues.put(SocialContract.People.EMAIL , "Person1");
+		initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
+		initialValues.put(SocialContract.People.DESCRIPTION , "Person1");
+
+		//Then build a query towards the DB with the comparison data 
+		//as query parameters:
+		String[] projection ={
+				SocialContract.People.GLOBAL_ID,
+				SocialContract.People.NAME,
+				SocialContract.People.EMAIL,
+				SocialContract.People.ORIGIN,
+				SocialContract.People.DESCRIPTION
+			};
+		String selection = SocialContract.People.GLOBAL_ID + " = 'ID1@societies.org'";
+		
+		//run the query:
+		Cursor cursor = resolver.query(SocialContract.People.CONTENT_URI,
+				projection, selection, null, null);
+		//Check if the cursor is valid:
+		assertFalse(cursor == null);
+		assertTrue(cursor.moveToFirst());
+		
+		//Compare to initial values:
+		ContentValues returnedValues = new ContentValues();
+		returnedValues.put(SocialContract.People.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.People.NAME , cursor.getString(1));
+		returnedValues.put(SocialContract.People.EMAIL , cursor.getString(2));
+		returnedValues.put(SocialContract.People.ORIGIN , cursor.getString(3));
+		returnedValues.put(SocialContract.People.DESCRIPTION , cursor.getString(4));
+		assertEquals(returnedValues,initialValues);
+		cursor.close();
+	}
+	public void testInsertPeopleActivityWithGlobalID(){
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+		//Then build a local contentvalues to hold the comparison data: 
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID , "Activity1@facebook.com");
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , "Person3@facebook.com");
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_ACTOR, "Actor1");
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT , "Object1");
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB, "Verb1");
+		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET, "Target1");
+		initialValues.put(SocialContract.PeopleActivity.ORIGIN, "Facebook");
+		resolver.insert(SocialContract.PeopleActivity.CONTENT_URI, initialValues);
+
+		//Then build a query towards the DB with the comparison data 
+		//as query parameters:
+		String[] projection ={
+				SocialContract.PeopleActivity.GLOBAL_ID,
+				SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER,
+				SocialContract.PeopleActivity.GLOBAL_ID_ACTOR,
+				SocialContract.PeopleActivity.GLOBAL_ID_OBJECT,
+				SocialContract.PeopleActivity.GLOBAL_ID_VERB,
+				SocialContract.PeopleActivity.GLOBAL_ID_TARGET,
+				SocialContract.PeopleActivity.ORIGIN
+			};
+		String selection = SocialContract.People.GLOBAL_ID + " = 'Activity1@facebook.com'";
+		
+		//run the query:
+		Cursor cursor = resolver.query(SocialContract.PeopleActivity.CONTENT_URI,
+				projection, selection, null, null);
+		//Check if the cursor is valid:
+		assertFalse(cursor == null);
+		assertTrue(cursor.moveToFirst());
+		
+		//Compare to initial values:
+		ContentValues returnedValues = new ContentValues();
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.PeopleActivity.ORIGIN, cursor.getString(6));
+		
+		assertEquals(returnedValues,initialValues);
+		cursor.close();
+		
+		
 	}
 }

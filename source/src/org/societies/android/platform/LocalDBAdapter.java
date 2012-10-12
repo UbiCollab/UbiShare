@@ -146,7 +146,7 @@ public class LocalDBAdapter implements ISocialAdapter {
 	public Cursor queryPeople(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder) {
 		db = dbHelper.getWritableDatabase();
-		return db.query(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, 
+		return db.query(SQLiteContract.PEOPLE_TABLE_NAME, 
 				_projection, _selection, _selectionArgs, null, null, _sortOrder);
 	}
 
@@ -318,6 +318,7 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 	public Cursor queryPeopleActivity(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
+		
 		db = dbHelper.getWritableDatabase();
 		return db.query(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, 
 				_projection, _selection, _selectionArgs, null, null, _sortOrder);
