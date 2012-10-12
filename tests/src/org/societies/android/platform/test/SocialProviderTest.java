@@ -25,7 +25,6 @@
 package org.societies.android.platform.test;
 
 import org.societies.android.api.cis.SocialContract;
-import org.societies.android.platform.LocalDBAdapter;
 import org.societies.android.platform.SocialDataSet;
 import org.societies.android.platform.SocialProvider;
 
@@ -45,7 +44,6 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 	
 	//This is the mock resolver that will do all the tests:
 	private MockContentResolver resolver;
-	private LocalDBAdapter adapter;
 	private TestDataPopulator testPop;
 	private RenamingDelegatingContext context;
 	//This is the mock context where the provider runs:
