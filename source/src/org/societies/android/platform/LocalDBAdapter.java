@@ -25,6 +25,8 @@
 package org.societies.android.platform;
 
 
+import org.societies.android.api.cis.SocialContract;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -144,7 +146,7 @@ public class LocalDBAdapter implements ISocialAdapter {
 	public Cursor queryPeople(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder) {
 		db = dbHelper.getWritableDatabase();
-		return db.query(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, 
+		return db.query(SQLiteContract.PEOPLE_TABLE_NAME, 
 				_projection, _selection, _selectionArgs, null, null, _sortOrder);
 	}
 
@@ -159,9 +161,25 @@ public class LocalDBAdapter implements ISocialAdapter {
 		return db.delete(SQLiteContract.PEOPLE_TABLE_NAME, _selection, _selectionArgs);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.societies.android.platform.ISocialAdapter#insertCommunities(android.content.ContentValues)
+	 */
 	public long insertCommunities(ContentValues _values) {
+		//Need to check whether all mandatory fields are provided:
+		boolean parametersOK = true;
+		ContentValues inputValues = new ContentValues(_values);
+		if(!inputValues.containsKey(SocialContract.Communities.NAME)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Communities.OWNER_ID)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Communities.TYPE)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Communities.ORIGIN)) parametersOK = false;
+		if (parametersOK == false) return -1;
+		
+		if (!inputValues.containsKey(SocialContract.Communities.DESCRIPTION))
+			inputValues.put(SocialContract.Communities.DESCRIPTION, "No description");
+		inputValues.put(SocialContract.Communities.GLOBAL_ID, "Pending");
+		
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.COMMUNITIES_TABLE_NAME, null, _values);
+		return db.insert(SQLiteContract.COMMUNITIES_TABLE_NAME, null, inputValues);
 	}
 
 	public Cursor queryCommunities(String[] _projection, String _selection,
@@ -185,8 +203,30 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 
 	public long insertServices(ContentValues _values) {
+		//Need to check whether all mandatory fields are provided:
+		boolean parametersOK = true;
+		ContentValues inputValues = new ContentValues(_values);
+		if(!inputValues.containsKey(SocialContract.Services.NAME)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Services.OWNER_ID)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Services.TYPE)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Services.APP_TYPE)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Services.ORIGIN)) parametersOK = false;
+		if(!inputValues.containsKey(SocialContract.Services.AVAILABLE)) parametersOK = false;
+		if (parametersOK == false) return -1;
+		//Add defaults for the non-mandatory fields:
+		if (!inputValues.containsKey(SocialContract.Services.DESCRIPTION))
+			inputValues.put(SocialContract.Services.DESCRIPTION, "NA");
+		if (!inputValues.containsKey(SocialContract.Services.DEPENDENCY))
+			inputValues.put(SocialContract.Services.DEPENDENCY, "NA");
+		if (!inputValues.containsKey(SocialContract.Services.CONFIG))
+			inputValues.put(SocialContract.Services.CONFIG, "NA");
+		if (!inputValues.containsKey(SocialContract.Services.URL))
+			inputValues.put(SocialContract.Services.URL, "NA");
+		//Set global_id to pending:
+		inputValues.put(SocialContract.Services.GLOBAL_ID, "Pending");
+
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.SERVICES_TABLE_NAME, null, _values);	
+		return db.insert(SQLiteContract.SERVICES_TABLE_NAME, null, inputValues);	
 	}
 
 	public Cursor queryServices(String[] _projection, String _selection,
@@ -278,6 +318,7 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 	public Cursor queryPeopleActivity(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
+		
 		db = dbHelper.getWritableDatabase();
 		return db.query(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, 
 				_projection, _selection, _selectionArgs, null, null, _sortOrder);
