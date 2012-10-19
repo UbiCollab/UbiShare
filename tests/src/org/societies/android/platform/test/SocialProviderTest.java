@@ -25,7 +25,6 @@
 package org.societies.android.platform.test;
 
 import org.societies.android.api.cis.SocialContract;
-import org.societies.android.platform.SocialDataSet;
 import org.societies.android.platform.SocialProvider;
 
 import android.content.ContentValues;
@@ -82,75 +81,23 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 	
 /**
  * Tests whether a Me record can be inserted and can be retrieved
- * using the _ID field.  
- */
-public void testInsertMeQueryWithID(){
-		//Create local ContentValues to hold the initial membership data.
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Me.NAME , "Babak Farshchian");
-		initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies"); //Optional
-		initialValues.put(SocialContract.Me.USER_NAME , "babak@societies.org");
-		initialValues.put(SocialContract.Me.PASSWORD , "XYz125");
-		initialValues.put(SocialContract.Me.ORIGIN , "societies.org");
-		
-		//Call insert in SocialProvider to initiate insertion.
-		//   Get _ID back and store it.
-		Uri newMeUri= 
-				resolver.insert(SocialContract.Me.CONTENT_URI, 
-						initialValues);
-		
-		//Try to query the newly inserted CIS from SocialProvider.
-		//What columns to get:
-		String[] projection ={
-				SocialContract.Me.GLOBAL_ID,
-				SocialContract.Me.NAME,
-				SocialContract.Me.DISPLAY_NAME,
-				SocialContract.Me.USER_NAME,
-				SocialContract.Me.PASSWORD,
-				SocialContract.Me.ORIGIN
-			};
-		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Membership._ID + " = " +
-			newMeUri.getLastPathSegment();
-		Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
-				projection, selection, null, null);
-		
-		//Fail if the cursor is null:
-		assertFalse(cursor == null);
-		//if (cursor == null)	return;
-		//Succeed if cursor is not empty:
-		assertTrue(cursor.moveToFirst());
-		//if (!cursor.moveToFirst()) return;
-		//Fail if the record data are not correct:
-		//Create new ContentValues object based on returned record:
-		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Me.GLOBAL_ID , cursor.getString(0));
-		returnedValues.put(SocialContract.Me.NAME , cursor.getString(1));
-		returnedValues.put(SocialContract.Me.DISPLAY_NAME, cursor.getString(2));
-		returnedValues.put(SocialContract.Me.USER_NAME , cursor.getString(3));
-		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
-		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
-		assertEquals(returnedValues,initialValues);
-		cursor.close();
-	}
-
-/**
- * Tests whether a Me record can be inserted and can be retrieved
  * using the GLOBAL_ID field.  
  */
 public void testInsertMeQueryWithGlobalID(){
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+
 		//Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Me.NAME , "Babak Farshchian");
-		initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies"); //Optional
-		initialValues.put(SocialContract.Me.USER_NAME , "babak@societies.org");
-		initialValues.put(SocialContract.Me.PASSWORD , "XYz125");
-		initialValues.put(SocialContract.Me.ORIGIN , "societies.org");
+		initialValues.put(SocialContract.Me.GLOBAL_ID , "ID1@societies.org");
+		initialValues.put(SocialContract.Me.NAME , "ID1");
+		initialValues.put(SocialContract.Me.DISPLAY_NAME , "ID1"); //Optional
+		initialValues.put(SocialContract.Me.USER_NAME , "ID1");
+		initialValues.put(SocialContract.Me.PASSWORD , "ID1");
+		initialValues.put(SocialContract.Me.ORIGIN , "SOCIETIES");
 		
 		//Call insert in SocialProvider to initiate insertion.
-		resolver.insert(SocialContract.Me.CONTENT_URI, initialValues);
+		//resolver.insert(SocialContract.Me.CONTENT_URI, initialValues);
 		
 		//Try to query the newly inserted CIS from SocialProvider.
 		//What columns to get:
@@ -163,7 +110,7 @@ public void testInsertMeQueryWithGlobalID(){
 				SocialContract.Me.ORIGIN
 			};
 		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Membership.GLOBAL_ID + " = 'babak@societies.org'";
+		String selection = SocialContract.Membership.GLOBAL_ID + " = 'ID1@societies.org'";
 		Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
 				projection, selection, null, null);
 		
@@ -192,154 +139,49 @@ public void testInsertMeQueryWithGlobalID(){
 //	}
 
 	/**
-	 * Test to see if information about the user is retrievable
-	 * from {@link SocialProvider}.
-	 * 
-	 <ul>
-	 * <li>create ContentValues based on an entry in {@link SocialDataSet}.</li>
-	 * <li>Query {@link SocialProvider} based on GLOBAL_ID.</li>
-	 * <li>Check to see if it is the same as added in {@link SocialDataSet}.</li>
-	 * </ul> 
-	 *  
-	 */
-	public void testQueryMe(){
+ * Test if you can read the people from test data.
+ */
+public void testInsertPeopleWithGlobalID(){
+	//First, build the test DB:
+	testPop= new TestDataPopulator(resolver);
+	testPop.populate();
 	
-		 // 1- create ContentValues for comparison person:
-		//FIXME: based on test data. Needs to be independent from test data.
+	//Then build a local contentvalues to hold the comparison data: 
+	ContentValues initialValues = new ContentValues();
+	initialValues.put(SocialContract.People.GLOBAL_ID , "ID1@societies.org");
+	initialValues.put(SocialContract.People.NAME , "Person1");
+	initialValues.put(SocialContract.People.EMAIL , "Person1");
+	initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
+	initialValues.put(SocialContract.People.DESCRIPTION , "Person1");
+
+	//Then build a query towards the DB with the comparison data 
+	//as query parameters:
+	String[] projection ={
+			SocialContract.People.GLOBAL_ID,
+			SocialContract.People.NAME,
+			SocialContract.People.EMAIL,
+			SocialContract.People.ORIGIN,
+			SocialContract.People.DESCRIPTION
+		};
+	String selection = SocialContract.People.GLOBAL_ID + " = 'ID1@societies.org'";
 	
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Me.GLOBAL_ID , "knut@redcross.org");
-		initialValues.put(SocialContract.Me.NAME , "Knut Roedhale");
-		initialValues.put(SocialContract.Me.DISPLAY_NAME , "knut@redcross");
-		initialValues.put(SocialContract.Me.USER_NAME , "knutr");
-		initialValues.put(SocialContract.Me.PASSWORD , "XYZ123");
-		initialValues.put(SocialContract.Me.ORIGIN , "Red Cross");
-	    resolver.insert(SocialContract.Me.CONTENT_URI, initialValues);
-		 // 2- read a person with the same global_id from
-		//  from {@link SocialProvider}:
-		
-		String[] projection ={
-				SocialContract.Me.GLOBAL_ID,
-				SocialContract.Me.NAME,
-				SocialContract.Me.DISPLAY_NAME,
-				SocialContract.Me.USER_NAME,
-				SocialContract.Me.PASSWORD,
-				SocialContract.Me.ORIGIN
-			};
-		//Select based on global_id:
-		//String selection = SocialContract.Me.GLOBAL_ID + "=?";
-		//String[] selectionArgs = new String[]{"knut@redcross.org"};
-		String selection = SocialContract.Me.GLOBAL_ID + "='knut@redcross.org'";
-		Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
-				projection, selection, null, null);
-		
-		//4- Fail if the person data was not found.
-		//   If cursor is empty it is not null but its length is zero
-		//   meaning moveToFirst will return false.
-		assertFalse(cursor == null);
-		//if (cursor == null)	return;
-		assertTrue(cursor.moveToFirst());
-		if (!cursor.moveToFirst()) return;
-		//cursor.moveToNext();
-		//5- Fail if the CIS data are not correct:
-		//Create new ContentValues object based on returned CIS:
-		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Me.GLOBAL_ID , cursor.getString(0));
-		returnedValues.put(SocialContract.Me.NAME , cursor.getString(1));
-		returnedValues.put(SocialContract.Me.DISPLAY_NAME , cursor.getString(2));
-		returnedValues.put(SocialContract.Me.USER_NAME , cursor.getString(3));
-		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
-		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
-		assertEquals(returnedValues,initialValues);
-		cursor.close();
-	}
-
-	public void testUpdateMe(){
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Me.NAME , "Babak Farshchian");
-		initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak F");
-		
-		resolver.update(SocialContract.Me.CONTENT_URI , 
-				initialValues, null, null);		
-		
-		String[] projection ={
-				SocialContract.Me.GLOBAL_ID,
-				SocialContract.Me.NAME,
-				SocialContract.Me.DISPLAY_NAME
-				};
-		
-		String selection = SocialContract.Me._ID + " = 1";
-		Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
-				projection, selection, null, null);
-		
-		//4- Fail if the CIS was not returned.
-		assertFalse(cursor == null);
-		if (cursor == null)	return;
-		if (!cursor.moveToFirst()) return;
-		//5- Fail if the CIS data are not correct:
-		//Create new ContentValues object based on returned CIS:
-		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Me.GLOBAL_ID , cursor.getString(0));
-		returnedValues.put(SocialContract.Me.NAME , cursor.getString(1));
-		returnedValues.put(SocialContract.Me.DISPLAY_NAME , cursor.getString(2));
-		assertEquals(returnedValues,initialValues);
-		cursor.close();
+	//run the query:
+	Cursor cursor = resolver.query(SocialContract.People.CONTENT_URI,
+			projection, selection, null, null);
+	//Check if the cursor is valid:
+	assertFalse(cursor == null);
+	assertTrue(cursor.moveToFirst());
 	
-	}
-
-	/**
-	 * Test whether Communities record can be inserted and can
-	 * be retrieved using the _ID field.
-	 */
-	public void testInsertCommunityQueryWithID(){
-		//Create local ContentValues to hold the community data:
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Communities.NAME , "SOCIETIES football team");
-		initialValues.put(SocialContract.Communities.OWNER_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Communities.TYPE , "sports");
-		initialValues.put(SocialContract.Communities.DESCRIPTION , "Hurray!!");
-		initialValues.put(SocialContract.Communities.ORIGIN , "SOCIETIES");
-		
-		//Call insert in SocialProvider to initiate insertion:
-		//Store _ID for later query:
-		Uri newCommunityUri= 
-				resolver.insert(SocialContract.Communities.CONTENT_URI, 
-						initialValues);
-		
-		//Get the newly inserted community from SocialProvider:
-		//Columns to get:
-		String[] projection ={
-				SocialContract.Communities.NAME,
-				SocialContract.Communities.OWNER_ID,
-				SocialContract.Communities.TYPE,
-				SocialContract.Communities.DESCRIPTION,
-				SocialContract.Communities.ORIGIN
-			};
-		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Communities._ID + " = " +
-			newCommunityUri.getLastPathSegment();
-		//Run the query:
-		Cursor cursor = resolver.query(SocialContract.Communities.CONTENT_URI,
-				projection, selection, null, null);
-		
-		//Fail if cursor is null:
-		assertFalse(cursor == null);
-		//if (cursor == null)	return;
-		//Succeed if cursor is not empty:
-		assertTrue(cursor.moveToFirst());
-		//Fail if the CIS data are not correct:
-		//Create new ContentValues object based on returned CIS:
-		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Communities.NAME , cursor.getString(0));
-		returnedValues.put(SocialContract.Communities.OWNER_ID , cursor.getString(1));
-		returnedValues.put(SocialContract.Communities.TYPE , cursor.getString(2));
-		returnedValues.put(SocialContract.Communities.DESCRIPTION , cursor.getString(3));
-		returnedValues.put(SocialContract.Communities.ORIGIN , cursor.getString(4));
-		assertEquals(returnedValues,initialValues);
-		cursor.close();
-
-	}
+	//Compare to initial values:
+	ContentValues returnedValues = new ContentValues();
+	returnedValues.put(SocialContract.People.GLOBAL_ID , cursor.getString(0));
+	returnedValues.put(SocialContract.People.NAME , cursor.getString(1));
+	returnedValues.put(SocialContract.People.EMAIL , cursor.getString(2));
+	returnedValues.put(SocialContract.People.ORIGIN , cursor.getString(3));
+	returnedValues.put(SocialContract.People.DESCRIPTION , cursor.getString(4));
+	assertEquals(returnedValues,initialValues);
+	cursor.close();
+}
 
 	/**
 	 * Test whether Communities record can be inserted and can
@@ -350,20 +192,21 @@ public void testInsertMeQueryWithGlobalID(){
 	 * adapter. So this test should handle both cases.
 	 */
 	public void testInsertCommunityQueryWithGlobalID(){
+		//First, build the test DB:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+
 		//Create local ContentValues to hold the community data:
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Communities.NAME , "SOCIETIES football team");
-		initialValues.put(SocialContract.Communities.OWNER_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Communities.TYPE , "sports");
-		initialValues.put(SocialContract.Communities.DESCRIPTION , "Hurray!!");
-		initialValues.put(SocialContract.Communities.ORIGIN , "SOCIETIES");
+		initialValues.put(SocialContract.Communities.GLOBAL_ID , "Community1@facebook.com");
+		initialValues.put(SocialContract.Communities.NAME , "Community1");
+		initialValues.put(SocialContract.Communities.OWNER_ID , "ID1@societies.org");
+		initialValues.put(SocialContract.Communities.TYPE , "Community1");
+		initialValues.put(SocialContract.Communities.DESCRIPTION , "Community1");
+		initialValues.put(SocialContract.Communities.ORIGIN , "Facebook");
 		
-		//Call insert in SocialProvider to initiate insertion:
-		//   Get _ID back and store it.
-		Uri newCommunityUri= 
-				resolver.insert(SocialContract.Communities.CONTENT_URI, initialValues);
 		
-		//Get the newly inserted community from SocialProvider:
+		//Get the community from SocialProvider:
 		//Columns to get:
 		String[] projection ={
 				SocialContract.Communities.GLOBAL_ID,
@@ -374,15 +217,13 @@ public void testInsertMeQueryWithGlobalID(){
 				SocialContract.Communities.ORIGIN
 			};
 		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Communities._ID + " = " +
-			newCommunityUri.getLastPathSegment();
+		String selection = SocialContract.Communities.GLOBAL_ID + " = 'Community1@facebook.com'" ;
 		//Run the query:
 		Cursor cursor = resolver.query(SocialContract.Communities.CONTENT_URI,
 				projection, selection, null, null);
 		
 		//Fail if cursor is null:
 		assertFalse(cursor == null);
-		//if (cursor == null)	return;
 		//Succeed if cursor is not empty:
 		assertTrue(cursor.moveToFirst());
 		//Fail if the CIS data are not correct:
@@ -397,76 +238,10 @@ public void testInsertMeQueryWithGlobalID(){
 		//Since this community is just created we can assume it
 		//is still pending: 		
 		//TODO: Find a more elegant way to test this.
-		initialValues.put(SocialContract.Communities.GLOBAL_ID , "Pending");
+		//initialValues.put(SocialContract.Communities.GLOBAL_ID , "Pending");
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
-	/**
-	 * Test whether Communities record can be inserted and can
-	 * be retrieved using the _ID field.
-	 */
-	public void testInsertServiceQueryWithID(){
-		//Create local ContentValues to hold the service data:
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Services.NAME , "My service");
-		initialValues.put(SocialContract.Services.OWNER_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Services.TYPE , "disaster");
-		initialValues.put(SocialContract.Services.DESCRIPTION , "good service");
-		initialValues.put(SocialContract.Services.APP_TYPE , "App");
-		initialValues.put(SocialContract.Services.ORIGIN , "SOCIETIES");
-		initialValues.put(SocialContract.Services.AVAILABLE , "yes");
-		initialValues.put(SocialContract.Services.DEPENDENCY , "iJacket");
-		initialValues.put(SocialContract.Services.CONFIG , "xyz");
-		initialValues.put(SocialContract.Services.URL , "https://github.com/downloads/UbiCollab/UbiShare/SocialProvider-v01.apk");
-		//Call insert in SocialProvider to initiate insertion:
-		//Store _ID for later query:
-		Uri newServiceUri= 
-				resolver.insert(SocialContract.Services.CONTENT_URI, 
-						initialValues);
-		
-		//Get the newly inserted community from SocialProvider:
-		//Columns to get:
-		String[] projection ={
-				SocialContract.Services.NAME,
-				SocialContract.Services.OWNER_ID,
-				SocialContract.Services.TYPE,
-				SocialContract.Services.DESCRIPTION,
-				SocialContract.Services.APP_TYPE,
-				SocialContract.Services.ORIGIN,
-				SocialContract.Services.AVAILABLE,
-				SocialContract.Services.DEPENDENCY,
-				SocialContract.Services.CONFIG,
-				SocialContract.Services.URL
-			};
-		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Services._ID + " = " +
-			newServiceUri.getLastPathSegment();
-		//Run the query:
-		Cursor cursor = resolver.query(SocialContract.Services.CONTENT_URI,
-				projection, selection, null, null);
-		
-		//Fail if cursor is null:
-		assertFalse(cursor == null);
-		//Succeed if cursor is not empty:
-		assertTrue(cursor.moveToFirst());
-		//Fail if the return data are not correct:
-		//Create new ContentValues object based on returned CIS:
-		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Services.NAME , cursor.getString(0));
-		returnedValues.put(SocialContract.Services.OWNER_ID , cursor.getString(1));
-		returnedValues.put(SocialContract.Services.TYPE , cursor.getString(2));
-		returnedValues.put(SocialContract.Services.DESCRIPTION , cursor.getString(3));
-		returnedValues.put(SocialContract.Services.APP_TYPE , cursor.getString(4));
-		returnedValues.put(SocialContract.Services.ORIGIN , cursor.getString(5));
-		returnedValues.put(SocialContract.Services.AVAILABLE , cursor.getString(6));
-		returnedValues.put(SocialContract.Services.DEPENDENCY , cursor.getString(7));
-		returnedValues.put(SocialContract.Services.CONFIG , cursor.getString(8));
-		returnedValues.put(SocialContract.Services.URL , cursor.getString(9));
-		assertEquals(returnedValues,initialValues);
-		cursor.close();
-
-	}
-
 	/**
 	 * Test whether Services record can be inserted and can
 	 * be retrieved using the GLOBAL_ID field.
@@ -476,25 +251,24 @@ public void testInsertMeQueryWithGlobalID(){
 	 * adapter. So this test should handle both cases.
 	 */
 	public void testInsertServiceQueryWithGlobalID(){
+		//First, build the test DB:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+
 		//Create local ContentValues to hold the service data:
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Services.NAME , "My service");
-		initialValues.put(SocialContract.Services.OWNER_ID , "babak@societies.org");
-		initialValues.put(SocialContract.Services.TYPE , "disaster");
-		initialValues.put(SocialContract.Services.DESCRIPTION , "good service");//Optional
-		initialValues.put(SocialContract.Services.APP_TYPE , "App");
-		initialValues.put(SocialContract.Services.ORIGIN , "SOCIETIES");
-		initialValues.put(SocialContract.Services.AVAILABLE , "yes");
-		initialValues.put(SocialContract.Services.DEPENDENCY , "iJacket");//Optional
-		initialValues.put(SocialContract.Services.CONFIG , "xyz");//Optional
-		initialValues.put(SocialContract.Services.URL , "https://github.com/downloads/UbiCollab/UbiShare/SocialProvider-v01.apk");//Optional
+		initialValues.put(SocialContract.Services.GLOBAL_ID , "Service1@play.google.com");
+		initialValues.put(SocialContract.Services.TYPE , "Service1");
+		initialValues.put(SocialContract.Services.NAME , "Service1");
+		initialValues.put(SocialContract.Services.OWNER_ID, "Person3@facebook.com");
+		initialValues.put(SocialContract.Services.ORIGIN, "Google Play");
+		initialValues.put(SocialContract.Services.DESCRIPTION , "Service1");
+		initialValues.put(SocialContract.Services.AVAILABLE, "false");
+		initialValues.put(SocialContract.Services.DEPENDENCY, "Service4@ubicollab.org");
+		initialValues.put(SocialContract.Services.CONFIG, "Service1");
+		initialValues.put(SocialContract.Services.URL, "Service1");
 		
-		//Call insert in SocialProvider to initiate insertion:
-		//   Get _ID back and store it.
-		Uri newServiceUri= 
-				resolver.insert(SocialContract.Services.CONTENT_URI, initialValues);
-		
-		//Get the newly inserted community from SocialProvider:
+		//Get the community from SocialProvider:
 		//Columns to get:
 		String[] projection ={
 				SocialContract.Services.GLOBAL_ID,
@@ -510,15 +284,13 @@ public void testInsertMeQueryWithGlobalID(){
 				SocialContract.Services.URL
 			};
 		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Services._ID + " = " +
-			newServiceUri.getLastPathSegment();
+		String selection = SocialContract.Services.GLOBAL_ID + " = 'Service1@play.google.com'";
 		//Run the query:
 		Cursor cursor = resolver.query(SocialContract.Services.CONTENT_URI,
 				projection, selection, null, null);
 		
 		//Fail if cursor is null:
 		assertFalse(cursor == null);
-		//if (cursor == null)	return;
 		//Succeed if cursor is not empty:
 		assertTrue(cursor.moveToFirst());
 		//Fail if the CIS data are not correct:
@@ -539,100 +311,151 @@ public void testInsertMeQueryWithGlobalID(){
 		//is still pending: 		
 		//TODO: Find a more elegant way to test this.
 		
-		initialValues.put(SocialContract.Services.GLOBAL_ID , "Pending");
+	//	initialValues.put(SocialContract.Services.GLOBAL_ID , "Pending");
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 /**
 	 * Add a membership, then check and see if it was added correctly.
 	 */
-	public void testInsertMembershipSimple(){
+	public void testInsertRelationshipWithGlobalID(){
+		//First, build the test DB:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+
 		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "babak@societies.org");
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY , "football.societies.org");
-		initialValues.put(SocialContract.Membership.TYPE , "member");
+		initialValues.put(SocialContract.Relationship.GLOBAL_ID , "rel1xyz@pending");
+		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , "ID1@societies.org");
+		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P2, "Person2@pending");
+		initialValues.put(SocialContract.Relationship.TYPE , "ID1 Person2");
+		initialValues.put(SocialContract.Relationship.ORIGIN, "private");
 		
-		//2- Call insert in SocialProvider to initiate insertion
-		Uri newCommunityUri= 
-				resolver.insert(Uri.parse(SocialContract.AUTHORITY_STRING+
-						SocialContract.UriPathIndex.MEMBERSHIP), 
-						initialValues);
 		
 		//3- Get the newly inserted CIS from SocialProvider.
 		//What to get:
 		String[] projection ={
-				SocialContract.Membership.GLOBAL_ID_MEMBER,
-				SocialContract.Membership.GLOBAL_ID_COMMUNITY,
-				SocialContract.Membership.TYPE
+				SocialContract.Relationship.GLOBAL_ID,
+				SocialContract.Relationship.GLOBAL_ID_P1,
+				SocialContract.Relationship.GLOBAL_ID_P2,
+				SocialContract.Relationship.TYPE,
+				SocialContract.Relationship.ORIGIN
 			};
 		//WHERE _id = ID of the newly created CIS:
-		String selection = SocialContract.Membership._ID + " = " +
-			newCommunityUri.getLastPathSegment();
+		String selection = SocialContract.Relationship.GLOBAL_ID + " = 'rel1xyz@pending'";
+		
+		Cursor cursor = resolver.query(SocialContract.Relationship.CONTENT_URI,
+				projection, selection, null, null);
+		
+		//4- Fail if the CIS was not returned.
+		assertFalse(cursor == null);
+		assertTrue(cursor.moveToFirst());
+		//5- Fail if the CIS data are not correct:
+		//Create new ContentValues object based on returned CIS:
+		ContentValues returnedValues = new ContentValues();
+		returnedValues.put(SocialContract.Relationship.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , cursor.getString(1));
+		returnedValues.put(SocialContract.Relationship.GLOBAL_ID_P2 , cursor.getString(2));
+		returnedValues.put(SocialContract.Relationship.TYPE , cursor.getString(3));
+		returnedValues.put(SocialContract.Relationship.ORIGIN , cursor.getString(4));
+		assertEquals(returnedValues,initialValues);
+		cursor.close();
+	}
+	public void testInsertMembershipWithGlobalID(){
+		//First, build the test DB:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+
+		//1- Create local ContentValues to hold the initial membership data.
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.Membership.GLOBAL_ID , "mem1xyz@facebook.com");
+		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "ID1@societies.org");
+		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
+		initialValues.put(SocialContract.Membership.TYPE , "mem1xyz");
+		initialValues.put(SocialContract.Membership.ORIGIN, "Facebook");
+		
+		
+		//3- Get the newly inserted CIS from SocialProvider.
+		//What to get:
+		String[] projection ={
+				SocialContract.Membership.GLOBAL_ID,
+				SocialContract.Membership.GLOBAL_ID_MEMBER,
+				SocialContract.Membership.GLOBAL_ID_COMMUNITY,
+				SocialContract.Membership.TYPE,
+				SocialContract.Membership.ORIGIN
+			};
+		//WHERE _id = ID of the newly created CIS:
+		String selection = SocialContract.Membership.GLOBAL_ID + " = 'mem1xyz@facebook.com'";
+		
 		Cursor cursor = resolver.query(SocialContract.Membership.CONTENT_URI,
 				projection, selection, null, null);
 		
 		//4- Fail if the CIS was not returned.
 		assertFalse(cursor == null);
-		if (cursor == null)	return;
-		if (!cursor.moveToFirst()) return;
+		assertTrue(cursor.moveToFirst());
 		//5- Fail if the CIS data are not correct:
 		//Create new ContentValues object based on returned CIS:
 		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , cursor.getString(0));
-		returnedValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY , cursor.getString(1));
-		returnedValues.put(SocialContract.Membership.TYPE , cursor.getString(2));
+		returnedValues.put(SocialContract.Membership.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , cursor.getString(1));
+		returnedValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY , cursor.getString(2));
+		returnedValues.put(SocialContract.Membership.TYPE , cursor.getString(3));
+		returnedValues.put(SocialContract.Membership.ORIGIN , cursor.getString(4));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
-	/**
-	 * Test if you can read the people from test data.
-	 */
-	public void testInsertPeopleWithGlobalID(){
+	public void testInsertSharingWithGlobalID(){
 		//First, build the test DB:
 		testPop= new TestDataPopulator(resolver);
 		testPop.populate();
-		
-		//Then build a local contentvalues to hold the comparison data: 
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.People.GLOBAL_ID , "ID1@societies.org");
-		initialValues.put(SocialContract.People.NAME , "Person1");
-		initialValues.put(SocialContract.People.EMAIL , "Person1");
-		initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
-		initialValues.put(SocialContract.People.DESCRIPTION , "Person1");
 
-		//Then build a query towards the DB with the comparison data 
-		//as query parameters:
-		String[] projection ={
-				SocialContract.People.GLOBAL_ID,
-				SocialContract.People.NAME,
-				SocialContract.People.EMAIL,
-				SocialContract.People.ORIGIN,
-				SocialContract.People.DESCRIPTION
-			};
-		String selection = SocialContract.People.GLOBAL_ID + " = 'ID1@societies.org'";
+		//1- Create local ContentValues to hold the initial membership data.
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha1xyz@facebook.com");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "Service1@play.google.com");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , "Person3@facebook.com");		
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
+		initialValues.put(SocialContract.Sharing.TYPE , "Service1");
+		initialValues.put(SocialContract.Sharing.ORIGIN, "Facebook");
 		
-		//run the query:
-		Cursor cursor = resolver.query(SocialContract.People.CONTENT_URI,
+		
+		//3- Get the newly inserted CIS from SocialProvider.
+		//What to get:
+		String[] projection ={
+				SocialContract.Sharing.GLOBAL_ID,
+				SocialContract.Sharing.GLOBAL_ID_SERVICE,
+				SocialContract.Sharing.GLOBAL_ID_OWNER,
+				SocialContract.Sharing.GLOBAL_ID_COMMUNITY,
+				SocialContract.Sharing.TYPE,
+				SocialContract.Sharing.ORIGIN
+			};
+		//WHERE _id = ID of the newly created CIS:
+		String selection = SocialContract.Sharing.GLOBAL_ID + " = 'sha1xyz@facebook.com'";
+		
+		Cursor cursor = resolver.query(SocialContract.Sharing.CONTENT_URI,
 				projection, selection, null, null);
-		//Check if the cursor is valid:
+		
+		//4- Fail if the CIS was not returned.
 		assertFalse(cursor == null);
 		assertTrue(cursor.moveToFirst());
-		
-		//Compare to initial values:
+		//5- Fail if the CIS data are not correct:
+		//Create new ContentValues object based on returned CIS:
 		ContentValues returnedValues = new ContentValues();
-		returnedValues.put(SocialContract.People.GLOBAL_ID , cursor.getString(0));
-		returnedValues.put(SocialContract.People.NAME , cursor.getString(1));
-		returnedValues.put(SocialContract.People.EMAIL , cursor.getString(2));
-		returnedValues.put(SocialContract.People.ORIGIN , cursor.getString(3));
-		returnedValues.put(SocialContract.People.DESCRIPTION , cursor.getString(4));
+		returnedValues.put(SocialContract.Sharing.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , cursor.getString(1));
+		returnedValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , cursor.getString(2));
+		returnedValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY , cursor.getString(3));
+		returnedValues.put(SocialContract.Sharing.TYPE , cursor.getString(4));
+		returnedValues.put(SocialContract.Sharing.ORIGIN , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 	public void testInsertPeopleActivityWithGlobalID(){
+		//First, build the test DB:
 		testPop= new TestDataPopulator(resolver);
 		testPop.populate();
-		//Then build a local contentvalues to hold the comparison data: 
+
+		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID , "Activity1@facebook.com");
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , "Person3@facebook.com");
@@ -641,10 +464,10 @@ public void testInsertMeQueryWithGlobalID(){
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB, "Verb1");
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET, "Target1");
 		initialValues.put(SocialContract.PeopleActivity.ORIGIN, "Facebook");
-		resolver.insert(SocialContract.PeopleActivity.CONTENT_URI, initialValues);
-
-		//Then build a query towards the DB with the comparison data 
-		//as query parameters:
+		
+		
+		//3- Get the newly inserted CIS from SocialProvider.
+		//What to get:
 		String[] projection ={
 				SocialContract.PeopleActivity.GLOBAL_ID,
 				SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER,
@@ -654,16 +477,17 @@ public void testInsertMeQueryWithGlobalID(){
 				SocialContract.PeopleActivity.GLOBAL_ID_TARGET,
 				SocialContract.PeopleActivity.ORIGIN
 			};
-		String selection = SocialContract.People.GLOBAL_ID + " = 'Activity1@facebook.com'";
+		//WHERE _id = ID of the newly created CIS:
+		String selection = SocialContract.PeopleActivity.GLOBAL_ID + " = 'Activity1@facebook.com'";
 		
-		//run the query:
 		Cursor cursor = resolver.query(SocialContract.PeopleActivity.CONTENT_URI,
 				projection, selection, null, null);
-		//Check if the cursor is valid:
+		
+		//4- Fail if the CIS was not returned.
 		assertFalse(cursor == null);
 		assertTrue(cursor.moveToFirst());
-		
-		//Compare to initial values:
+		//5- Fail if the CIS data are not correct:
+		//Create new ContentValues object based on returned CIS:
 		ContentValues returnedValues = new ContentValues();
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID , cursor.getString(0));
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
@@ -671,11 +495,157 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB , cursor.getString(4));
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET , cursor.getString(5));
-		returnedValues.put(SocialContract.PeopleActivity.ORIGIN, cursor.getString(6));
+		returnedValues.put(SocialContract.PeopleActivity.ORIGIN , cursor.getString(6));
+		assertEquals(returnedValues,initialValues);
+		cursor.close();
+	}
+	public void testInsertCommunityActivityWithGlobalID(){
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+		//Then build a local contentvalues to hold the comparison data: 
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID , "Activity1@facebook.com");
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER , "Community1@facebook.com");
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_ACTOR, "Actor1");
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_OBJECT , "Object1");
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_VERB, "Verb1");
+		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_TARGET, "Target1");
+		initialValues.put(SocialContract.CommunityActivity.ORIGIN, "Facebook");
+
+		//Then build a query towards the DB with the comparison data 
+		//as query parameters:
+		String[] projection ={
+				SocialContract.CommunityActivity.GLOBAL_ID,
+				SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER,
+				SocialContract.CommunityActivity.GLOBAL_ID_ACTOR,
+				SocialContract.CommunityActivity.GLOBAL_ID_OBJECT,
+				SocialContract.CommunityActivity.GLOBAL_ID_VERB,
+				SocialContract.CommunityActivity.GLOBAL_ID_TARGET,
+				SocialContract.CommunityActivity.ORIGIN
+			};
+		String selection = SocialContract.CommunityActivity.GLOBAL_ID + " = 'Activity1@facebook.com'";
+		
+		//run the query:
+		Cursor cursor = resolver.query(SocialContract.CommunityActivity.CONTENT_URI,
+				projection, selection, null, null);
+		//Check if the cursor is valid:
+		assertFalse(cursor == null);
+		assertTrue(cursor.moveToFirst());
+		//Compare to initial values:
+		ContentValues returnedValues = new ContentValues();
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.CommunityActivity.ORIGIN, cursor.getString(6));
 		
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 		
 		
 	}
+	public void testInsertServiceActivityWithGlobalID(){
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
+		//Then build a local contentvalues to hold the comparison data: 
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID , "Activity1@google.com");
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER , "Service1@google.com");
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_ACTOR, "Actor1");
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_OBJECT , "Object1");
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_VERB, "Verb1");
+		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_TARGET, "Target1");
+		initialValues.put(SocialContract.ServiceActivity.ORIGIN, "Google");
+
+		//Then build a query towards the DB with the comparison data 
+		//as query parameters:
+		String[] projection ={
+				SocialContract.ServiceActivity.GLOBAL_ID,
+				SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER,
+				SocialContract.ServiceActivity.GLOBAL_ID_ACTOR,
+				SocialContract.ServiceActivity.GLOBAL_ID_OBJECT,
+				SocialContract.ServiceActivity.GLOBAL_ID_VERB,
+				SocialContract.ServiceActivity.GLOBAL_ID_TARGET,
+				SocialContract.ServiceActivity.ORIGIN
+			};
+		String selection = SocialContract.ServiceActivity.GLOBAL_ID + " = 'Activity1@google.com'";
+		
+		//run the query:
+		Cursor cursor = resolver.query(SocialContract.ServiceActivity.CONTENT_URI,
+				projection, selection, null, null);
+		//Check if the cursor is valid:
+		assertFalse(cursor == null);
+		assertTrue(cursor.moveToFirst());
+		//Compare to initial values:
+		ContentValues returnedValues = new ContentValues();
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID , cursor.getString(0));
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.ServiceActivity.ORIGIN, cursor.getString(6));
+		
+		assertEquals(returnedValues,initialValues);
+		cursor.close();
+		
+		
+	}
+
+	/**
+	 * Tests whether a Me record can be inserted and can be retrieved
+	 * using the _ID field.  
+	 */
+	public void testInsertMeQueryWithID(){
+			//Create local ContentValues to hold the initial membership data.
+			ContentValues initialValues = new ContentValues();
+			initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
+			initialValues.put(SocialContract.Me.NAME , "Babak Farshchian");
+			initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies"); //Optional
+			initialValues.put(SocialContract.Me.USER_NAME , "babak@societies.org");
+			initialValues.put(SocialContract.Me.PASSWORD , "XYz125");
+			initialValues.put(SocialContract.Me.ORIGIN , "societies.org");
+			
+			//Call insert in SocialProvider to initiate insertion.
+			//   Get _ID back and store it.
+			Uri newMeUri= 
+					resolver.insert(SocialContract.Me.CONTENT_URI, 
+							initialValues);
+			
+			//Try to query the newly inserted CIS from SocialProvider.
+			//What columns to get:
+			String[] projection ={
+					SocialContract.Me.GLOBAL_ID,
+					SocialContract.Me.NAME,
+					SocialContract.Me.DISPLAY_NAME,
+					SocialContract.Me.USER_NAME,
+					SocialContract.Me.PASSWORD,
+					SocialContract.Me.ORIGIN
+				};
+			//WHERE _id = ID of the newly created CIS:
+			String selection = SocialContract.Membership._ID + " = " +
+				newMeUri.getLastPathSegment();
+			Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
+					projection, selection, null, null);
+			
+			//Fail if the cursor is null:
+			assertFalse(cursor == null);
+			//if (cursor == null)	return;
+			//Succeed if cursor is not empty:
+			assertTrue(cursor.moveToFirst());
+			//if (!cursor.moveToFirst()) return;
+			//Fail if the record data are not correct:
+			//Create new ContentValues object based on returned record:
+			ContentValues returnedValues = new ContentValues();
+			returnedValues.put(SocialContract.Me.GLOBAL_ID , cursor.getString(0));
+			returnedValues.put(SocialContract.Me.NAME , cursor.getString(1));
+			returnedValues.put(SocialContract.Me.DISPLAY_NAME, cursor.getString(2));
+			returnedValues.put(SocialContract.Me.USER_NAME , cursor.getString(3));
+			returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
+			returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
+			assertEquals(returnedValues,initialValues);
+			cursor.close();
+		}
 }

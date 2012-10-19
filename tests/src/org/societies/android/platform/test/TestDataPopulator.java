@@ -348,6 +348,7 @@ public class TestDataPopulator {
 		
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha1xyz@facebook.com");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "Service1@play.google.com");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , "Person3@facebook.com");		
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
 		initialValues.put(SocialContract.Sharing.TYPE , "Service1");
 		initialValues.put(SocialContract.Sharing.ORIGIN, "Facebook");
@@ -357,6 +358,7 @@ public class TestDataPopulator {
 		
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha2xyz@facebook.com");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "Service5@amazon.com");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , "Person3@facebook.com");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
 		initialValues.put(SocialContract.Sharing.TYPE , "Service5");
 		initialValues.put(SocialContract.Sharing.ORIGIN, "Facebook");
@@ -366,6 +368,7 @@ public class TestDataPopulator {
 		
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha3xyz@societies.org");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "Service6@amazon.com");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , "Person4@google.com");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "Community2@societies.org");
 		initialValues.put(SocialContract.Sharing.TYPE , "Service6");
 		initialValues.put(SocialContract.Sharing.ORIGIN, "SOCIETIES");
