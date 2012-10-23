@@ -97,7 +97,7 @@ public final class SQLiteContract {
 			+ " (" + 
 			SocialContract.Sharing._ID + " integer primary key autoincrement, " +
 			SocialContract.Sharing.GLOBAL_ID + " text, " +
-			SocialContract.Sharing.OWNER_GLOBAL_ID + "text, " +
+			SocialContract.Sharing.GLOBAL_ID_OWNER + " text, " +
 			SocialContract.Sharing.GLOBAL_ID_SERVICE + " text," +
 			SocialContract.Sharing.GLOBAL_ID_COMMUNITY + " text," +
 			SocialContract.Sharing.TYPE + " text," +

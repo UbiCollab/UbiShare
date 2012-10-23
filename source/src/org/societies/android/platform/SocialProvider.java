@@ -142,8 +142,11 @@ public class SocialProvider extends ContentProvider{
 		switch (index){
 		case SocialContract.UriMatcherIndex.ME:
 			
-			//TODO: For all these, need to check for missing values in _values and add them.
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertMe(_values)));
+			newID = adapter.insertMe(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new me:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 		// Cannot insert in specific index in the table. SQLite decides index.
@@ -152,7 +155,11 @@ public class SocialProvider extends ContentProvider{
 			
 		case SocialContract.UriMatcherIndex.PEOPLE:
 			
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertPeople(_values)));
+			newID = adapter.insertPeople(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new people:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
@@ -184,7 +191,11 @@ public class SocialProvider extends ContentProvider{
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.RELATIONSHIP:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertRelationship(_values)));
+			newID = adapter.insertRelationship(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new relationship:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
@@ -192,15 +203,23 @@ public class SocialProvider extends ContentProvider{
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.MEMBERSHIP:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertMembership(_values)));
+			newID = adapter.insertMembership(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new membership:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
-			
+						
 	   	// Cannot insert in specific index in the table. SQLite decides index.	
 		//case SocialContract.UriMatcherIndex.MEMBERSHIP_SHARP:
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.SHARING:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertSharing(_values)));
+			newID = adapter.insertSharing(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new sharing:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
@@ -208,7 +227,11 @@ public class SocialProvider extends ContentProvider{
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.PEOPLE_ACTIVITY:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertPeopleActivity(_values)));
+			newID = adapter.insertPeopleActivity(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new people activity:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
@@ -216,7 +239,11 @@ public class SocialProvider extends ContentProvider{
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.COMMUNITY_ACTIVITIY:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertCommunityActivity(_values)));
+			newID = adapter.insertCommunityActivity(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new community activity:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
@@ -224,7 +251,11 @@ public class SocialProvider extends ContentProvider{
 		//	break;
 			
 		case SocialContract.UriMatcherIndex.SERVICE_ACTIVITY:
-			returnUri = Uri.withAppendedPath(_uri, Long.toString(adapter.insertServiceActivity(_values)));
+			newID = adapter.insertServiceActivity(_values);
+			if (newID == -1) { //_values does not contain correct parameters.
+				throw new IllegalArgumentException("Unsupported parameters for new service activity:" + _values.toString());
+			}
+			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
 			
 	   	// Cannot insert in specific index in the table. SQLite decides index.
