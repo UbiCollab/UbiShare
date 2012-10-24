@@ -6,6 +6,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -80,6 +81,12 @@ public class BoxAuthenticatorService extends Service {
 			result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+			
+			ContentResolver.addPeriodicSync(
+					account,
+					context.getString(R.string.provider_authority),
+					null,
+					60);
 		}
 		
 		return result;
