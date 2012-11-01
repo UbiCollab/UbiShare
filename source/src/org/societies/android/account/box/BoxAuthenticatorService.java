@@ -73,8 +73,9 @@ public class BoxAuthenticatorService extends Service {
 	 */
 	public static Bundle addAccount(Context context, String username, String password, Bundle userdata) {
 		Bundle result = null;
+		String authority = context.getString(R.string.box_account_type);
 		
-		Account account = new Account(username, context.getString(R.string.box_account_type));
+		Account account = new Account(username, authority);
 		AccountManager manager = AccountManager.get(context);
 		
 		if (manager.addAccountExplicitly(account, password, userdata)) {
@@ -82,11 +83,9 @@ public class BoxAuthenticatorService extends Service {
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 			
-			ContentResolver.addPeriodicSync(
-					account,
-					context.getString(R.string.provider_authority),
-					null,
-					60);
+			ContentResolver.setIsSyncable(account, authority, 1);
+			ContentResolver.setSyncAutomatically(account, authority, true);
+			ContentResolver.addPeriodicSync(account, authority, new Bundle(), 60);
 		}
 		
 		return result;
