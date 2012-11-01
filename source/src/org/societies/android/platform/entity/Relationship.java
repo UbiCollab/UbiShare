@@ -1,17 +1,80 @@
 package org.societies.android.platform.entity;
 
-import java.util.Date;
+import java.util.List;
 
-public class Relationship {
+import android.content.ContentResolver;
+import android.database.Cursor;
+
+import static org.societies.android.api.cis.SocialContract.Relationship.*;
+
+/**
+ * A relationship entity.
+ * 
+ * @author Kato
+ */
+public class Relationship extends Entity {
 
 	private String id;
 	private String globalId;
 	private String globalIdP1;
 	private String globalIdP2;
 	private String type;
-	private Date creationDate;
-	private Date lastModifiedDate;
+	private String creationDate;
+	private String lastModifiedDate;
 	private boolean dirty;
+	
+	/**
+	 * Gets a list of all the relationships in the database.
+	 * @param resolver The content resolver.
+	 * @return A list of all relationships in the database.
+	 */
+	public static List<Relationship> getRelationships(ContentResolver resolver) {
+		return Entity.getEntities(
+				Relationship.class, resolver, CONTENT_URI, null, null, null, null);
+	}
+
+	@Override
+	protected void populate(Cursor cursor) {
+		setId(Entity.getString(cursor, _ID));
+		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdP1(Entity.getString(cursor, GLOBAL_ID_P1));
+		setGlobalIdP2(Entity.getString(cursor, GLOBAL_ID_P2));
+		setType(Entity.getString(cursor, TYPE));
+		//setCreationDate(Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
+		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
+		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
+	}
+
+	@Override
+	public void update(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void delete(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void insert(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public String serialize() {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_P1, globalIdP1));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_P2, globalIdP2));
+		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
+		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
+		//builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate)); TODO: add creation date?
+		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
+		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
+		
+		return builder.toString();
+	}
 	
 	public String getId() {
 		return id;
@@ -21,10 +84,12 @@ public class Relationship {
 		this.id = id;
 	}
 	
+	@Override
 	public String getGlobalId() {
 		return globalId;
 	}
 	
+	@Override
 	public void setGlobalId(String globalId) {
 		this.globalId = globalId;
 	}
@@ -53,11 +118,11 @@ public class Relationship {
 		this.type = type;
 	}
 	
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 	
@@ -69,11 +134,11 @@ public class Relationship {
 		this.dirty = dirty;
 	}
 
-	public Date getLastModifiedDate() {
+	public String getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
+	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

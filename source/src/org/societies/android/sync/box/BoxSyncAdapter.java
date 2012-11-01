@@ -2,8 +2,13 @@ package org.societies.android.sync.box;
 
 import java.util.List;
 
-import org.societies.android.api.cis.SocialContract;
 import org.societies.android.box.BoxConstants;
+import org.societies.android.platform.entity.Community;
+import org.societies.android.platform.entity.CommunityActivity;
+import org.societies.android.platform.entity.Membership;
+import org.societies.android.platform.entity.Person;
+import org.societies.android.platform.entity.PersonActivity;
+import org.societies.android.platform.entity.Relationship;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -37,7 +42,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		mContext = context;
 		mAccountManager = AccountManager.get(context);
-		mBoxHandler = new BoxHandler();
+		mBoxHandler = new BoxHandler(mContext.getContentResolver());
 	}
 	
 	@Override
@@ -53,8 +58,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			Bundle extras,
 			String authority,
 			ContentProviderClient provider,
-			SyncResult syncResult
-	) {
+			SyncResult syncResult) {
 		try {
 			String authToken = mAccountManager.blockingGetAuthToken(
 				account, BoxConstants.AUTH_TOKEN_FLAG, true);
@@ -62,24 +66,92 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			mBoxHandler.initialize(authToken);
 			
 			syncPeople();
+			syncPeopleActivities();
+			
+			syncCommunities();
+			syncCommunityActivities();
+			
+			syncMemberships();
+			syncRelationships();
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 	
 	/**
-	 * Synchronizes the entries in the People table.
+	 * Synchronizes the people.
 	 */
 	private void syncPeople() {
 		Log.i(TAG, "Started People Sync");
 		
-		List<DatabaseEntity> entities = DatabaseEntity.getEntities(
-				mContext, SocialContract.People.CONTENT_URI, null, null, null, null);
+		List<Person> people = Person.getPeople(mContext.getContentResolver());
 		
-		for (DatabaseEntity entity : entities)
-			mBoxHandler.uploadEntity(
-					entity,
-					entity.mColumnValues.getAsString(SocialContract.People.EMAIL),
-					BoxHandler.BOX_PEOPLE_FOLDER);
+		for (Person person : people)
+			mBoxHandler.uploadEntity(person);
+	}
+	
+	/**
+	 * Synchronizes the people activities.
+	 */
+	private void syncPeopleActivities() {
+		Log.i(TAG, "Started Person Activities Sync");
+		
+		List<PersonActivity> activities =
+				PersonActivity.getPersonActivities(mContext.getContentResolver());
+		
+		for (PersonActivity activity : activities)
+			mBoxHandler.uploadEntity(activity);
+	}
+	
+	/**
+	 * Synchronizes the communities.
+	 */
+	private void syncCommunities() {
+		Log.i(TAG, "Started Communities Sync");
+		
+		List<Community> communities =
+				Community.getCommunities(mContext.getContentResolver());
+		
+		for (Community community : communities)
+			mBoxHandler.uploadEntity(community);
+	}
+	
+	/**
+	 * Synchronizes the community activities.
+	 */
+	private void syncCommunityActivities() {
+		Log.i(TAG, "Started Community Activities Sync");
+		
+		List<CommunityActivity> activities =
+				CommunityActivity.getCommunityActivities(mContext.getContentResolver());
+		
+		for (CommunityActivity activity : activities)
+			mBoxHandler.uploadEntity(activity);
+	}
+	
+	/**
+	 * Synchronizes the memberships.
+	 */
+	private void syncMemberships() {
+		Log.i(TAG, "Started Memberships Sync");
+		
+		List<Membership> memberships =
+				Membership.getMemberships(mContext.getContentResolver());
+		
+		for (Membership membership : memberships)
+			mBoxHandler.uploadEntity(membership);
+	}
+	
+	/**
+	 * Synchronizes the relationships.
+	 */
+	private void syncRelationships() {
+		Log.i(TAG, "Started Relationships Sync");
+		
+		List<Relationship> relationships =
+				Relationship.getRelationships(mContext.getContentResolver());
+		
+		for (Relationship relationship : relationships)
+			mBoxHandler.uploadEntity(relationship);
 	}
 }

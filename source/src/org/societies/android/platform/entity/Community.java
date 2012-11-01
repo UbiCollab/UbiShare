@@ -1,8 +1,18 @@
 package org.societies.android.platform.entity;
 
-import java.sql.Date;
+import java.util.List;
 
-public class Community {
+import static org.societies.android.api.cis.SocialContract.Communities.*;
+
+import android.content.ContentResolver;
+import android.database.Cursor;
+
+/**
+ * A community entity.
+ * 
+ * @author Kato
+ */
+public class Community extends Entity {
 
 	private String id;
 	private String globalId;
@@ -10,9 +20,63 @@ public class Community {
 	private String ownerId;
 	private String type;
 	private String description;
-	private Date creationDate;
-	private Date lastModifiedDate;
+	private String creationDate;
+	private String lastModifiedDate;
 	private boolean dirty;
+	
+	/**
+	 * Gets a list of all the communities in the database.
+	 * @param resolver The content resolver.
+	 * @return A list of all the communities in the database.
+	 */
+	public static List<Community> getCommunities(ContentResolver resolver) {
+		return Entity.getEntities(
+				Community.class, resolver, CONTENT_URI, null, null, null, null);
+	}
+
+	@Override
+	protected void populate(Cursor cursor) {
+		setId(Entity.getString(cursor, _ID));
+		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
+		setName(Entity.getString(cursor, NAME));
+		setOwnerId(Entity.getString(cursor, OWNER_ID));
+		setType(Entity.getString(cursor, TYPE));
+		setDescription(Entity.getString(cursor, DESCRIPTION));
+		setCreationDate(Entity.getString(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
+		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
+	}
+
+	@Override
+	public void update(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void delete(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void insert(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public String serialize() {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
+		builder.append(String.format(SERIALIZE_FORMAT, NAME, name));
+		builder.append(String.format(SERIALIZE_FORMAT, OWNER_ID, ownerId));
+		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
+		builder.append(String.format(SERIALIZE_FORMAT, DESCRIPTION, description));
+		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
+		builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate));
+		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
+		
+		return builder.toString();
+	}
 	
 	public String getId() {
 		return id;
@@ -22,10 +86,12 @@ public class Community {
 		this.id = id;
 	}
 	
+	@Override
 	public String getGlobalId() {
 		return globalId;
 	}
 	
+	@Override
 	public void setGlobalId(String globalId) {
 		this.globalId = globalId;
 	}
@@ -62,19 +128,19 @@ public class Community {
 		this.description = description;
 	}
 	
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public Date getLastModifiedDate() {
+	public String getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(Date lastModifiedDate) {
+	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 	

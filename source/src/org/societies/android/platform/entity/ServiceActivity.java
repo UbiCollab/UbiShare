@@ -2,7 +2,10 @@ package org.societies.android.platform.entity;
 
 import java.util.Date;
 
-public class ServiceActivity {
+import android.content.ContentResolver;
+import android.database.Cursor;
+
+public class ServiceActivity extends Entity {
 
 	private String id;
 	private String globalId;
@@ -15,6 +18,33 @@ public class ServiceActivity {
 	private Date lastModifiedDate;
 	private boolean dirty;
 	
+
+	@Override
+	protected void populate(Cursor cursor) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void delete(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void insert(ContentResolver resolver) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public String serialize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -23,10 +53,12 @@ public class ServiceActivity {
 		this.id = id;
 	}
 	
+	@Override
 	public String getGlobalId() {
 		return globalId;
 	}
 	
+	@Override
 	public void setGlobalId(String globalId) {
 		this.globalId = globalId;
 	}
