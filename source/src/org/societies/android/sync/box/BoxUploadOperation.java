@@ -1,3 +1,18 @@
+/**
+ * Copyright 2012 UbiCollab
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.societies.android.sync.box;
 
 import java.io.ByteArrayInputStream;
@@ -56,24 +71,17 @@ public class BoxUploadOperation extends BoxOperation {
 		mResolver = resolver;
 	}
 	
-	/**
-	 * Runs the upload operation.
-	 */
+	@Override
 	public void run() {
 		try {
-			long fileId = Long.parseLong(mEntity.getGlobalId());
-			
 			try {
+				long fileId = Long.parseLong(mEntity.getGlobalId());
 				uploadEntity(fileId, false);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-		} catch (NumberFormatException nfe) {
-			try {
+			} catch (NumberFormatException nfe) {
 				uploadEntity(getNewFileId(), true);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
 			}
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 	
@@ -138,7 +146,7 @@ public class BoxUploadOperation extends BoxOperation {
 	
 	/**
 	 * Uploads the specified content to a file.
-	 * @param action The action to perform (see Box.upload doc).
+	 * @param action The action to perform (see Box.upload() doc).
 	 * @param content The content to upload.
 	 * @param name The name of the file to upload to.
 	 * @param destinationId The folder ID or file ID, depending on the action.

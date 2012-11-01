@@ -1,0 +1,23 @@
+=====================================================================
+ UbiShare
+ Copyright 2012 UbiCollab
+=====================================================================
+
+UbiShare is Copyright UbiCollab. It is licensed under the Apache 2.0
+license. You may obtain a copy of the License at:
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+The source files in the org.societies.android.sync.box package uses
+a slightly modified version of the box-android-sdk library. The
+box-android-sdk library is Copyright Box.net and is also licensed
+under the Apache 2.0 license.
+
+The source code of the modified box-android-sdk library can be
+obtained at:
+
+  https://github.com/KatoStoelen/box-android-sdk
+  
+While the source code of the original library can be obtained at:
+
+  https://github.com/box/box-android-sdk
