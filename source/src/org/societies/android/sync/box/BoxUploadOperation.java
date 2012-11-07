@@ -16,10 +16,8 @@
 package org.societies.android.sync.box;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 
 import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.entity.Entity;
@@ -96,8 +94,7 @@ public class BoxUploadOperation extends BoxOperation {
 	 * @param fileId The ID of the existing file.
 	 * @param updateEntity Whether or not the entity should be updated with a
 	 * new global ID.
-	 * @throws IOException Can be thrown if there is no connection, or if some
-	 * other connection problem exists.
+	 * @throws IOException If an error occurs while uploading.
 	 */
 	private void uploadEntity(long fileId, boolean updateEntity) throws IOException {
 		FileResponseParser response = upload(
@@ -118,8 +115,7 @@ public class BoxUploadOperation extends BoxOperation {
 	/**
 	 * Creates a temporary file and returns it's ID.
 	 * @return The ID of the the temporary file.
-	 * @throws IOException Can be thrown if there is no connection, or if some
-	 * other connection problem exists.
+	 * @throws IOException If an error occurs while uploading.
 	 */
 	private long getNewFileId() throws IOException {
 		FileResponseParser response = upload(
@@ -151,12 +147,7 @@ public class BoxUploadOperation extends BoxOperation {
 	 * @param name The name of the file to upload to.
 	 * @param destinationId The folder ID or file ID, depending on the action.
 	 * @return The response.
-	 * @throws IOException Can be thrown if there is no connection, or if some
-	 * other connection problem exists.
-     * @throws FileNotFoundException File being uploaded either doesn't exist,
-     * is not a file, or cannot be read.
-     * @throws MalformedURLException Make sure you have specified a valid upload
-     * action.
+	 * @throws IOException If an error occurs while uploading.
 	 */
 	private FileResponseParser upload(
 			String action,
