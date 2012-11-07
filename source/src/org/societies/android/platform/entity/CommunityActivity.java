@@ -69,8 +69,7 @@ public class CommunityActivity extends Entity {
 	
 	@Override
 	protected Uri getContentUri() {
-		// TODO Auto-generated method stub
-		return null;
+		return CONTENT_URI;
 	}
 
 	@Override

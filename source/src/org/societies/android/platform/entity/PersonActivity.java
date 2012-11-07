@@ -15,6 +15,7 @@
  */
 package org.societies.android.platform.entity;
 
+import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.PeopleActivity.*;
 
 import java.util.List;
@@ -70,8 +71,7 @@ public class PersonActivity extends Entity {
 	
 	@Override
 	protected Uri getContentUri() {
-		// TODO Auto-generated method stub
-		return null;
+		return CONTENT_URI;
 	}
 
 	@Override

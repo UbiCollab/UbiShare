@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.Services.*;
 
 /**
@@ -67,8 +68,7 @@ public class Service extends Entity {
 	
 	@Override
 	protected Uri getContentUri() {
-		// TODO Auto-generated method stub
-		return null;
+		return CONTENT_URI;
 	}
 
 	@Override
