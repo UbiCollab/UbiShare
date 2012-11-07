@@ -51,14 +51,14 @@ public class CommunityActivity extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getInt(cursor, _ID));
-		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdFeedOwner(Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
-		setGlobalIdActor(Entity.getString(cursor, GLOBAL_ID_ACTOR));
-		setGlobalIdObject(Entity.getString(cursor, GLOBAL_ID_OBJECT));
-		setGlobalIdVerb(Entity.getString(cursor, GLOBAL_ID_VERB));
-		setGlobalIdTarget(Entity.getString(cursor, GLOBAL_ID_TARGET));
-		setCreationDate(Entity.getString(cursor, CREATION_DATE));
+		setId(					Entity.getInt(cursor, _ID));
+		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdFeedOwner(	Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
+		setGlobalIdActor(		Entity.getString(cursor, GLOBAL_ID_ACTOR));
+		setGlobalIdObject(		Entity.getString(cursor, GLOBAL_ID_OBJECT));
+		setGlobalIdVerb(		Entity.getString(cursor, GLOBAL_ID_VERB));
+		setGlobalIdTarget(		Entity.getString(cursor, GLOBAL_ID_TARGET));
+		setCreationDate(		Entity.getString(cursor, CREATION_DATE));
 	}
 	
 	@Override

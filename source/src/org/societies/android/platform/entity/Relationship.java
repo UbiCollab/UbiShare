@@ -52,13 +52,13 @@ public class Relationship extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getInt(cursor, _ID));
-		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdP1(Entity.getString(cursor, GLOBAL_ID_P1));
-		setGlobalIdP2(Entity.getString(cursor, GLOBAL_ID_P2));
-		setType(Entity.getString(cursor, TYPE));
-		//setCreationDate(Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
-		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
+		setId(					Entity.getInt(cursor, _ID));
+		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdP1(			Entity.getString(cursor, GLOBAL_ID_P1));
+		setGlobalIdP2(			Entity.getString(cursor, GLOBAL_ID_P2));
+		setType(				Entity.getString(cursor, TYPE));
+		//setCreationDate(		Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
+		//setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
 	}
 
 	@Override

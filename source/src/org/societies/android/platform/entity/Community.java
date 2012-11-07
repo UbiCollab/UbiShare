@@ -52,14 +52,14 @@ public class Community extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getInt(cursor, _ID));
-		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
-		setName(Entity.getString(cursor, NAME));
-		setOwnerId(Entity.getString(cursor, OWNER_ID));
-		setType(Entity.getString(cursor, TYPE));
-		setDescription(Entity.getString(cursor, DESCRIPTION));
-		setCreationDate(Entity.getString(cursor, CREATION_DATE));
-		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
+		setId(					Entity.getInt(cursor, _ID));
+		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
+		setName(				Entity.getString(cursor, NAME));
+		setOwnerId(				Entity.getString(cursor, OWNER_ID));
+		setType(				Entity.getString(cursor, TYPE));
+		setDescription(			Entity.getString(cursor, DESCRIPTION));
+		setCreationDate(		Entity.getString(cursor, CREATION_DATE));
+		setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
