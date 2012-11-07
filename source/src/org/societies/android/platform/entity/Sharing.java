@@ -30,7 +30,6 @@ public class Sharing extends Entity {
 	private String type;
 	private Date creationDate;
 	private Date lastModifiedDate;
-	private boolean dirty;
 	
 	@Override
 	protected void populate(Cursor cursor) {
@@ -122,13 +121,5 @@ public class Sharing extends Entity {
 	
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 }

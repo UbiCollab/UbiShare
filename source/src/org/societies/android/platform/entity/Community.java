@@ -37,7 +37,6 @@ public class Community extends Entity {
 	private String description;
 	private String creationDate;
 	private String lastModifiedDate;
-	private boolean dirty;
 	
 	/**
 	 * Gets a list of all the communities in the database.
@@ -59,7 +58,6 @@ public class Community extends Entity {
 		setDescription(Entity.getString(cursor, DESCRIPTION));
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
-		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
 	}
 
 	@Override
@@ -88,7 +86,6 @@ public class Community extends Entity {
 		builder.append(String.format(SERIALIZE_FORMAT, DESCRIPTION, description));
 		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
 		builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate));
-		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
 		
 		return builder.toString();
 	}
@@ -157,13 +154,5 @@ public class Community extends Entity {
 	
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 }

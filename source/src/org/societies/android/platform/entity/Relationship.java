@@ -36,7 +36,6 @@ public class Relationship extends Entity {
 	private String type;
 	private String creationDate;
 	private String lastModifiedDate;
-	private boolean dirty;
 	
 	/**
 	 * Gets a list of all the relationships in the database.
@@ -57,7 +56,6 @@ public class Relationship extends Entity {
 		setType(Entity.getString(cursor, TYPE));
 		//setCreationDate(Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
 		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
-		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
 	}
 
 	@Override
@@ -86,7 +84,6 @@ public class Relationship extends Entity {
 		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
 		//builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate)); TODO: add creation date?
 		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
-		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
 		
 		return builder.toString();
 	}
@@ -139,14 +136,6 @@ public class Relationship extends Entity {
 	
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 
 	public String getLastModifiedDate() {

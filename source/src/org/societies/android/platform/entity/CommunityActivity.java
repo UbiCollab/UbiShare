@@ -37,7 +37,6 @@ public class CommunityActivity extends Entity {
 	private String globalIdTarget;
 	private String creationDate;
 	private String lastModifiedDate;
-	private boolean dirty;
 	
 	/**
 	 * Gets a list of all the community activities in the database.
@@ -60,7 +59,6 @@ public class CommunityActivity extends Entity {
 		setGlobalIdTarget(Entity.getString(cursor, GLOBAL_ID_TARGET));
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
-		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
 	}
 
 	@Override
@@ -90,7 +88,6 @@ public class CommunityActivity extends Entity {
 		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_TARGET, globalIdTarget));
 		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
 		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
-		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
 		
 		return builder.toString();
 	}
@@ -167,13 +164,5 @@ public class CommunityActivity extends Entity {
 	
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 }

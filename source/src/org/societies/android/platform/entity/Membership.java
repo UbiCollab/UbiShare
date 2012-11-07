@@ -36,7 +36,6 @@ public class Membership extends Entity {
 	private String type;
 	private String creationDate;
 	private String lastModifiedDate;
-	private boolean dirty;
 	
 	/**
 	 * Gets a list of all the memberships in the database.
@@ -57,7 +56,6 @@ public class Membership extends Entity {
 		setType(Entity.getString(cursor, TYPE));
 		//setCreationDate(Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
 		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
-		//setDirty(Entity.getBoolean(cursor, DIRTY)); TODO: add dirty flag?
 	}
 
 	@Override
@@ -146,13 +144,5 @@ public class Membership extends Entity {
 	
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 }

@@ -31,7 +31,6 @@ public class ServiceActivity extends Entity {
 	private String globalIdTarget;
 	private Date creationDate;
 	private Date lastModifiedDate;
-	private boolean dirty;
 	
 
 	@Override
@@ -132,13 +131,5 @@ public class ServiceActivity extends Entity {
 	
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 }
