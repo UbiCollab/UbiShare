@@ -97,6 +97,9 @@ public class BoxUploadOperation extends BoxOperation {
 	 * @throws IOException If an error occurs while uploading.
 	 */
 	private void uploadEntity(long fileId, boolean updateEntity) throws IOException {
+		if (updateEntity)
+			mEntity.setGlobalId(String.valueOf(fileId));
+		
 		FileResponseParser response = upload(
 				Box.UPLOAD_ACTION_OVERWRITE,
 				mEntity.serialize(),
@@ -104,10 +107,8 @@ public class BoxUploadOperation extends BoxOperation {
 				fileId);
 		
 		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
-			if (updateEntity) {
-				mEntity.setGlobalId(String.valueOf(response.getFile().getId()));
+			if (updateEntity)
 				mEntity.update(mResolver);
-			}
 		}
 		else throw new IOException("Failed to upload entity: " + response.getStatus());
 	}
