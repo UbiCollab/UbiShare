@@ -15,10 +15,10 @@
  */
 package org.societies.android.platform.entity;
 
-import java.util.Date;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
+
+import static org.societies.android.api.cis.SocialContract.Sharing.*;
 
 public class Sharing extends Entity {
 
@@ -28,12 +28,19 @@ public class Sharing extends Entity {
 	private String globalIdOwner;
 	private String globalIdCommunity;
 	private String type;
-	private Date creationDate;
-	private Date lastModifiedDate;
+	private String creationDate;
+	private String lastModifiedDate;
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		// TODO Auto-generated method stub
+		setId(Entity.getString(cursor, _ID));
+		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdService(Entity.getString(cursor, GLOBAL_ID_SERVICE));
+		setGlobalIdOwner(Entity.getString(cursor, GLOBAL_ID_OWNER));
+		setGlobalIdCommunity(Entity.getString(cursor, GLOBAL_ID_COMMUNITY));
+		setType(Entity.getString(cursor, TYPE));
+		//setCreationDate(Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
+		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
 	}
 
 	@Override
@@ -53,8 +60,17 @@ public class Sharing extends Entity {
 
 	@Override
 	public String serialize() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_SERVICE, globalIdService));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_OWNER, globalIdOwner));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_COMMUNITY, globalIdCommunity));
+		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
+		//builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate)); TODO: add creation date?
+		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
+		
+		return builder.toString();
 	}
 	
 	public String getId() {
@@ -107,19 +123,19 @@ public class Sharing extends Entity {
 		this.type = type;
 	}
 	
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public Date getLastModifiedDate() {
+	public String getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(Date lastModifiedDate) {
+	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

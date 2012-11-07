@@ -15,11 +15,16 @@
  */
 package org.societies.android.platform.entity;
 
-import java.util.Date;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 
+import static org.societies.android.api.cis.SocialContract.Services.*;
+
+/**
+ * A service entity.
+ * 
+ * @author Kato
+ */
 public class Service extends Entity {
 
 	private String id;
@@ -33,12 +38,24 @@ public class Service extends Entity {
 	private String dependency;
 	private String config;
 	private String url;
-	private Date creationDate;
-	private Date lastModifiedDate;
+	private String creationDate;
+	private String lastModifiedDate;
 
 	@Override
 	protected void populate(Cursor cursor) {
-		// TODO Auto-generated method stub
+		setId(Entity.getString(cursor, _ID));
+		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
+		setName(Entity.getString(cursor, NAME));
+		setDescription(Entity.getString(cursor, DESCRIPTION));
+		setOwnerId(Entity.getString(cursor, OWNER_ID));
+		setType(Entity.getString(cursor, TYPE));
+		setAppType(Entity.getString(cursor, APP_TYPE));
+		setAvailable(Entity.getBoolean(cursor, AVAILABLE));
+		setDependency(Entity.getString(cursor, DEPENDENCY));
+		setConfig(Entity.getString(cursor, CONFIG));
+		setUrl(Entity.getString(cursor, URL));
+		setCreationDate(Entity.getString(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -58,8 +75,22 @@ public class Service extends Entity {
 
 	@Override
 	public String serialize() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
+		builder.append(String.format(SERIALIZE_FORMAT, NAME, name));
+		builder.append(String.format(SERIALIZE_FORMAT, DESCRIPTION, description));
+		builder.append(String.format(SERIALIZE_FORMAT, OWNER_ID, ownerId));
+		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
+		builder.append(String.format(SERIALIZE_FORMAT, APP_TYPE, appType));
+		builder.append(String.format(SERIALIZE_FORMAT, AVAILABLE, available));
+		builder.append(String.format(SERIALIZE_FORMAT, DEPENDENCY, dependency));
+		builder.append(String.format(SERIALIZE_FORMAT, CONFIG, config));
+		builder.append(String.format(SERIALIZE_FORMAT, URL, url));
+		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
+		builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate));
+		
+		return builder.toString();
 	}
 	
 	public String getId() {
@@ -152,19 +183,19 @@ public class Service extends Entity {
 		this.url = url;
 	}
 	
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public Date getLastModifiedDate() {
+	public String getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(Date lastModifiedDate) {
+	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

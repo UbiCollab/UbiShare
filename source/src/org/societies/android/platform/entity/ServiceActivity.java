@@ -15,11 +15,16 @@
  */
 package org.societies.android.platform.entity;
 
-import java.util.Date;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 
+import static org.societies.android.api.cis.SocialContract.ServiceActivity.*;
+
+/**
+ * A service activity entity.
+ * 
+ * @author Kato
+ */
 public class ServiceActivity extends Entity {
 
 	private String id;
@@ -29,12 +34,18 @@ public class ServiceActivity extends Entity {
 	private String globalIdObject;
 	private String globalIdVerb;
 	private String globalIdTarget;
-	private Date creationDate;
-	
+	private String creationDate;
 
 	@Override
 	protected void populate(Cursor cursor) {
-		// TODO Auto-generated method stub
+		setId(Entity.getString(cursor, _ID));
+		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdFeedOwner(Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
+		setGlobalIdActor(Entity.getString(cursor, GLOBAL_ID_ACTOR));
+		setGlobalIdObject(Entity.getString(cursor, GLOBAL_ID_OBJECT));
+		setGlobalIdVerb(Entity.getString(cursor, GLOBAL_ID_VERB));
+		setGlobalIdTarget(Entity.getString(cursor, GLOBAL_ID_TARGET));
+		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 	}
 
 	@Override
@@ -54,8 +65,17 @@ public class ServiceActivity extends Entity {
 
 	@Override
 	public String serialize() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_FEED_OWNER, globalIdFeedOwner));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_ACTOR, globalIdActor));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_OBJECT, globalIdObject));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_VERB, globalIdVerb));
+		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_TARGET, globalIdTarget));
+		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
+		
+		return builder.toString();
 	}
 	
 	public String getId() {
@@ -116,11 +136,11 @@ public class ServiceActivity extends Entity {
 		this.globalIdTarget = globalIdTarget;
 	}
 	
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 }
