@@ -83,7 +83,6 @@ public class Membership extends Entity {
 		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
 		//builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate)); TODO: add creation date?
 		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
-		//builder.append(String.format(SERIALIZE_FORMAT, DIRTY, dirty)); TODO: add dirty flag?
 		
 		return builder.toString();
 	}
