@@ -37,7 +37,6 @@ public class PersonActivity extends Entity {
 	private String globalIdVerb;
 	private String globalIdTarget;
 	private String creationDate;
-	private String lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the person activities in the database.
@@ -59,7 +58,6 @@ public class PersonActivity extends Entity {
 		setGlobalIdVerb(Entity.getString(cursor, GLOBAL_ID_VERB));
 		setGlobalIdTarget(Entity.getString(cursor, GLOBAL_ID_TARGET));
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
-		//setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
 	}
 	
 
@@ -89,7 +87,6 @@ public class PersonActivity extends Entity {
 		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_VERB, globalIdVerb));
 		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_TARGET, globalIdTarget));
 		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
-		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
 		
 		return builder.toString();
 	}
@@ -158,13 +155,5 @@ public class PersonActivity extends Entity {
 	
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
-	}
-	
-	public String getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	
-	public void setLastModifiedDate(String lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
 	}
 }

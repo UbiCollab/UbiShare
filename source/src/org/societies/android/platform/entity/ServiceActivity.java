@@ -30,7 +30,6 @@ public class ServiceActivity extends Entity {
 	private String globalIdVerb;
 	private String globalIdTarget;
 	private Date creationDate;
-	private Date lastModifiedDate;
 	
 
 	@Override
@@ -123,13 +122,5 @@ public class ServiceActivity extends Entity {
 	
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
 	}
 }
