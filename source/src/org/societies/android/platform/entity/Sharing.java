@@ -17,6 +17,7 @@ package org.societies.android.platform.entity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 import static org.societies.android.api.cis.SocialContract.Sharing.*;
 
@@ -45,6 +46,12 @@ public class Sharing extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	protected Uri getContentUri() {
 		// TODO Auto-generated method stub
 		return null;
 	}

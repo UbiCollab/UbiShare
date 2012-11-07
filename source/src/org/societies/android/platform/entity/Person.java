@@ -22,6 +22,7 @@ import static org.societies.android.api.cis.SocialContract.People.*;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 /**
  * A person entity.
@@ -61,6 +62,12 @@ public class Person extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	protected Uri getContentUri() {
 		// TODO Auto-generated method stub
 		return null;
 	}

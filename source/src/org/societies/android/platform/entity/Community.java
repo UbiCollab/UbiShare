@@ -22,6 +22,7 @@ import static org.societies.android.api.cis.SocialContract.Communities.*;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 /**
  * A community entity.
@@ -63,6 +64,12 @@ public class Community extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	protected Uri getContentUri() {
 		// TODO Auto-generated method stub
 		return null;
 	}

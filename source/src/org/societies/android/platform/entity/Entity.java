@@ -128,6 +128,12 @@ public abstract class Entity {
 	protected abstract ContentValues getEntityValues();
 	
 	/**
+	 * Gets the content URL of the entity.
+	 * @return The content URL of the entity.
+	 */
+	protected abstract Uri getContentUri();
+	
+	/**
 	 * Updates the entity in the database.
 	 * @param resolver The content resolver.
 	 */

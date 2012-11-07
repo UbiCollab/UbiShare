@@ -20,6 +20,7 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import static org.societies.android.api.cis.SocialContract.CommunityActivity.*;
 
 /**
@@ -62,6 +63,12 @@ public class CommunityActivity extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	protected Uri getContentUri() {
 		// TODO Auto-generated method stub
 		return null;
 	}
