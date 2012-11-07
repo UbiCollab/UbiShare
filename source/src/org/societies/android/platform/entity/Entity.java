@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -136,25 +137,32 @@ public abstract class Entity {
 	/**
 	 * Updates the entity in the database.
 	 * @param resolver The content resolver.
+	 * @return The number of rows updated. Should always be 1.
 	 */
-	public void update(ContentResolver resolver) {
-		// TODO: Implement update
+	public int update(ContentResolver resolver) {
+		Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
+		
+		return resolver.update(contentUri, getEntityValues(), null, null);
 	}
 	
 	/**
 	 * Deletes the entity in the database.
 	 * @param resolver The content resolver.
+	 * @return The number of rows deleted. Should always be 1.
 	 */
-	public void delete(ContentResolver resolver) {
-		// TODO: Implement delete
+	public int delete(ContentResolver resolver) {
+		Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
+		
+		return resolver.delete(contentUri, null, null);
 	}
 	
 	/**
 	 * Inserts the entity into the database.
 	 * @param resolver The content resolver.
+	 * @return The URL to the newly inserted entity.
 	 */
-	public void insert(ContentResolver resolver) {
-		// TODO: Implement insert
+	public Uri insert(ContentResolver resolver) {
+		return resolver.insert(getContentUri(), getEntityValues());
 	}
 	
 	/**
