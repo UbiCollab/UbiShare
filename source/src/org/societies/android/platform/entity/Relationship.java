@@ -63,8 +63,16 @@ public class Relationship extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(GLOBAL_ID_P1, globalIdP1);
+		values.put(GLOBAL_ID_P2, globalIdP2);
+		values.put(TYPE, type);
+		//values.put(CREATION_DATE, creationDate); TODO: add creation date?
+		//values.put(LAST_MODIFIED_DATE, lastModifiedDate); TODO: add last modified date?
+		
+		return values;
 	}
 	
 	@Override

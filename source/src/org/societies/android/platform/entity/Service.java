@@ -62,8 +62,22 @@ public class Service extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(NAME, name);
+		values.put(DESCRIPTION, description);
+		values.put(OWNER_ID, ownerId);
+		values.put(TYPE, type);
+		values.put(APP_TYPE, appType);
+		values.put(AVAILABLE, available);
+		values.put(DEPENDENCY, dependency);
+		values.put(CONFIG, config);
+		values.put(URL, url);
+		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
+		
+		return values;
 	}
 	
 	@Override

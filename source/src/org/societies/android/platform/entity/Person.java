@@ -52,18 +52,26 @@ public class Person extends Entity {
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(Entity.getInt(cursor, _ID));
-		setDescription(Entity.getString(cursor, DESCRIPTION));
-		setCreationDate(Entity.getString(cursor, CREATION_DATE));
-		setEmail(Entity.getString(cursor, EMAIL));
 		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
-		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
 		setName(Entity.getString(cursor, NAME));
+		setDescription(Entity.getString(cursor, DESCRIPTION));
+		setEmail(Entity.getString(cursor, EMAIL));
+		setCreationDate(Entity.getString(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(NAME, name);
+		values.put(DESCRIPTION, description);
+		values.put(EMAIL, email);
+		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
+		
+		return values;
 	}
 	
 	@Override

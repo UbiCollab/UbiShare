@@ -52,8 +52,17 @@ public class ServiceActivity extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(GLOBAL_ID_FEED_OWNER, globalIdFeedOwner);
+		values.put(GLOBAL_ID_ACTOR, globalIdActor);
+		values.put(GLOBAL_ID_OBJECT, globalIdObject);
+		values.put(GLOBAL_ID_VERB, globalIdVerb);
+		values.put(GLOBAL_ID_TARGET, globalIdTarget);
+		values.put(CREATION_DATE, creationDate);
+		
+		return values;
 	}
 	
 	@Override

@@ -47,8 +47,17 @@ public class Sharing extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(GLOBAL_ID_SERVICE, globalIdService);
+		values.put(GLOBAL_ID_OWNER, globalIdOwner);
+		values.put(GLOBAL_ID_COMMUNITY, globalIdCommunity);
+		values.put(TYPE, type);
+		//values.put(CREATION_DATE, creationDate); TODO: add creation date?
+		//values.put(LAST_MODIFIED_DATE, lastModifiedDate); TODO: add last modified date?
+		
+		return values;
 	}
 	
 	@Override

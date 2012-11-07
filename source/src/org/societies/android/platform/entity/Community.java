@@ -64,8 +64,17 @@ public class Community extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		// TODO Auto-generated method stub
-		return null;
+		ContentValues values = new ContentValues();
+		
+		values.put(GLOBAL_ID, globalId);
+		values.put(NAME, name);
+		values.put(OWNER_ID, ownerId);
+		values.put(TYPE, type);
+		values.put(DESCRIPTION, description);
+		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
+		
+		return values;
 	}
 	
 	@Override
