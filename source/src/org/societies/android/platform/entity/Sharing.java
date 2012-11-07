@@ -22,6 +22,11 @@ import android.net.Uri;
 import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.Sharing.*;
 
+/**
+ * A sharing entity.
+ * 
+ * @author Kato
+ */
 public class Sharing extends Entity {
 
 	private int id;
