@@ -20,6 +20,7 @@ import static org.societies.android.api.cis.SocialContract.PeopleActivity.*;
 import java.util.List;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 
 /**
@@ -29,7 +30,7 @@ import android.database.Cursor;
  */
 public class PersonActivity extends Entity {
 
-	private String id;
+	private int id;
 	private String globalId;
 	private String globalIdFeedOwner;
 	private String globalIdActor;
@@ -50,7 +51,7 @@ public class PersonActivity extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getString(cursor, _ID));
+		setId(Entity.getInt(cursor, _ID));
 		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
 		setGlobalIdFeedOwner(Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
 		setGlobalIdActor(Entity.getString(cursor, GLOBAL_ID_ACTOR));
@@ -60,20 +61,10 @@ public class PersonActivity extends Entity {
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 	}
 	
-
 	@Override
-	public void update(ContentResolver resolver) {
+	protected ContentValues getEntityValues() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void delete(ContentResolver resolver) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void insert(ContentResolver resolver) {
-		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -91,11 +82,12 @@ public class PersonActivity extends Entity {
 		return builder.toString();
 	}
 	
-	public String getId() {
+	@Override
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(String id) {
+	private void setId(int id) {
 		this.id = id;
 	}
 	

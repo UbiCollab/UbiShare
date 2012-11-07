@@ -15,14 +15,14 @@
  */
 package org.societies.android.platform.entity;
 
-import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import static org.societies.android.api.cis.SocialContract.Sharing.*;
 
 public class Sharing extends Entity {
 
-	private String id;
+	private int id;
 	private String globalId;
 	private String globalIdService;
 	private String globalIdOwner;
@@ -33,7 +33,7 @@ public class Sharing extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getString(cursor, _ID));
+		setId(Entity.getInt(cursor, _ID));
 		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
 		setGlobalIdService(Entity.getString(cursor, GLOBAL_ID_SERVICE));
 		setGlobalIdOwner(Entity.getString(cursor, GLOBAL_ID_OWNER));
@@ -44,18 +44,9 @@ public class Sharing extends Entity {
 	}
 
 	@Override
-	public void update(ContentResolver resolver) {
+	protected ContentValues getEntityValues() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void delete(ContentResolver resolver) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void insert(ContentResolver resolver) {
-		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -73,11 +64,12 @@ public class Sharing extends Entity {
 		return builder.toString();
 	}
 	
-	public String getId() {
+	@Override
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(String id) {
+	private void setId(int id) {
 		this.id = id;
 	}
 	

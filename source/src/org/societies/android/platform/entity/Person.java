@@ -20,6 +20,7 @@ import java.util.List;
 import static org.societies.android.api.cis.SocialContract.People.*;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 
 /**
@@ -29,7 +30,7 @@ import android.database.Cursor;
  */
 public class Person extends Entity {
 	
-	private String id;
+	private int id;
 	private String globalId;
 	private String name;
 	private String description;
@@ -49,7 +50,7 @@ public class Person extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getString(cursor, _ID));
+		setId(Entity.getInt(cursor, _ID));
 		setDescription(Entity.getString(cursor, DESCRIPTION));
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 		setEmail(Entity.getString(cursor, EMAIL));
@@ -59,18 +60,9 @@ public class Person extends Entity {
 	}
 	
 	@Override
-	public void update(ContentResolver resolver) {
+	protected ContentValues getEntityValues() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void delete(ContentResolver resolver) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void insert(ContentResolver resolver) {
-		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -87,11 +79,12 @@ public class Person extends Entity {
 		return builder.toString();
 	}
 	
-	public String getId() {
+	@Override
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(String id) {
+	private void setId(int id) {
 		this.id = id;
 	}
 	

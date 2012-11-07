@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -91,6 +92,18 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Gets the value of the specified column as an integer.
+	 * @param cursor The database cursor.
+	 * @param columnName The name of the column.
+	 * @return The value of the specified column as an integer.
+	 * @throws IllegalArgumentException If the specified column does not exist.
+	 */
+	protected static int getInt(Cursor cursor, String columnName)
+			throws IllegalArgumentException {
+		return cursor.getInt(cursor.getColumnIndexOrThrow(columnName));
+	}
+	
+	/**
 	 * Gets the value of the specified column as a boolean.
 	 * @param cursor The database cursor.
 	 * @param columnName The name of the column.
@@ -99,7 +112,7 @@ public abstract class Entity {
 	 */
 	protected static boolean getBoolean(Cursor cursor, String columnName)
 			throws IllegalArgumentException {
-		return cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1;
+		return getInt(cursor, columnName) == 1;
 	}
 	
 	/**
@@ -109,28 +122,46 @@ public abstract class Entity {
 	protected abstract void populate(Cursor cursor);
 	
 	/**
+	 * Gets the values of the entity.
+	 * @return A mapping between property name and value.
+	 */
+	protected abstract ContentValues getEntityValues();
+	
+	/**
 	 * Updates the entity in the database.
 	 * @param resolver The content resolver.
 	 */
-	public abstract void update(ContentResolver resolver);
+	public void update(ContentResolver resolver) {
+		// TODO: Implement update
+	}
 	
 	/**
 	 * Deletes the entity in the database.
 	 * @param resolver The content resolver.
 	 */
-	public abstract void delete(ContentResolver resolver);
+	public void delete(ContentResolver resolver) {
+		// TODO: Implement delete
+	}
 	
 	/**
 	 * Inserts the entity into the database.
 	 * @param resolver The content resolver.
 	 */
-	public abstract void insert(ContentResolver resolver);
+	public void insert(ContentResolver resolver) {
+		// TODO: Implement insert
+	}
 	
 	/**
 	 * Serializes the entity into a string.
 	 * @return A string representation of the entity.
 	 */
 	public abstract String serialize();
+	
+	/**
+	 * Gets the local ID of the entity.
+	 * @return The local ID of the entity.
+	 */
+	public abstract int getId();
 	
 	/**
 	 * Gets the global ID of the entity.

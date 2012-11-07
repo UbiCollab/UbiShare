@@ -20,6 +20,7 @@ import java.util.List;
 import static org.societies.android.api.cis.SocialContract.Communities.*;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 
 /**
@@ -29,7 +30,7 @@ import android.database.Cursor;
  */
 public class Community extends Entity {
 
-	private String id;
+	private int id;
 	private String globalId;
 	private String name;
 	private String ownerId;
@@ -50,7 +51,7 @@ public class Community extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getString(cursor, _ID));
+		setId(Entity.getInt(cursor, _ID));
 		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
 		setName(Entity.getString(cursor, NAME));
 		setOwnerId(Entity.getString(cursor, OWNER_ID));
@@ -59,20 +60,11 @@ public class Community extends Entity {
 		setCreationDate(Entity.getString(cursor, CREATION_DATE));
 		setLastModifiedDate(Entity.getString(cursor, LAST_MODIFIED_DATE));
 	}
-
+	
 	@Override
-	public void update(ContentResolver resolver) {
+	protected ContentValues getEntityValues() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void delete(ContentResolver resolver) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void insert(ContentResolver resolver) {
-		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -90,11 +82,12 @@ public class Community extends Entity {
 		return builder.toString();
 	}
 	
-	public String getId() {
+	@Override
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(String id) {
+	private void setId(int id) {
 		this.id = id;
 	}
 	

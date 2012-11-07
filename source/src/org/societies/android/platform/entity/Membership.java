@@ -18,6 +18,7 @@ package org.societies.android.platform.entity;
 import java.util.List;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import static org.societies.android.api.cis.SocialContract.Membership.*;
@@ -29,7 +30,7 @@ import static org.societies.android.api.cis.SocialContract.Membership.*;
  */
 public class Membership extends Entity {
 
-	private String id;
+	private int id;
 	private String globalId;
 	private String globalIdMember;
 	private String globalIdCommunity;
@@ -49,7 +50,7 @@ public class Membership extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(Entity.getString(cursor, _ID));
+		setId(Entity.getInt(cursor, _ID));
 		setGlobalId(Entity.getString(cursor, GLOBAL_ID));
 		setGlobalIdMember(Entity.getString(cursor, GLOBAL_ID_MEMBER));
 		setGlobalIdCommunity(Entity.getString(cursor, GLOBAL_ID_COMMUNITY));
@@ -59,18 +60,9 @@ public class Membership extends Entity {
 	}
 
 	@Override
-	public void update(ContentResolver resolver) {
+	protected ContentValues getEntityValues() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void delete(ContentResolver resolver) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void insert(ContentResolver resolver) {
-		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -87,11 +79,12 @@ public class Membership extends Entity {
 		return builder.toString();
 	}
 	
-	public String getId() {
+	@Override
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(String id) {
+	private void setId(int id) {
 		this.id = id;
 	}
 	
