@@ -26,7 +26,7 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * Base class of all entities.
+ * Base class of entities.
  * 
  * @author Kato
  */
@@ -63,7 +63,7 @@ public abstract class Entity {
 			cursor = resolver.query(contentUri, projection, selection, selectionArgs, sortOrder);
 			
 			if (cursor.moveToFirst()) {
-				for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
+				for (boolean hasItem = true; hasItem; hasItem = cursor.moveToNext()) {
 					E entity = entityClass.newInstance();
 					entity.populate(cursor);
 					
@@ -137,23 +137,33 @@ public abstract class Entity {
 	/**
 	 * Updates the entity in the database.
 	 * @param resolver The content resolver.
-	 * @return The number of rows updated. Should always be 1.
+	 * @return The number of rows updated.
+	 * @throws IllegalStateException If the entity is not in the database.
 	 */
 	public int update(ContentResolver resolver) {
-		Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
-		
-		return resolver.update(contentUri, getEntityValues(), null, null);
+		if (getId() != -1) {
+			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
+			
+			return resolver.update(contentUri, getEntityValues(), null, null);
+		} else {
+			throw new IllegalStateException("The entity is not in the database.");
+		}
 	}
 	
 	/**
 	 * Deletes the entity in the database.
 	 * @param resolver The content resolver.
-	 * @return The number of rows deleted. Should always be 1.
+	 * @return The number of rows deleted.
+	 * @throws IllegalStateException If the entity is not in the database.
 	 */
 	public int delete(ContentResolver resolver) {
-		Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
-		
-		return resolver.delete(contentUri, null, null);
+		if (getId() != -1) {
+			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
+			
+			return resolver.delete(contentUri, null, null);
+		} else {
+			throw new IllegalStateException("The entity is not in the database.");
+		}
 	}
 	
 	/**
@@ -162,7 +172,11 @@ public abstract class Entity {
 	 * @return The URL to the newly inserted entity.
 	 */
 	public Uri insert(ContentResolver resolver) {
-		return resolver.insert(getContentUri(), getEntityValues());
+		if (getId() == -1) {
+			return resolver.insert(getContentUri(), getEntityValues());
+		} else {
+			throw new IllegalStateException("The entity is already in the database.");
+		}
 	}
 	
 	/**

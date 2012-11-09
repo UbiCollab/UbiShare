@@ -32,7 +32,7 @@ import android.net.Uri;
  */
 public class PersonActivity extends Entity {
 
-	private int id;
+	private int id = -1;
 	private String globalId;
 	private String globalIdFeedOwner;
 	private String globalIdActor;

@@ -32,7 +32,7 @@ import static org.societies.android.api.cis.SocialContract.Relationship.*;
  */
 public class Relationship extends Entity {
 
-	private int id;
+	private int id = -1;
 	private String globalId;
 	private String globalIdP1;
 	private String globalIdP2;

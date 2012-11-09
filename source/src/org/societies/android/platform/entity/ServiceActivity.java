@@ -29,7 +29,7 @@ import static org.societies.android.api.cis.SocialContract.ServiceActivity.*;
  */
 public class ServiceActivity extends Entity {
 
-	private int id;
+	private int id = -1;
 	private String globalId;
 	private String globalIdFeedOwner;
 	private String globalIdActor;
