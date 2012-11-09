@@ -15,7 +15,6 @@
  */
 package org.societies.android.platform.entity;
 
-import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.PeopleActivity.*;
 
 import java.util.List;

@@ -22,7 +22,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.Relationship.*;
 
 /**
