@@ -40,11 +40,12 @@ public class Membership extends Entity {
 	private String lastModifiedDate;
 	
 	/**
-	 * Gets a list of all the memberships in the database.
+	 * Gets a list of all the memberships that have been updated since the last
+	 * synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all the memberships in the database.
+	 * @return A list of updated memberships.
 	 */
-	public static List<Membership> getMemberships(ContentResolver resolver) {
+	public static List<Membership> getUpdatedMemberships(ContentResolver resolver) {
 		return Entity.getEntities(
 				Membership.class, resolver, CONTENT_URI, null, null, null, null);
 	}

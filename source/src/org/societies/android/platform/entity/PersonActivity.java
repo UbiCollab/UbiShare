@@ -41,11 +41,12 @@ public class PersonActivity extends Entity {
 	private String creationDate;
 	
 	/**
-	 * Gets a list of all the person activities in the database.
+	 * Gets a list of all the person activities that have been updated since the last
+	 * synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all the person activities in the database.
+	 * @return A list of updated person activities.
 	 */
-	public static List<PersonActivity> getPersonActivities(ContentResolver resolver) {
+	public static List<PersonActivity> getUpdatedPersonActivities(ContentResolver resolver) {
 		return Entity.getEntities(
 				PersonActivity.class, resolver, CONTENT_URI, null, null, null, null);
 	}

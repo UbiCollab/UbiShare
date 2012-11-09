@@ -15,6 +15,9 @@
  */
 package org.societies.android.platform.entity;
 
+import java.util.List;
+
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,6 +45,17 @@ public class Service extends Entity {
 	private String url;
 	private String creationDate;
 	private String lastModifiedDate;
+	
+	/**
+	 * Gets a list of all services that have been updated since the last
+	 * synchronization.
+	 * @param resolver The content resolver.
+	 * @return A list of updated services.
+	 */
+	public static List<Service> getUpdatedServices(ContentResolver resolver) {
+		return Entity.getEntities(
+				Service.class, resolver, CONTENT_URI, null, null, null, null);
+	}
 
 	@Override
 	protected void populate(Cursor cursor) {

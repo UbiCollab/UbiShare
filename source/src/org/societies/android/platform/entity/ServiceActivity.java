@@ -15,6 +15,9 @@
  */
 package org.societies.android.platform.entity;
 
+import java.util.List;
+
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,6 +40,18 @@ public class ServiceActivity extends Entity {
 	private String globalIdVerb;
 	private String globalIdTarget;
 	private String creationDate;
+	
+	/**
+	 * Gets a list of all service activities that have been updates since the last
+	 * synchronization.
+	 * @param resolver The content resolver.
+	 * @return A list of updated service activities.
+	 */
+	public static List<ServiceActivity> getUpdatedServiceActivities(
+			ContentResolver resolver) {
+		return Entity.getEntities(
+				ServiceActivity.class, resolver, CONTENT_URI, null, null, null, null);
+	}
 
 	@Override
 	protected void populate(Cursor cursor) {

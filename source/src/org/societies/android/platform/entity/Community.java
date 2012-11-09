@@ -41,11 +41,12 @@ public class Community extends Entity {
 	private String lastModifiedDate;
 	
 	/**
-	 * Gets a list of all the communities in the database.
+	 * Gets a list of all the communities that have been updated since the last
+	 * synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all the communities in the database.
+	 * @return A list of updated communities.
 	 */
-	public static List<Community> getCommunities(ContentResolver resolver) {
+	public static List<Community> getUpdatedCommunities(ContentResolver resolver) {
 		return Entity.getEntities(
 				Community.class, resolver, CONTENT_URI, null, null, null, null);
 	}

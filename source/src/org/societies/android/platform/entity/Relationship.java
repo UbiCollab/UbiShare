@@ -40,11 +40,12 @@ public class Relationship extends Entity {
 	private String lastModifiedDate;
 	
 	/**
-	 * Gets a list of all the relationships in the database.
+	 * Gets a list of all the relationships that have been updated since the last
+	 * synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all relationships in the database.
+	 * @return A list of updated relationships.
 	 */
-	public static List<Relationship> getRelationships(ContentResolver resolver) {
+	public static List<Relationship> getUpdatedRelationships(ContentResolver resolver) {
 		return Entity.getEntities(
 				Relationship.class, resolver, CONTENT_URI, null, null, null, null);
 	}

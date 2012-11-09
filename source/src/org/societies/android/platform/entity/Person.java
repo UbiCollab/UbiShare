@@ -40,11 +40,12 @@ public class Person extends Entity {
 	private String lastModifiedDate;
 	
 	/**
-	 * Gets a list of all the people in the database.
+	 * Gets a list of all the people that have been updated since the last
+	 * synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all the people in the database.
+	 * @return A list of updated people.
 	 */
-	public static List<Person> getPeople(ContentResolver resolver) {
+	public static List<Person> getUpdatedPeople(ContentResolver resolver) {
 		return Entity.getEntities(
 				Person.class, resolver, CONTENT_URI, null, null, null, null);
 	}

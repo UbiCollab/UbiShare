@@ -99,7 +99,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	private void syncPeople() {
 		Log.i(TAG, "Started People Sync");
 		
-		List<Person> people = Person.getPeople(mContext.getContentResolver());
+		List<Person> people = Person.getUpdatedPeople(mContext.getContentResolver());
 		
 		for (Person person : people)
 			mBoxHandler.uploadEntity(person);
@@ -112,7 +112,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Started Person Activities Sync");
 		
 		List<PersonActivity> activities =
-				PersonActivity.getPersonActivities(mContext.getContentResolver());
+				PersonActivity.getUpdatedPersonActivities(mContext.getContentResolver());
 		
 		for (PersonActivity activity : activities)
 			mBoxHandler.uploadEntity(activity);
@@ -125,7 +125,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Started Communities Sync");
 		
 		List<Community> communities =
-				Community.getCommunities(mContext.getContentResolver());
+				Community.getUpdatedCommunities(mContext.getContentResolver());
 		
 		for (Community community : communities)
 			mBoxHandler.uploadEntity(community);
@@ -138,7 +138,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Started Community Activities Sync");
 		
 		List<CommunityActivity> activities =
-				CommunityActivity.getCommunityActivities(mContext.getContentResolver());
+				CommunityActivity.getUpdatedCommunityActivities(mContext.getContentResolver());
 		
 		for (CommunityActivity activity : activities)
 			mBoxHandler.uploadEntity(activity);
@@ -151,7 +151,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Started Memberships Sync");
 		
 		List<Membership> memberships =
-				Membership.getMemberships(mContext.getContentResolver());
+				Membership.getUpdatedMemberships(mContext.getContentResolver());
 		
 		for (Membership membership : memberships)
 			mBoxHandler.uploadEntity(membership);
@@ -164,7 +164,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.i(TAG, "Started Relationships Sync");
 		
 		List<Relationship> relationships =
-				Relationship.getRelationships(mContext.getContentResolver());
+				Relationship.getUpdatedRelationships(mContext.getContentResolver());
 		
 		for (Relationship relationship : relationships)
 			mBoxHandler.uploadEntity(relationship);

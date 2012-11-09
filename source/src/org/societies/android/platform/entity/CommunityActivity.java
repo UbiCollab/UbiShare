@@ -40,11 +40,13 @@ public class CommunityActivity extends Entity {
 	private String creationDate;
 	
 	/**
-	 * Gets a list of all the community activities in the database.
+	 * Gets a list of all the community activities that have been updated since the
+	 * last synchronization.
 	 * @param resolver The content resolver.
-	 * @return A list of all the community activities in the database.
+	 * @return A list of updated community activities.
 	 */
-	public static List<CommunityActivity> getCommunityActivities(ContentResolver resolver) {
+	public static List<CommunityActivity> getUpdatedCommunityActivities(
+			ContentResolver resolver) {
 		return Entity.getEntities(
 				CommunityActivity.class, resolver, CONTENT_URI, null, null, null, null);
 	}
