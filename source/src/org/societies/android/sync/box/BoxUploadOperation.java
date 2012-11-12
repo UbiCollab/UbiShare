@@ -29,6 +29,7 @@ import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFile;
 import com.box.androidlib.ResponseListeners.FileUploadListener;
+import com.box.androidlib.ResponseListeners.RenameListener;
 import com.box.androidlib.ResponseParsers.FileResponseParser;
 
 /**
@@ -42,8 +43,6 @@ public class BoxUploadOperation extends BoxOperation {
 	
 	/** The content of the temporary files. */
 	private static final String TEMP_CONTENT = ".";
-	/** The status representing a successful rename operation. */
-	private static final String STATUS_RENAME_SUCCESSFUL = "s_rename_node";
 
 	private Entity mEntity;
 	private BoxHandler mBoxHandler;
@@ -134,7 +133,7 @@ public class BoxUploadOperation extends BoxOperation {
 					tempFile.getId(),
 					String.valueOf(tempFile.getId()));
 			
-			if (status.equals(STATUS_RENAME_SUCCESSFUL))
+			if (status.equals(RenameListener.STATUS_S_RENAME_NODE))
 				return tempFile.getId();
 		}
 		
