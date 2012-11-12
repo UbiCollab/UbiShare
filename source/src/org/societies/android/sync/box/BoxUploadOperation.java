@@ -105,11 +105,12 @@ public class BoxUploadOperation extends BoxOperation {
 				String.valueOf(fileId),
 				fileId);
 		
-		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
+		if (!response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK))
+			throw new IOException("Failed to upload entity: " + response.getStatus());
+		else {
 			if (updateEntity)
 				mEntity.update(mResolver);
 		}
-		else throw new IOException("Failed to upload entity: " + response.getStatus());
 	}
 	
 	/**
