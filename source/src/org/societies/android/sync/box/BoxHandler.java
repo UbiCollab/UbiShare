@@ -35,11 +35,14 @@ import org.societies.android.platform.entity.ServiceActivity;
 import org.societies.android.platform.entity.Sharing;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFolder;
+import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.SearchResult;
 import com.box.androidlib.ResponseParsers.AccountTreeResponseParser;
 import com.box.androidlib.ResponseParsers.SearchResponseParser;
@@ -63,15 +66,19 @@ public class BoxHandler {
 	private String mAuthToken;
 	private boolean mInitialized;
 	private ContentResolver mResolver;
+	private Context mContext;
+	private SharedPreferences mPreferences;
 	
 	/**
 	 * Initializes a new BoxHandler.
+	 * @param context The context to operate in.
 	 */
-	public BoxHandler(ContentResolver resolver) {
+	public BoxHandler(Context context) {
 		mOperations = Collections.synchronizedList(new ArrayList<BoxOperation>());
 		mFolderMap = new HashMap<Class<? extends Entity>, String>();
 		mInitialized = false;
-		mResolver = resolver;
+		mResolver = context.getContentResolver();
+		mContext = context;
 	}
 	
 	/**
@@ -82,8 +89,14 @@ public class BoxHandler {
 	public void initialize(String authToken) {
 		mAuthToken = authToken;
 		
+		mPreferences = mContext.getSharedPreferences(
+				BoxConstants.PREFERENCE_FILE, Context.MODE_PRIVATE);
+		
 		initFolderMappings();
-		fetchDirectoryTree();
+		loadPreferences();
+		
+		if (mRootFolder == null)
+			fetchDirectoryTree();
 		
 		if (mRootFolder.getFoldersInFolder().size() < 9) {
 			createFolderStructure();
@@ -150,12 +163,23 @@ public class BoxHandler {
 	}
 	
 	/**
-	 * Initializes the map of folder names and IDs.
-	 * 
-	 * TODO: The directory tree might be cached in the future.
+	 * Loads the preferences.
+	 */
+	private void loadPreferences() {
+		String rootJson = mPreferences.getString(
+				BoxConstants.PREFERENCE_DIRECTORY_TREE, null);
+		
+		if (rootJson != null)
+			mRootFolder = DAO.fromJSON(rootJson, BoxFolder.class);
+	}
+	
+	/**
+	 * Fetches the directory three of the root folder and stores it in 
+	 * the shared preferences.
 	 */
 	private void fetchDirectoryTree() {
 		try {
+			// TODO: Add root folder to shared preferences
 			SearchResponseParser searchParser =
 					BoxSynchronous.getInstance(BoxConstants.API_KEY).search(
 							mAuthToken,
@@ -179,6 +203,9 @@ public class BoxHandler {
 							});
 			
 			mRootFolder = treeParser.getFolder();
+			
+			mPreferences.edit().putString(
+					BoxConstants.PREFERENCE_DIRECTORY_TREE, DAO.toJSON(mRootFolder));
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}

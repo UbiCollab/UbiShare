@@ -32,4 +32,9 @@ public final class BoxConstants {
 	/** The account userdata auth-token key. */
 	public static final String ACCOUNT_USERDATA_AUTH_TOKEN = "authToken";
 	
+	/** The name of the share preference file. */
+	public static final String PREFERENCE_FILE = "preferences.box";
+	/** The directory tree preference. */
+	public static final String PREFERENCE_DIRECTORY_TREE = "dir_tree";
+	
 }
