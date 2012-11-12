@@ -50,6 +50,29 @@ public class Person extends Entity {
 				Person.class, resolver, CONTENT_URI, null, null, null, null);
 	}
 	
+	/**
+	 * Gets the person with the specified global ID.
+	 * @param globalId The global ID of the person.
+	 * @param resolver The content resolver.
+	 * @return The person with the specified global ID, or <code>null</code>
+	 * if it does not exist.
+	 */
+	public static Person getPerson(String globalId, ContentResolver resolver) {
+		List<Person> queryResult = Entity.getEntities(
+				Person.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				GLOBAL_ID + "=?",
+				new String[] { globalId },
+				null);
+		
+		if (queryResult.size() > 0)
+			return queryResult.get(0);
+		else
+			return null;
+	}
+	
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(					Entity.getInt(cursor, _ID));

@@ -52,6 +52,28 @@ public class Sharing extends Entity {
 				Sharing.class, resolver, CONTENT_URI, null, null, null, null);
 	}
 	
+	/**
+	 * Gets the sharing with the specified global ID.
+	 * @param globalId The global ID of the sharing.
+	 * @param resolver The content resolver.
+	 * @return The sharing with the specified global ID, or <code>null</code> if
+	 * it does not exist.
+	 */
+	public static Sharing getSharing(String globalId, ContentResolver resolver) {
+		List<Sharing> queryResult = Entity.getEntities(Sharing.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				GLOBAL_ID + "=?",
+				new String[] { globalId },
+				null);
+		
+		if (queryResult.size() > 0)
+			return queryResult.get(0);
+		else
+			return null;
+	}
+	
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(					Entity.getInt(cursor, _ID));

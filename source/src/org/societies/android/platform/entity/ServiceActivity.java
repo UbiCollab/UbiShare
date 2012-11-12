@@ -52,6 +52,30 @@ public class ServiceActivity extends Entity {
 		return Entity.getEntities(
 				ServiceActivity.class, resolver, CONTENT_URI, null, null, null, null);
 	}
+	
+	/**
+	 * Gets the service activity with the specified global ID.
+	 * @param globalId The global ID of the service activity.
+	 * @param resolver The content resolver.
+	 * @return The service activity with the specified global ID, or <code>null</code>
+	 * if it does not exist.
+	 */
+	public static ServiceActivity getServiceActivity(
+			String globalId, ContentResolver resolver) {
+		List<ServiceActivity> queryResult = Entity.getEntities(
+				ServiceActivity.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				GLOBAL_ID + "=?",
+				new String[] { globalId },
+				null);
+		
+		if (queryResult.size() > 0)
+			return queryResult.get(0);
+		else
+			return null;
+	}
 
 	@Override
 	protected void populate(Cursor cursor) {
