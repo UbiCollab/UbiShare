@@ -122,14 +122,15 @@ public class BoxHandler {
 	 * @param entity The entity to upload.
 	 */
 	public void uploadEntity(Entity entity) {
-		if (mInitialized) {
+		if (!mInitialized)
+			throw new IllegalStateException("Not initialized.");
+		else {
 			BoxUploadOperation operation =
 					new BoxUploadOperation(entity, mAuthToken, this, mResolver);
 			
 			mOperations.add(operation);
 			operation.start();
 		}
-		else throw new IllegalStateException("Not initialized.");
 	}
 	
 	/**
