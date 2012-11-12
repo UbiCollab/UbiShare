@@ -60,7 +60,8 @@ public class Sharing extends Entity {
 	 * it does not exist.
 	 */
 	public static Sharing getSharing(String globalId, ContentResolver resolver) {
-		List<Sharing> queryResult = Entity.getEntities(Sharing.class,
+		List<Sharing> queryResult = Entity.getEntities(
+				Sharing.class,
 				resolver,
 				CONTENT_URI,
 				null,
