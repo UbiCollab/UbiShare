@@ -18,6 +18,7 @@ package org.societies.android.sync.box;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,11 @@ import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFolder;
 import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.SearchResult;
+import com.box.androidlib.DAO.Update;
+import com.box.androidlib.ResponseListeners.GetUpdatesListener;
 import com.box.androidlib.ResponseParsers.AccountTreeResponseParser;
 import com.box.androidlib.ResponseParsers.SearchResponseParser;
+import com.box.androidlib.ResponseParsers.UpdatesResponseParser;
 
 /**
  * Handles the interaction with Box.com
@@ -131,6 +135,25 @@ public class BoxHandler {
 			mOperations.add(operation);
 			operation.start();
 		}
+	}
+	
+	/**
+	 * Gets a list of updates since the specified timestamp.
+	 * @param timestamp The Unix time (in seconds) of the oldest updates to get.
+	 * @return A list of updates since the specified timestamp.
+	 * @throws IOException If an error occurs while fetching updates.
+	 */
+	public List<Update> getUpdatesSince(long timestamp) throws IOException {
+		long unixTimeNow = new Date().getTime() / 1000;
+		
+		UpdatesResponseParser response =
+				BoxSynchronous.getInstance(BoxConstants.API_KEY).getUpdates(
+						mAuthToken, timestamp, unixTimeNow, null);
+		
+		if (response.getStatus().equals(GetUpdatesListener.STATUS_S_GET_UPDATES))
+			return response.getUpdates();
+		else
+			throw new IOException("Failed to get updates: " + response.getStatus());
 	}
 	
 	/**

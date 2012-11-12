@@ -43,6 +43,8 @@ public class BoxUploadOperation extends BoxOperation {
 	
 	/** The content of the temporary files. */
 	private static final String TEMP_CONTENT = ".";
+	/** The status returned when trying to upload to a deleted file. */
+	private static final String STATUS_FILE_DELETED = "e_file_deleted";
 
 	private Entity mEntity;
 	private BoxHandler mBoxHandler;
@@ -105,11 +107,13 @@ public class BoxUploadOperation extends BoxOperation {
 				String.valueOf(fileId),
 				fileId);
 		
-		if (!response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK))
-			throw new IOException("Failed to upload entity: " + response.getStatus());
-		else {
+		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
 			if (updateEntity)
 				mEntity.update(mResolver);
+		} else if (response.getStatus().equals(STATUS_FILE_DELETED)) {
+			uploadEntity(getNewFileId(), true);
+		} else {
+			throw new IOException("Failed to upload entity: " + response.getStatus());
 		}
 	}
 	

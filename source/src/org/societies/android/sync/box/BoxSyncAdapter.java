@@ -15,6 +15,8 @@
  */
 package org.societies.android.sync.box;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.societies.android.box.BoxConstants;
@@ -24,6 +26,8 @@ import org.societies.android.platform.entity.Membership;
 import org.societies.android.platform.entity.Person;
 import org.societies.android.platform.entity.PersonActivity;
 import org.societies.android.platform.entity.Relationship;
+
+import com.box.androidlib.DAO.Update;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -83,6 +87,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			mBoxHandler.initialize(authToken);
 			
+			/*
+			Date now = new Date();
+			long timestamp = (now.getTime() / 1000) - 10800;
+			List<Update> updates = mBoxHandler.getUpdatesSince(timestamp);
+			*/
+			
+			// TODO: Get updates from Box.
+			
 			syncPeople();
 			syncPeopleActivities();
 			
@@ -104,8 +116,9 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		List<Person> people = Person.getUpdatedPeople(mResolver);
 		
-		for (Person person : people)
+		for (Person person : people) {
 			mBoxHandler.uploadEntity(person);
+		}
 	}
 	
 	/**
