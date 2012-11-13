@@ -104,20 +104,6 @@ public class Person extends Entity {
 	}
 	
 	@Override
-	public String serialize() {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
-		builder.append(String.format(SERIALIZE_FORMAT, NAME, name));
-		builder.append(String.format(SERIALIZE_FORMAT, DESCRIPTION, description));
-		builder.append(String.format(SERIALIZE_FORMAT, EMAIL, email));
-		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
-		builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate));
-		
-		return builder.toString();
-	}
-	
-	@Override
 	public int getId() {
 		return id;
 	}

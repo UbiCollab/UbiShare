@@ -106,21 +106,6 @@ public class Sharing extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
-
-	@Override
-	public String serialize() {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_SERVICE, globalIdService));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_OWNER, globalIdOwner));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_COMMUNITY, globalIdCommunity));
-		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
-		//builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate)); TODO: add creation date?
-		//builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate)); TODO: add last modified date?
-		
-		return builder.toString();
-	}
 	
 	@Override
 	public int getId() {

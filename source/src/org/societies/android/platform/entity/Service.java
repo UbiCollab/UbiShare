@@ -121,26 +121,6 @@ public class Service extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
-
-	@Override
-	public String serialize() {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
-		builder.append(String.format(SERIALIZE_FORMAT, NAME, name));
-		builder.append(String.format(SERIALIZE_FORMAT, DESCRIPTION, description));
-		builder.append(String.format(SERIALIZE_FORMAT, OWNER_ID, ownerId));
-		builder.append(String.format(SERIALIZE_FORMAT, TYPE, type));
-		builder.append(String.format(SERIALIZE_FORMAT, APP_TYPE, appType));
-		builder.append(String.format(SERIALIZE_FORMAT, AVAILABLE, available));
-		builder.append(String.format(SERIALIZE_FORMAT, DEPENDENCY, dependency));
-		builder.append(String.format(SERIALIZE_FORMAT, CONFIG, config));
-		builder.append(String.format(SERIALIZE_FORMAT, URL, url));
-		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
-		builder.append(String.format(SERIALIZE_FORMAT, LAST_MODIFIED_DATE, lastModifiedDate));
-		
-		return builder.toString();
-	}
 	
 	@Override
 	public int getId() {

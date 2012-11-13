@@ -108,21 +108,6 @@ public class ServiceActivity extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
-
-	@Override
-	public String serialize() {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID, globalId));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_FEED_OWNER, globalIdFeedOwner));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_ACTOR, globalIdActor));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_OBJECT, globalIdObject));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_VERB, globalIdVerb));
-		builder.append(String.format(SERIALIZE_FORMAT, GLOBAL_ID_TARGET, globalIdTarget));
-		builder.append(String.format(SERIALIZE_FORMAT, CREATION_DATE, creationDate));
-		
-		return builder.toString();
-	}
 	
 	@Override
 	public int getId() {

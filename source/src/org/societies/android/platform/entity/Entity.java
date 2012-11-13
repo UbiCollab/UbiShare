@@ -18,6 +18,8 @@ package org.societies.android.platform.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.renamedgson.Gson;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -183,7 +185,22 @@ public abstract class Entity {
 	 * Serializes the entity into a string.
 	 * @return A string representation of the entity.
 	 */
-	public abstract String serialize();
+	public String serialize() {
+		Gson serializer = new Gson();
+		return serializer.toJson(this);
+	}
+	
+	/**
+	 * Parses a serialized entity into an object.
+	 * @param serialized The serialized entity.
+	 * @param entityClass The entity class to parse into.
+	 * @return The parsed entity.
+	 */
+	public static <T extends Entity> T deserialize(
+			String serialized, Class<T> entityClass) {
+		Gson serializer = new Gson();
+		return (T) serializer.fromJson(serialized, entityClass);
+	}
 	
 	/**
 	 * Gets the local ID of the entity.
