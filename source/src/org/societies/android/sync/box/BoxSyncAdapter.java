@@ -15,7 +15,7 @@
  */
 package org.societies.android.sync.box;
 
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +35,7 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,10 +49,10 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	private static final String TAG = "BoxSyncAdapter";
 	
-	private Context mContext;
 	private ContentResolver mResolver;
 	private AccountManager mAccountManager;
 	private BoxHandler mBoxHandler;
+	private SharedPreferences mPreferences;
 
 	/**
 	 * Initiates a new BoxSyncAdapter.
@@ -61,10 +62,11 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	public BoxSyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
 		
-		mContext = context;
+		mPreferences = context.getSharedPreferences(
+				BoxConstants.PREFERENCE_FILE, Context.MODE_PRIVATE);
 		mResolver = context.getContentResolver();
 		mAccountManager = AccountManager.get(context);
-		mBoxHandler = new BoxHandler(context);
+		mBoxHandler = new BoxHandler(mPreferences, mResolver);
 	}
 	
 	@Override
@@ -87,14 +89,16 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			mBoxHandler.initialize(authToken);
 			
-			/*
-			Date now = new Date();
-			long timestamp = (now.getTime() / 1000) - 10800;
-			List<Update> updates = mBoxHandler.getUpdatesSince(timestamp);
-			*/
+			// TODO: Figure out the deleted files part
+			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
+			Log.i(TAG, "Last sync: " + new Date(lastSync * 1000));
+			processBoxUpdates(lastSync);
 			
-			// TODO: Get updates from Box.
+			Log.i(TAG, "Waiting for running operations to complete.");
+			mBoxHandler.waitForRunningOperationsToComplete();
+			Log.i(TAG, "Running operations complete.");
 			
+			// TODO: Sync only updated entities
 			syncPeople();
 			syncPeopleActivities();
 			
@@ -103,9 +107,37 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			syncMemberships();
 			syncRelationships();
+			
+			Log.i(TAG, "Waiting for running operations to complete.");
+			mBoxHandler.waitForRunningOperationsToComplete();
+			Log.i(TAG, "Running operations complete.");
+			
+			mPreferences.edit().putLong(
+					BoxConstants.PREFERENCE_LAST_SYNC,
+					new Date().getTime() / 1000
+			).commit();
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Processes the updates from Box.
+	 * @param lastSync The timestamp of the last synchronization.
+	 * @throws IOException If an error occurs while fetching updates.
+	 */
+	private void processBoxUpdates(long lastSync)
+			throws IOException {
+		List<Update> updates = null;
+		if (lastSync > 0)
+			updates = mBoxHandler.getUpdatesSince(lastSync);
+		
+		if (updates == null)
+			Log.i(TAG, "Fetching all entities from box.");
+		else
+			Log.i(TAG, "Fetching " + updates.size() + " updates from box.");
+		
+		mBoxHandler.processUpdates(updates);
 	}
 	
 	/**

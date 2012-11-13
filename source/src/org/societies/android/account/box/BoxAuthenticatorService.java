@@ -15,6 +15,7 @@
  */
 package org.societies.android.account.box;
 
+import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.R;
 
 import android.accounts.Account;
@@ -71,8 +72,10 @@ public class BoxAuthenticatorService extends Service {
 			Bundle userdata,
 			Parcelable response
 	) {
-		AccountAuthenticatorResponse authResponse = (AccountAuthenticatorResponse)response;
-		Bundle result = BoxAuthenticatorService.addAccount(context, username, password, userdata);
+		AccountAuthenticatorResponse authResponse = 
+				(AccountAuthenticatorResponse)response;
+		Bundle result = BoxAuthenticatorService.addAccount(
+				context, username, password, userdata);
 		
 		if (authResponse != null)
 			authResponse.onResult(result);
@@ -86,7 +89,8 @@ public class BoxAuthenticatorService extends Service {
 	 * @param userdata A bundle of string values to use as userdata, or null if none.
 	 * @return A bundle of account name and type, or null if the account was not added.
 	 */
-	public static Bundle addAccount(Context context, String username, String password, Bundle userdata) {
+	public static Bundle addAccount(
+			Context context, String username, String password, Bundle userdata) {
 		Bundle result = null;
 		String authority = context.getString(R.string.box_account_type);
 		
@@ -100,7 +104,8 @@ public class BoxAuthenticatorService extends Service {
 			
 			ContentResolver.setIsSyncable(account, authority, 1);
 			ContentResolver.setSyncAutomatically(account, authority, true);
-			ContentResolver.addPeriodicSync(account, authority, new Bundle(), 60);
+			ContentResolver.addPeriodicSync(
+					account, authority, new Bundle(), BoxConstants.ACCOUNT_SYNC_FREQUENCY);
 		}
 		
 		return result;

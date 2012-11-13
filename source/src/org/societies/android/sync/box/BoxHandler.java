@@ -36,12 +36,12 @@ import org.societies.android.platform.entity.ServiceActivity;
 import org.societies.android.platform.entity.Sharing;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
+import com.box.androidlib.DAO.BoxFile;
 import com.box.androidlib.DAO.BoxFolder;
 import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.SearchResult;
@@ -64,25 +64,33 @@ public class BoxHandler {
 	private static final String BOX_FOLDER_ROOT = "UbiShare";
 	/* END TEMPORARY CONSTANTS */
 	
+	// TODO: Move these constants to a more appropriate place?
+	/** Indicates that the file has been updated. */
+	private static final String UPDATE_FILE_UPDATED = "updated";
+	/** Indicates that the file has been added. */
+	private static final String UPDATE_FILE_ADDED = "added";
+	/** Indicates that the file has been deleted. (Not confirmed) */
+	private static final String UPDATE_FILE_DELETED = "deleted";
+	
 	private List<BoxOperation> mOperations;
 	private Map<Class<? extends Entity>, String> mFolderMap;
 	private BoxFolder mRootFolder;
 	private String mAuthToken;
 	private boolean mInitialized;
 	private ContentResolver mResolver;
-	private Context mContext;
 	private SharedPreferences mPreferences;
 	
 	/**
 	 * Initializes a new BoxHandler.
-	 * @param context The context to operate in.
+	 * @param preferences The shared preferences.
+	 * @param resolver The content resolver.
 	 */
-	public BoxHandler(Context context) {
+	public BoxHandler(SharedPreferences preferences, ContentResolver resolver) {
 		mOperations = Collections.synchronizedList(new ArrayList<BoxOperation>());
 		mFolderMap = new HashMap<Class<? extends Entity>, String>();
 		mInitialized = false;
-		mResolver = context.getContentResolver();
-		mContext = context;
+		mResolver = resolver;
+		mPreferences = preferences;
 	}
 	
 	/**
@@ -92,9 +100,6 @@ public class BoxHandler {
 	 */
 	public void initialize(String authToken) {
 		mAuthToken = authToken;
-		
-		mPreferences = mContext.getSharedPreferences(
-				BoxConstants.PREFERENCE_FILE, Context.MODE_PRIVATE);
 		
 		initFolderMappings();
 		loadPreferences();
@@ -138,6 +143,29 @@ public class BoxHandler {
 	}
 	
 	/**
+	 * Processes the specified Box updates.
+	 * @param updates The Box updates to process, or <code>null</code> to
+	 * retrieve all the data from Box.
+	 */
+	public void processUpdates(List<Update> updates) {
+		if (updates == null)
+			fetchAllEntities();
+		else {
+			for (Update update : updates) {
+				if (update.getUpdateType().equals(UPDATE_FILE_ADDED) ||
+					update.getUpdateType().equals(UPDATE_FILE_UPDATED)) {
+					for (BoxFile file : update.getFiles()) {
+						downloadEntity(file.getId(), update.getFolderId());
+					}
+				} else if (update.getUpdateType().equals(UPDATE_FILE_DELETED)) {
+					// TODO: Delete local entity if this code is ever reached
+					Log.i(TAG, "Got deleted file update.");
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Gets a list of updates since the specified timestamp.
 	 * @param timestamp The Unix time (in seconds) of the oldest updates to get.
 	 * @return A list of updates since the specified timestamp.
@@ -172,6 +200,29 @@ public class BoxHandler {
 	}
 	
 	/**
+	 * Gets the entity class related to the specified folder.
+	 * @param folderId The ID of the folder.
+	 * @return The entity class related to the specified folder.
+	 */
+	public Class<? extends Entity> getEntityClass(long folderId) {
+		String folderName = null;
+		for (BoxFolder subFolder : mRootFolder.getFoldersInFolder()) {
+			if (subFolder.getId() == folderId)
+				folderName = subFolder.getFolderName();
+		}
+		
+		if (folderName != null) {
+			for (Class<? extends Entity> entity : mFolderMap.keySet()) {
+				if (mFolderMap.get(entity).equals(folderName))
+					return entity;
+			}
+		}
+		
+		throw new IllegalArgumentException(
+				"Entity class of folder ID " + folderId + " not found");
+	}
+	
+	/**
 	 * Initializes the mapping of entities and box folders.
 	 */
 	private void initFolderMappings() {
@@ -193,8 +244,10 @@ public class BoxHandler {
 		String rootJson = mPreferences.getString(
 				BoxConstants.PREFERENCE_DIRECTORY_TREE, null);
 		
-		if (rootJson != null)
+		if (rootJson != null) {
 			mRootFolder = DAO.fromJSON(rootJson, BoxFolder.class);
+			Log.i(TAG, "Directory tree loaded from preferences.");
+		}
 	}
 	
 	/**
@@ -203,7 +256,9 @@ public class BoxHandler {
 	 */
 	private void fetchDirectoryTree() {
 		try {
-			// TODO: Add root folder to shared preferences
+			// TODO: Add root folder to shared preferences (Setup app)
+			
+			Log.i(TAG, "Searching for root folder.");
 			SearchResponseParser searchParser =
 					BoxSynchronous.getInstance(BoxConstants.API_KEY).search(
 							mAuthToken,
@@ -217,6 +272,7 @@ public class BoxHandler {
 			SearchResult searchResult = searchParser.getSearchResult();
 			BoxFolder root = searchResult.getFolders().get(0);
 			
+			Log.i(TAG, "Fetching directory tree from Box.");
 			AccountTreeResponseParser treeParser =
 					BoxSynchronous.getInstance(BoxConstants.API_KEY).getAccountTree(
 							mAuthToken,
@@ -229,7 +285,9 @@ public class BoxHandler {
 			mRootFolder = treeParser.getFolder();
 			
 			mPreferences.edit().putString(
-					BoxConstants.PREFERENCE_DIRECTORY_TREE, DAO.toJSON(mRootFolder));
+					BoxConstants.PREFERENCE_DIRECTORY_TREE,
+					DAO.toJSON(mRootFolder)
+			).commit();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
@@ -250,6 +308,8 @@ public class BoxHandler {
 	 * Creates the folder structure.
 	 */
 	private void createFolderStructure() {
+		Log.i(TAG, "Creating directory tree.");
+		
 		try {
 			for (Class<? extends Entity> entityClass : mFolderMap.keySet())
 				BoxSynchronous.getInstance(BoxConstants.API_KEY).createFolder(
@@ -259,6 +319,73 @@ public class BoxHandler {
 						false);
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Downloads the specified entity.
+	 * @param fileId The file ID of the entity.
+	 * @param folderId The ID of the folder containing the entity.
+	 */
+	private void downloadEntity(long fileId, long folderId) {
+		BoxDownloadOperation operation = new BoxDownloadOperation(
+				fileId,
+				folderId,
+				mAuthToken,
+				mResolver,
+				this);
+		
+		mOperations.add(operation);
+		operation.start();
+	}
+	
+	/**
+	 * Downloads all the entities in the directory tree under the
+	 * specified root folder.
+	 * @param rootFolder The root folder.
+	 */
+	private void downloadAllEntities(BoxFolder rootFolder) {
+		for (BoxFile file : rootFolder.getFilesInFolder())
+			downloadEntity(file.getId(), rootFolder.getId());
+		
+		for (BoxFolder subFolder : rootFolder.getFoldersInFolder())
+			downloadAllEntities(subFolder);
+	}
+	
+	/**
+	 * Fetches all the entities from Box.
+	 */
+	private void fetchAllEntities() {
+		try {
+			AccountTreeResponseParser treeParser =
+					BoxSynchronous.getInstance(BoxConstants.API_KEY).getAccountTree(
+							mAuthToken,
+							mRootFolder.getId(),
+							new String[] { Box.PARAM_SIMPLE });
+			
+			downloadAllEntities(treeParser.getFolder());
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Waits for running operations to complete.
+	 * @throws InterruptedException If the thread is interrupted while waiting.
+	 */
+	public void waitForRunningOperationsToComplete() throws InterruptedException {
+		boolean wait = false;
+		
+		for (BoxOperation operation : mOperations) {
+			if (operation.isAlive()) {
+				wait = true;
+				break;
+			}
+		}
+		
+		if (wait) {
+			Thread.sleep(100);
+			waitForRunningOperationsToComplete();
 		}
 	}
 }

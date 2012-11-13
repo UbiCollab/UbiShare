@@ -25,7 +25,10 @@ public abstract class BoxOperation extends Thread {
 	/**
 	 * Cancels the operation.
 	 */
-	public abstract void cancel();
+	public void cancel() {
+		if (isAlive())
+			interrupt();
+	}
 	
 	@Override
 	public abstract void run();

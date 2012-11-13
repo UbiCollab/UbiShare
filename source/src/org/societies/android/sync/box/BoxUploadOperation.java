@@ -57,6 +57,7 @@ public class BoxUploadOperation extends BoxOperation {
 	 * @param entity The entity to be uploaded.
 	 * @param authToken The authentication token.
 	 * @param boxHandler The box handler instance.
+	 * @param resolver The content resolver.
 	 */
 	public BoxUploadOperation(
 			Entity entity,
@@ -82,12 +83,6 @@ public class BoxUploadOperation extends BoxOperation {
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
-	}
-	
-	@Override
-	public void cancel() {
-		if (isAlive())
-			interrupt();
 	}
 	
 	/**
