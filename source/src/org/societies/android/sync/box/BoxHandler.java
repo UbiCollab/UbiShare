@@ -376,10 +376,12 @@ public class BoxHandler {
 	public void waitForRunningOperationsToComplete() throws InterruptedException {
 		boolean wait = false;
 		
-		for (BoxOperation operation : mOperations) {
-			if (operation.isAlive()) {
-				wait = true;
-				break;
+		synchronized (mOperations) {
+			for (BoxOperation operation : mOperations) {
+				if (operation.isAlive()) {
+					wait = true;
+					break;
+				}
 			}
 		}
 		
