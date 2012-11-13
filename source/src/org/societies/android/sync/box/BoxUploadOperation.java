@@ -111,6 +111,8 @@ public class BoxUploadOperation extends BoxOperation {
 			if (updateEntity)
 				mEntity.update(mResolver);
 		} else if (response.getStatus().equals(STATUS_FILE_DELETED)) {
+			// TODO: Either delete local or upload new copy
+			// mEntity.delete(mResolver);
 			uploadEntity(getNewFileId(), true);
 		} else {
 			throw new IOException("Failed to upload entity: " + response.getStatus());
