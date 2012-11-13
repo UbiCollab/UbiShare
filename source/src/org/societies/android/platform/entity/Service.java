@@ -22,7 +22,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.Services.*;
 
 /**
@@ -57,29 +56,6 @@ public class Service extends Entity {
 				Service.class, resolver, CONTENT_URI, null, null, null, null);
 	}
 	
-	/**
-	 * Gets the service with the specified global ID.
-	 * @param globalId The global ID of the service.
-	 * @param resolver The content resolver.
-	 * @return The service with the specified global ID, or <code>null</code> if
-	 * it does not exist.
-	 */
-	public static Service getService(String globalId, ContentResolver resolver) {
-		List<Service> queryResult = Entity.getEntities(
-				Service.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				GLOBAL_ID + "=?",
-				new String[] { globalId },
-				null);
-		
-		if (queryResult.size() > 0)
-			return queryResult.get(0);
-		else
-			return null;
-	}
-
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(					Entity.getInt(cursor, _ID));
@@ -123,11 +99,17 @@ public class Service extends Entity {
 	}
 	
 	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
+	
+	@Override
 	public int getId() {
 		return id;
 	}
 	
-	private void setId(int id) {
+	@Override
+	protected void setId(int id) {
 		this.id = id;
 	}
 	

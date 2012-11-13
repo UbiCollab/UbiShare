@@ -50,29 +50,6 @@ public class PersonActivity extends Entity {
 		return Entity.getEntities(
 				PersonActivity.class, resolver, CONTENT_URI, null, null, null, null);
 	}
-	
-	/**
-	 * Gets the person activity with the specified global ID.
-	 * @param globalId The global ID of the person activity.
-	 * @param resolver The content resolver.
-	 * @return The person activity with the specified global ID, or <code>null</code> if
-	 * it does not exist.
-	 */
-	public static PersonActivity getPersonActivity(String globalId, ContentResolver resolver) {
-		List<PersonActivity> queryResult = Entity.getEntities(
-				PersonActivity.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				GLOBAL_ID + "=?",
-				new String[] { globalId },
-				null);
-		
-		if (queryResult.size() > 0)
-			return queryResult.get(0);
-		else
-			return null;
-	}
 
 	@Override
 	protected void populate(Cursor cursor) {
@@ -105,13 +82,19 @@ public class PersonActivity extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
+	
+	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
 
 	@Override
 	public int getId() {
 		return id;
 	}
 	
-	private void setId(int id) {
+	@Override
+	protected void setId(int id) {
 		this.id = id;
 	}
 	

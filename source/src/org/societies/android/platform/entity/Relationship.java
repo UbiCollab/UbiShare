@@ -49,29 +49,6 @@ public class Relationship extends Entity {
 		return Entity.getEntities(
 				Relationship.class, resolver, CONTENT_URI, null, null, null, null);
 	}
-	
-	/**
-	 * Gets the relationship with the specified global ID.
-	 * @param globalId The global ID of the relationship.
-	 * @param resolver The content resolver.
-	 * @return The relationship with the specified global ID, or <code>null</code> if
-	 * it does not exist.
-	 */
-	public static Relationship getRelationship(String globalId, ContentResolver resolver) {
-		List<Relationship> queryResult = Entity.getEntities(
-				Relationship.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				GLOBAL_ID + "=?",
-				new String[] { globalId },
-				null);
-		
-		if (queryResult.size() > 0)
-			return queryResult.get(0);
-		else
-			return null;
-	}
 
 	@Override
 	protected void populate(Cursor cursor) {
@@ -104,11 +81,17 @@ public class Relationship extends Entity {
 	}
 	
 	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
+	
+	@Override
 	public int getId() {
 		return id;
 	}
 	
-	private void setId(int id) {
+	@Override
+	protected void setId(int id) {
 		this.id = id;
 	}
 	

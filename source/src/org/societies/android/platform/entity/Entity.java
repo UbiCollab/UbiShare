@@ -83,6 +83,45 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Gets the local ID of the entity with the specified global ID.
+	 * @param contentUri The content URL.
+	 * @param idColumnName The name of the ID column.
+	 * @param globalIdColumnName The name of the global ID column.
+	 * @param globalId The global ID of the entity.
+	 * @param resolver The content resolver.
+	 * @return The local ID of the entity with the specified global ID, or -1 if
+	 * it does not exist.
+	 */
+	protected static int getLocalId(
+			Uri contentUri,
+			String idColumnName,
+			String globalIdColumnName,
+			String globalId,
+			ContentResolver resolver) {
+		int localId = -1;
+		
+		Cursor cursor = null;
+		try {
+			cursor = resolver.query(
+					contentUri,
+					new String[] { idColumnName },
+					globalIdColumnName + "=?",
+					new String[] { globalId },
+					null);
+			
+			if (cursor.moveToFirst())
+				localId = getInt(cursor, idColumnName);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		} finally {
+			if (cursor != null)
+				cursor.close();
+		}
+		
+		return localId;
+	}
+	
+	/**
 	 * Gets the value of the specified column as a string.
 	 * @param cursor The database cursor.
 	 * @param columnName The name of the column.
@@ -183,23 +222,44 @@ public abstract class Entity {
 	
 	/**
 	 * Serializes the entity into a string.
-	 * @return A string representation of the entity.
+	 * @return A string representation of the entity, or <code>null</code> if the
+	 * serialization fails.
 	 */
 	public String serialize() {
-		Gson serializer = new Gson();
-		return serializer.toJson(this);
+		int localId = getId();
+		setId(-1); /* Prevent actual local ID from being serialized */
+		
+		String serialized = null;
+		try {
+			Gson serializer = new Gson();
+			serialized = serializer.toJson(this);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		} finally {
+			setId(localId); /* Restore local ID */
+		}
+		
+		return serialized;
 	}
 	
 	/**
 	 * Parses a serialized entity into an object.
 	 * @param serialized The serialized entity.
 	 * @param entityClass The entity class to parse into.
-	 * @return The parsed entity.
+	 * @return The parsed entity, or <code>null</code> if the deserialization
+	 * fails.
 	 */
 	public static <T extends Entity> T deserialize(
 			String serialized, Class<T> entityClass) {
-		Gson serializer = new Gson();
-		return (T) serializer.fromJson(serialized, entityClass);
+		T entity = null;
+		try {
+			Gson serializer = new Gson();
+			entity = (T) serializer.fromJson(serialized, entityClass);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+		
+		return entity;
 	}
 	
 	/**
@@ -207,6 +267,19 @@ public abstract class Entity {
 	 * @return The local ID of the entity.
 	 */
 	public abstract int getId();
+	
+	/**
+	 * Sets the local ID of the entity.
+	 * @param id The local ID of the entity.
+	 */
+	protected abstract void setId(int id);
+	
+	/**
+	 * Fetches the local ID of the entity from the database. If the entity
+	 * does not exist in the database, the local ID is set to -1.
+	 * @param resolver The content resolver.
+	 */
+	public abstract void fetchLocalId(ContentResolver resolver);
 	
 	/**
 	 * Gets the global ID of the entity.

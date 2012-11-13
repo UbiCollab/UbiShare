@@ -22,7 +22,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-import static org.societies.android.api.cis.SocialContract.People.CONTENT_URI;
 import static org.societies.android.api.cis.SocialContract.Sharing.*;
 
 /**
@@ -50,29 +49,6 @@ public class Sharing extends Entity {
 	public static List<Sharing> getUpdatedSharings(ContentResolver resolver) {
 		return Entity.getEntities(
 				Sharing.class, resolver, CONTENT_URI, null, null, null, null);
-	}
-	
-	/**
-	 * Gets the sharing with the specified global ID.
-	 * @param globalId The global ID of the sharing.
-	 * @param resolver The content resolver.
-	 * @return The sharing with the specified global ID, or <code>null</code> if
-	 * it does not exist.
-	 */
-	public static Sharing getSharing(String globalId, ContentResolver resolver) {
-		List<Sharing> queryResult = Entity.getEntities(
-				Sharing.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				GLOBAL_ID + "=?",
-				new String[] { globalId },
-				null);
-		
-		if (queryResult.size() > 0)
-			return queryResult.get(0);
-		else
-			return null;
 	}
 	
 	@Override
@@ -108,11 +84,17 @@ public class Sharing extends Entity {
 	}
 	
 	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
+	
+	@Override
 	public int getId() {
 		return id;
 	}
 	
-	private void setId(int id) {
+	@Override
+	protected void setId(int id) {
 		this.id = id;
 	}
 	

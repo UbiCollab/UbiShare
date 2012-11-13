@@ -51,30 +51,6 @@ public class CommunityActivity extends Entity {
 				CommunityActivity.class, resolver, CONTENT_URI, null, null, null, null);
 	}
 	
-	/**
-	 * Gets the community activity with the specified global ID.
-	 * @param globalId The global ID of the community activity.
-	 * @param resolver The content resolver.
-	 * @return The community activity with the specified global ID, or
-	 * <code>null</code> if it does not exist.
-	 */
-	public static CommunityActivity getCommunityActivity(
-			String globalId, ContentResolver resolver) {
-		List<CommunityActivity> queryResult = Entity.getEntities(
-				CommunityActivity.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				GLOBAL_ID + "=?",
-				new String[] { globalId },
-				null);
-		
-		if (queryResult.size() > 0)
-			return queryResult.get(0);
-		else
-			return null;
-	}
-	
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(					Entity.getInt(cursor, _ID));
@@ -106,13 +82,19 @@ public class CommunityActivity extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
+	
+	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
 
 	@Override
 	public int getId() {
 		return id;
 	}
 	
-	private void setId(int id) {
+	@Override
+	protected void setId(int id) {
 		this.id = id;
 	}
 	
