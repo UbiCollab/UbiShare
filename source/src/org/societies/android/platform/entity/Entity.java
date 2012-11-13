@@ -176,12 +176,26 @@ public abstract class Entity {
 	protected abstract Uri getContentUri();
 	
 	/**
+	 * Inserts the entity into the database.
+	 * @param resolver The content resolver.
+	 * @return The URL to the newly inserted entity.
+	 * @throws IllegalStateException If the entity is already in the database.
+	 */
+	public Uri insert(ContentResolver resolver) throws IllegalStateException {
+		if (getId() == -1) {
+			return resolver.insert(getContentUri(), getEntityValues());
+		} else {
+			throw new IllegalStateException("The entity is already in the database.");
+		}
+	}
+	
+	/**
 	 * Updates the entity in the database.
 	 * @param resolver The content resolver.
 	 * @return The number of rows updated.
 	 * @throws IllegalStateException If the entity is not in the database.
 	 */
-	public int update(ContentResolver resolver) {
+	public int update(ContentResolver resolver) throws IllegalStateException {
 		if (getId() != -1) {
 			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
 			
@@ -197,26 +211,13 @@ public abstract class Entity {
 	 * @return The number of rows deleted.
 	 * @throws IllegalStateException If the entity is not in the database.
 	 */
-	public int delete(ContentResolver resolver) {
+	public int delete(ContentResolver resolver) throws IllegalStateException {
 		if (getId() != -1) {
 			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
 			
 			return resolver.delete(contentUri, null, null);
 		} else {
 			throw new IllegalStateException("The entity is not in the database.");
-		}
-	}
-	
-	/**
-	 * Inserts the entity into the database.
-	 * @param resolver The content resolver.
-	 * @return The URL to the newly inserted entity.
-	 */
-	public Uri insert(ContentResolver resolver) {
-		if (getId() == -1) {
-			return resolver.insert(getContentUri(), getEntityValues());
-		} else {
-			throw new IllegalStateException("The entity is already in the database.");
 		}
 	}
 	
