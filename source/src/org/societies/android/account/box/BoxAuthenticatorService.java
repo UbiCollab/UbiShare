@@ -15,14 +15,12 @@
  */
 package org.societies.android.account.box;
 
-import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.R;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
