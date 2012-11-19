@@ -236,10 +236,8 @@ public class BoxHandler {
 		String rootJson = mPreferences.getString(
 				BoxConstants.PREFERENCE_DIRECTORY_TREE, null);
 		
-		if (rootJson != null) {
+		if (rootJson != null)
 			mRootFolder = DAO.fromJSON(rootJson, BoxFolder.class);
-			Log.i(TAG, "Directory tree loaded from preferences.");
-		}
 	}
 	
 	/**
@@ -249,22 +247,19 @@ public class BoxHandler {
 	private void fetchDirectoryTree() {
 		try {
 			// TODO: Add root folder to shared preferences (Setup app)
-			
-			Log.i(TAG, "Searching for root folder.");
 			SearchResponseParser searchParser =
 					BoxSynchronous.getInstance(BoxConstants.API_KEY).search(
 							mAuthToken,
 							BOX_FOLDER_ROOT,
 							Box.SORT_RELEVANCE,
 							1,
-							100,
+							1,
 							Box.DIRECTION_DESC,
 							new String[0]);
 			
 			SearchResult searchResult = searchParser.getSearchResult();
 			BoxFolder root = searchResult.getFolders().get(0);
 			
-			Log.i(TAG, "Fetching directory tree from Box.");
 			AccountTreeResponseParser treeParser =
 					BoxSynchronous.getInstance(BoxConstants.API_KEY).getAccountTree(
 							mAuthToken,
@@ -300,8 +295,6 @@ public class BoxHandler {
 	 * Creates the folder structure.
 	 */
 	private void createFolderStructure() {
-		Log.i(TAG, "Creating directory tree.");
-		
 		try {
 			for (Class<? extends Entity> entityClass : mFolderMap.keySet())
 				BoxSynchronous.getInstance(BoxConstants.API_KEY).createFolder(

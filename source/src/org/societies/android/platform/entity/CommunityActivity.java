@@ -42,13 +42,20 @@ public class CommunityActivity extends Entity {
 	/**
 	 * Gets a list of all the community activities that have been updated since the
 	 * last synchronization.
+	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated community activities.
 	 */
 	public static List<CommunityActivity> getUpdatedCommunityActivities(
-			ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) {
 		return Entity.getEntities(
-				CommunityActivity.class, resolver, CONTENT_URI, null, null, null, null);
+				CommunityActivity.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				null, /*CREATION_DATE + " > ?",*/
+				null, /*new String[] { String.valueOf(lastSync) },*/
+				null);
 	}
 	
 	@Override

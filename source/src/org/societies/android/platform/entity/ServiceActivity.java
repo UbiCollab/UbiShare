@@ -43,13 +43,20 @@ public class ServiceActivity extends Entity {
 	/**
 	 * Gets a list of all service activities that have been updates since the last
 	 * synchronization.
+	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated service activities.
 	 */
 	public static List<ServiceActivity> getUpdatedServiceActivities(
-			ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) {
 		return Entity.getEntities(
-				ServiceActivity.class, resolver, CONTENT_URI, null, null, null, null);
+				ServiceActivity.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				null, /*CREATION_DATE + " > ?",*/
+				null, /*new String[] { String.valueOf(lastSync) },*/
+				null);
 	}
 	
 	@Override

@@ -43,12 +43,20 @@ public class PersonActivity extends Entity {
 	/**
 	 * Gets a list of all the person activities that have been updated since the last
 	 * synchronization.
+	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated person activities.
 	 */
-	public static List<PersonActivity> getUpdatedPersonActivities(ContentResolver resolver) {
+	public static List<PersonActivity> getUpdatedPersonActivities(
+			long lastSync, ContentResolver resolver) {
 		return Entity.getEntities(
-				PersonActivity.class, resolver, CONTENT_URI, null, null, null, null);
+				PersonActivity.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				null, /*CREATION_DATE + " > ?",*/
+				null, /*new String[] { String.valueOf(lastSync) },*/
+				null);
 	}
 
 	@Override

@@ -48,12 +48,20 @@ public class Service extends Entity {
 	/**
 	 * Gets a list of all services that have been updated since the last
 	 * synchronization.
+	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated services.
 	 */
-	public static List<Service> getUpdatedServices(ContentResolver resolver) {
+	public static List<Service> getUpdatedServices(
+			long lastSync, ContentResolver resolver) {
 		return Entity.getEntities(
-				Service.class, resolver, CONTENT_URI, null, null, null, null);
+				Service.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				null, /*LAST_MODIFIED_DATE + " > ?",*/
+				null, /*new String[] { String.valueOf(lastSync) },*/
+				null);
 	}
 	
 	@Override
