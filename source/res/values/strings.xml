@@ -16,6 +16,6 @@
     <string name="box_preference_summary">Configure Sync Settings</string>
     <string name="box_preference_title">Box Account Settings</string>
     <string name="box_preference_category_title">Account Settings</string>
-    <string name="box_account_name">Box.com</string>
+    <string name="box_account_name">Box</string>
 
 </resources>
