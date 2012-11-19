@@ -101,11 +101,6 @@ public class BoxAuthenticatorService extends Service {
 			result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-			
-			ContentResolver.setIsSyncable(account, authority, 1);
-			ContentResolver.setSyncAutomatically(account, authority, true);
-			ContentResolver.addPeriodicSync(
-					account, authority, new Bundle(), BoxConstants.ACCOUNT_SYNC_FREQUENCY);
 		}
 		
 		return result;
