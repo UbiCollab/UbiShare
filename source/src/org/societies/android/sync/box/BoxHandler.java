@@ -64,14 +64,6 @@ public class BoxHandler {
 	private static final String BOX_FOLDER_ROOT = "UbiShare";
 	/* END TEMPORARY CONSTANTS */
 	
-	// TODO: Move these constants to a more appropriate place?
-	/** Indicates that the file has been updated. */
-	private static final String UPDATE_FILE_UPDATED = "updated";
-	/** Indicates that the file has been added. */
-	private static final String UPDATE_FILE_ADDED = "added";
-	/** Indicates that the file has been deleted. (Not confirmed) */
-	private static final String UPDATE_FILE_DELETED = "deleted";
-	
 	private List<BoxOperation> mOperations;
 	private Map<Class<? extends Entity>, String> mFolderMap;
 	private BoxFolder mRootFolder;
@@ -152,12 +144,12 @@ public class BoxHandler {
 			fetchAllEntities();
 		else {
 			for (Update update : updates) {
-				if (update.getUpdateType().equals(UPDATE_FILE_ADDED) ||
-					update.getUpdateType().equals(UPDATE_FILE_UPDATED)) {
+				if (update.getUpdateType().equals(Update.UPDATE_FILE_ADDED) ||
+					update.getUpdateType().equals(Update.UPDATE_FILE_UPDATED)) {
 					for (BoxFile file : update.getFiles()) {
 						downloadEntity(file.getId(), update.getFolderId());
 					}
-				} else if (update.getUpdateType().equals(UPDATE_FILE_DELETED)) {
+				} else if (update.getUpdateType().equals(Update.UPDATE_FILE_DELETED)) {
 					// TODO: Delete local entity if this code is ever reached
 					Log.i(TAG, "Got deleted file update.");
 				}
@@ -374,20 +366,16 @@ public class BoxHandler {
 	 * @throws InterruptedException If the thread is interrupted while waiting.
 	 */
 	public void waitForRunningOperationsToComplete() throws InterruptedException {
-		boolean wait = false;
+		boolean wait = true;
 		
-		synchronized (mOperations) {
-			for (BoxOperation operation : mOperations) {
-				if (operation.isAlive()) {
-					wait = true;
-					break;
-				}
+		while (wait) {
+			synchronized (mOperations) {
+				for (BoxOperation operation : mOperations)
+					wait |= operation.isAlive();
 			}
-		}
-		
-		if (wait) {
-			Thread.sleep(100);
-			waitForRunningOperationsToComplete();
+			
+			if (wait)
+				Thread.sleep(100);
 		}
 	}
 }
