@@ -362,6 +362,8 @@ public class BoxHandler {
 		boolean wait = true;
 		
 		while (wait) {
+			wait = false;
+			
 			synchronized (mOperations) {
 				for (BoxOperation operation : mOperations)
 					wait |= operation.isAlive();

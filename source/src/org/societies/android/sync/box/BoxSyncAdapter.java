@@ -91,7 +91,6 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			// TODO: Figure out the deleted files part
 			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
-			Log.i(TAG, "Last sync: " + new Date(lastSync * 1000));
 			processBoxUpdates(lastSync);
 			
 			mBoxHandler.waitForRunningOperationsToComplete();
