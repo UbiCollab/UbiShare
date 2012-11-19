@@ -128,11 +128,6 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		if (lastSync > 0)
 			updates = mBoxHandler.getUpdatesSince(lastSync);
 		
-		if (updates == null)
-			Log.i(TAG, "Fetching all entities from box.");
-		else
-			Log.i(TAG, "Fetching " + updates.size() + " updates from box.");
-		
 		mBoxHandler.processUpdates(updates);
 	}
 	
