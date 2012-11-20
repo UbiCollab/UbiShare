@@ -158,6 +158,18 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Gets the value of the specified column as a long.
+	 * @param cursor The database cursor.
+	 * @param columnName The name of the column.
+	 * @return The value of the specified column as a long.
+	 * @throws IllegalArgumentException If the specified column does not exist.
+	 */
+	protected static long getLong(Cursor cursor, String columnName)
+			throws IllegalArgumentException {
+		return cursor.getLong(cursor.getColumnIndexOrThrow(columnName));
+	}
+	
+	/**
 	 * Populates the entity with the values from the specified cursor.
 	 * @param cursor The database cursor.
 	 */
