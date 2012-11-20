@@ -215,6 +215,26 @@ public class BoxHandler {
 	}
 	
 	/**
+	 * Waits for running operations to complete.
+	 * @throws InterruptedException If the thread is interrupted while waiting.
+	 */
+	public void waitForRunningOperationsToComplete() throws InterruptedException {
+		boolean wait = true;
+		
+		while (wait) {
+			wait = false;
+			
+			synchronized (mOperations) {
+				for (BoxOperation operation : mOperations)
+					wait |= operation.isAlive();
+			}
+			
+			if (wait)
+				Thread.sleep(100);
+		}
+	}
+	
+	/**
 	 * Initializes the mapping of entities and box folders.
 	 */
 	private void initFolderMappings() {
@@ -351,26 +371,6 @@ public class BoxHandler {
 			downloadAllEntities(treeParser.getFolder());
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
-		}
-	}
-	
-	/**
-	 * Waits for running operations to complete.
-	 * @throws InterruptedException If the thread is interrupted while waiting.
-	 */
-	public void waitForRunningOperationsToComplete() throws InterruptedException {
-		boolean wait = true;
-		
-		while (wait) {
-			wait = false;
-			
-			synchronized (mOperations) {
-				for (BoxOperation operation : mOperations)
-					wait |= operation.isAlive();
-			}
-			
-			if (wait)
-				Thread.sleep(100);
 		}
 	}
 }
