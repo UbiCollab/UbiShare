@@ -57,7 +57,6 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 	 */
 	@Override
 	protected void setUp() throws Exception {
-		// TODO Auto-generated method stub
 		super.setUp();
 		
 		//Delegate context so that files and DBs during 
@@ -68,6 +67,10 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 		resolver = getMockContentResolver();
 		//context = getMockContext();
 		resolver.addProvider(SocialContract.AUTHORITY.getAuthority(), getProvider());
+
+		//Set up the test database with content:
+		testPop= new TestDataPopulator(resolver);
+		testPop.populate();
 	}
 
 	/* (non-Javadoc)
@@ -81,11 +84,11 @@ public class SocialProviderTest extends ProviderTestCase2<SocialProvider> {
 	
 /**
  * Tests whether a Me record can be inserted and can be retrieved
- * using the GLOBAL_ID field.  
+ * using the GLOBAL_ID field.
+ * inserting is done in setUp() for all tests as part of test DB
+ * populating.
  */
 public void testInsertMeQueryWithGlobalID(){
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
@@ -94,10 +97,7 @@ public void testInsertMeQueryWithGlobalID(){
 		initialValues.put(SocialContract.Me.DISPLAY_NAME , "ID1"); //Optional
 		initialValues.put(SocialContract.Me.USER_NAME , "ID1");
 		initialValues.put(SocialContract.Me.PASSWORD , "ID1");
-		initialValues.put(SocialContract.Me.ORIGIN , "SOCIETIES");
-		
-		//Call insert in SocialProvider to initiate insertion.
-		//resolver.insert(SocialContract.Me.CONTENT_URI, initialValues);
+		initialValues.put(SocialContract.Me.ACCOUNT_TYPE , "SOCIETIES");
 		
 		//Try to query the newly inserted CIS from SocialProvider.
 		//What columns to get:
@@ -107,7 +107,7 @@ public void testInsertMeQueryWithGlobalID(){
 				SocialContract.Me.DISPLAY_NAME,
 				SocialContract.Me.USER_NAME,
 				SocialContract.Me.PASSWORD,
-				SocialContract.Me.ORIGIN
+				SocialContract.Me.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.Membership.GLOBAL_ID + " = 'ID1@societies.org'";
@@ -116,10 +116,8 @@ public void testInsertMeQueryWithGlobalID(){
 		
 		//Fail if the cursor is null:
 		assertFalse(cursor == null);
-		//if (cursor == null)	return;
 		//Succeed if cursor is not empty:
 		assertTrue(cursor.moveToFirst());
-		//if (!cursor.moveToFirst()) return;
 		//Fail if the record data are not correct:
 		//Create new ContentValues object based on returned record:
 		ContentValues returnedValues = new ContentValues();
@@ -128,30 +126,25 @@ public void testInsertMeQueryWithGlobalID(){
 		returnedValues.put(SocialContract.Me.DISPLAY_NAME, cursor.getString(2));
 		returnedValues.put(SocialContract.Me.USER_NAME , cursor.getString(3));
 		returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
-		returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
+		returnedValues.put(SocialContract.Me.ACCOUNT_TYPE , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
-//	public void testDelete(){
-//	//TODO: probably add a CisRecord, then delete it.	
-//		assertFalse(true);
-//		
-//	}
 
-	/**
- * Test if you can read the people from test data.
+/**
+ * Tests whether a People record can be inserted and can be retrieved
+ * using the GLOBAL_ID field.
+ * inserting is done in setUp() for all tests as part of test DB
+ * populating.
  */
 public void testInsertPeopleWithGlobalID(){
-	//First, build the test DB:
-	testPop= new TestDataPopulator(resolver);
-	testPop.populate();
 	
 	//Then build a local contentvalues to hold the comparison data: 
 	ContentValues initialValues = new ContentValues();
 	initialValues.put(SocialContract.People.GLOBAL_ID , "ID1@societies.org");
 	initialValues.put(SocialContract.People.NAME , "Person1");
 	initialValues.put(SocialContract.People.EMAIL , "Person1");
-	initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
+	initialValues.put(SocialContract.People.ACCOUNT_TYPE , "SOCIETIES");
 	initialValues.put(SocialContract.People.DESCRIPTION , "Person1");
 
 	//Then build a query towards the DB with the comparison data 
@@ -160,7 +153,7 @@ public void testInsertPeopleWithGlobalID(){
 			SocialContract.People.GLOBAL_ID,
 			SocialContract.People.NAME,
 			SocialContract.People.EMAIL,
-			SocialContract.People.ORIGIN,
+			SocialContract.People.ACCOUNT_TYPE,
 			SocialContract.People.DESCRIPTION
 		};
 	String selection = SocialContract.People.GLOBAL_ID + " = 'ID1@societies.org'";
@@ -177,7 +170,7 @@ public void testInsertPeopleWithGlobalID(){
 	returnedValues.put(SocialContract.People.GLOBAL_ID , cursor.getString(0));
 	returnedValues.put(SocialContract.People.NAME , cursor.getString(1));
 	returnedValues.put(SocialContract.People.EMAIL , cursor.getString(2));
-	returnedValues.put(SocialContract.People.ORIGIN , cursor.getString(3));
+	returnedValues.put(SocialContract.People.ACCOUNT_TYPE , cursor.getString(3));
 	returnedValues.put(SocialContract.People.DESCRIPTION , cursor.getString(4));
 	assertEquals(returnedValues,initialValues);
 	cursor.close();
@@ -192,9 +185,6 @@ public void testInsertPeopleWithGlobalID(){
 	 * adapter. So this test should handle both cases.
 	 */
 	public void testInsertCommunityQueryWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//Create local ContentValues to hold the community data:
 		ContentValues initialValues = new ContentValues();
@@ -203,7 +193,7 @@ public void testInsertPeopleWithGlobalID(){
 		initialValues.put(SocialContract.Communities.OWNER_ID , "ID1@societies.org");
 		initialValues.put(SocialContract.Communities.TYPE , "Community1");
 		initialValues.put(SocialContract.Communities.DESCRIPTION , "Community1");
-		initialValues.put(SocialContract.Communities.ORIGIN , "Facebook");
+		initialValues.put(SocialContract.Communities.ACCOUNT_TYPE , "Facebook");
 		
 		
 		//Get the community from SocialProvider:
@@ -214,7 +204,7 @@ public void testInsertPeopleWithGlobalID(){
 				SocialContract.Communities.OWNER_ID,
 				SocialContract.Communities.TYPE,
 				SocialContract.Communities.DESCRIPTION,
-				SocialContract.Communities.ORIGIN
+				SocialContract.Communities.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.Communities.GLOBAL_ID + " = 'Community1@facebook.com'" ;
@@ -234,7 +224,7 @@ public void testInsertPeopleWithGlobalID(){
 		returnedValues.put(SocialContract.Communities.OWNER_ID , cursor.getString(2));
 		returnedValues.put(SocialContract.Communities.TYPE , cursor.getString(3));
 		returnedValues.put(SocialContract.Communities.DESCRIPTION , cursor.getString(4));
-		returnedValues.put(SocialContract.Communities.ORIGIN , cursor.getString(5));
+		returnedValues.put(SocialContract.Communities.ACCOUNT_TYPE , cursor.getString(5));
 		//Since this community is just created we can assume it
 		//is still pending: 		
 		//TODO: Find a more elegant way to test this.
@@ -251,17 +241,15 @@ public void testInsertPeopleWithGlobalID(){
 	 * adapter. So this test should handle both cases.
 	 */
 	public void testInsertServiceQueryWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//Create local ContentValues to hold the service data:
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SocialContract.Services.GLOBAL_ID , "Service1@play.google.com");
 		initialValues.put(SocialContract.Services.TYPE , "Service1");
+		initialValues.put(SocialContract.Services.APP_TYPE , "Service1");
 		initialValues.put(SocialContract.Services.NAME , "Service1");
 		initialValues.put(SocialContract.Services.OWNER_ID, "Person3@facebook.com");
-		initialValues.put(SocialContract.Services.ORIGIN, "Google Play");
+		initialValues.put(SocialContract.Services.ACCOUNT_TYPE, "Google Play");
 		initialValues.put(SocialContract.Services.DESCRIPTION , "Service1");
 		initialValues.put(SocialContract.Services.AVAILABLE, "false");
 		initialValues.put(SocialContract.Services.DEPENDENCY, "Service4@ubicollab.org");
@@ -277,7 +265,7 @@ public void testInsertPeopleWithGlobalID(){
 				SocialContract.Services.TYPE,
 				SocialContract.Services.DESCRIPTION,
 				SocialContract.Services.APP_TYPE,
-				SocialContract.Services.ORIGIN,
+				SocialContract.Services.ACCOUNT_TYPE,
 				SocialContract.Services.AVAILABLE,
 				SocialContract.Services.DEPENDENCY,
 				SocialContract.Services.CONFIG,
@@ -302,7 +290,7 @@ public void testInsertPeopleWithGlobalID(){
 		returnedValues.put(SocialContract.Services.TYPE , cursor.getString(3));
 		returnedValues.put(SocialContract.Services.DESCRIPTION , cursor.getString(4));
 		returnedValues.put(SocialContract.Services.APP_TYPE , cursor.getString(5));
-		returnedValues.put(SocialContract.Services.ORIGIN , cursor.getString(6));
+		returnedValues.put(SocialContract.Services.ACCOUNT_TYPE , cursor.getString(6));
 		returnedValues.put(SocialContract.Services.AVAILABLE , cursor.getString(7));
 		returnedValues.put(SocialContract.Services.DEPENDENCY , cursor.getString(8));
 		returnedValues.put(SocialContract.Services.CONFIG , cursor.getString(9));
@@ -319,9 +307,6 @@ public void testInsertPeopleWithGlobalID(){
 	 * Add a membership, then check and see if it was added correctly.
 	 */
 	public void testInsertRelationshipWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
@@ -329,7 +314,7 @@ public void testInsertPeopleWithGlobalID(){
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , "ID1@societies.org");
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P2, "Person2@pending");
 		initialValues.put(SocialContract.Relationship.TYPE , "ID1 Person2");
-		initialValues.put(SocialContract.Relationship.ORIGIN, "private");
+		initialValues.put(SocialContract.Relationship.ACCOUNT_TYPE, "private");
 		
 		
 		//3- Get the newly inserted CIS from SocialProvider.
@@ -339,7 +324,7 @@ public void testInsertPeopleWithGlobalID(){
 				SocialContract.Relationship.GLOBAL_ID_P1,
 				SocialContract.Relationship.GLOBAL_ID_P2,
 				SocialContract.Relationship.TYPE,
-				SocialContract.Relationship.ORIGIN
+				SocialContract.Relationship.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.Relationship.GLOBAL_ID + " = 'rel1xyz@pending'";
@@ -357,14 +342,11 @@ public void testInsertPeopleWithGlobalID(){
 		returnedValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , cursor.getString(1));
 		returnedValues.put(SocialContract.Relationship.GLOBAL_ID_P2 , cursor.getString(2));
 		returnedValues.put(SocialContract.Relationship.TYPE , cursor.getString(3));
-		returnedValues.put(SocialContract.Relationship.ORIGIN , cursor.getString(4));
+		returnedValues.put(SocialContract.Relationship.ACCOUNT_TYPE , cursor.getString(4));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 	public void testInsertMembershipWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
@@ -372,7 +354,7 @@ public void testInsertPeopleWithGlobalID(){
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "ID1@societies.org");
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
 		initialValues.put(SocialContract.Membership.TYPE , "mem1xyz");
-		initialValues.put(SocialContract.Membership.ORIGIN, "Facebook");
+		initialValues.put(SocialContract.Membership.ACCOUNT_TYPE, "Facebook");
 		
 		
 		//3- Get the newly inserted CIS from SocialProvider.
@@ -382,7 +364,7 @@ public void testInsertPeopleWithGlobalID(){
 				SocialContract.Membership.GLOBAL_ID_MEMBER,
 				SocialContract.Membership.GLOBAL_ID_COMMUNITY,
 				SocialContract.Membership.TYPE,
-				SocialContract.Membership.ORIGIN
+				SocialContract.Membership.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.Membership.GLOBAL_ID + " = 'mem1xyz@facebook.com'";
@@ -400,14 +382,11 @@ public void testInsertPeopleWithGlobalID(){
 		returnedValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , cursor.getString(1));
 		returnedValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY , cursor.getString(2));
 		returnedValues.put(SocialContract.Membership.TYPE , cursor.getString(3));
-		returnedValues.put(SocialContract.Membership.ORIGIN , cursor.getString(4));
+		returnedValues.put(SocialContract.Membership.ACCOUNT_TYPE , cursor.getString(4));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 	public void testInsertSharingWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
@@ -416,7 +395,7 @@ public void testInsertPeopleWithGlobalID(){
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , "Person3@facebook.com");		
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "Community1@facebook.com");
 		initialValues.put(SocialContract.Sharing.TYPE , "Service1");
-		initialValues.put(SocialContract.Sharing.ORIGIN, "Facebook");
+		initialValues.put(SocialContract.Sharing.ACCOUNT_TYPE, "Facebook");
 		
 		
 		//3- Get the newly inserted CIS from SocialProvider.
@@ -427,7 +406,7 @@ public void testInsertPeopleWithGlobalID(){
 				SocialContract.Sharing.GLOBAL_ID_OWNER,
 				SocialContract.Sharing.GLOBAL_ID_COMMUNITY,
 				SocialContract.Sharing.TYPE,
-				SocialContract.Sharing.ORIGIN
+				SocialContract.Sharing.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.Sharing.GLOBAL_ID + " = 'sha1xyz@facebook.com'";
@@ -446,24 +425,21 @@ public void testInsertPeopleWithGlobalID(){
 		returnedValues.put(SocialContract.Sharing.GLOBAL_ID_OWNER , cursor.getString(2));
 		returnedValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY , cursor.getString(3));
 		returnedValues.put(SocialContract.Sharing.TYPE , cursor.getString(4));
-		returnedValues.put(SocialContract.Sharing.ORIGIN , cursor.getString(5));
+		returnedValues.put(SocialContract.Sharing.ACCOUNT_TYPE , cursor.getString(5));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 	public void testInsertPeopleActivityWithGlobalID(){
-		//First, build the test DB:
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
 
 		//1- Create local ContentValues to hold the initial membership data.
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID , "Activity1@facebook.com");
 		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , "Person3@facebook.com");
-		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_ACTOR, "Actor1");
-		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT , "Object1");
-		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB, "Verb1");
-		initialValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET, "Target1");
-		initialValues.put(SocialContract.PeopleActivity.ORIGIN, "Facebook");
+		initialValues.put(SocialContract.PeopleActivity.ACTOR, "Actor1");
+		initialValues.put(SocialContract.PeopleActivity.OBJECT , "Object1");
+		initialValues.put(SocialContract.PeopleActivity.VERB, "Verb1");
+		initialValues.put(SocialContract.PeopleActivity.TARGET, "Target1");
+		initialValues.put(SocialContract.PeopleActivity.ACCOUNT_TYPE, "Facebook");
 		
 		
 		//3- Get the newly inserted CIS from SocialProvider.
@@ -471,11 +447,11 @@ public void testInsertPeopleWithGlobalID(){
 		String[] projection ={
 				SocialContract.PeopleActivity.GLOBAL_ID,
 				SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER,
-				SocialContract.PeopleActivity.GLOBAL_ID_ACTOR,
-				SocialContract.PeopleActivity.GLOBAL_ID_OBJECT,
-				SocialContract.PeopleActivity.GLOBAL_ID_VERB,
-				SocialContract.PeopleActivity.GLOBAL_ID_TARGET,
-				SocialContract.PeopleActivity.ORIGIN
+				SocialContract.PeopleActivity.ACTOR,
+				SocialContract.PeopleActivity.OBJECT,
+				SocialContract.PeopleActivity.VERB,
+				SocialContract.PeopleActivity.TARGET,
+				SocialContract.PeopleActivity.ACCOUNT_TYPE
 			};
 		//WHERE _id = ID of the newly created CIS:
 		String selection = SocialContract.PeopleActivity.GLOBAL_ID + " = 'Activity1@facebook.com'";
@@ -491,37 +467,36 @@ public void testInsertPeopleWithGlobalID(){
 		ContentValues returnedValues = new ContentValues();
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID , cursor.getString(0));
 		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
-		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
-		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
-		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_VERB , cursor.getString(4));
-		returnedValues.put(SocialContract.PeopleActivity.GLOBAL_ID_TARGET , cursor.getString(5));
-		returnedValues.put(SocialContract.PeopleActivity.ORIGIN , cursor.getString(6));
+		returnedValues.put(SocialContract.PeopleActivity.ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.PeopleActivity.OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.PeopleActivity.VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.PeopleActivity.TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.PeopleActivity.ACCOUNT_TYPE , cursor.getString(6));
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
 	}
 	public void testInsertCommunityActivityWithGlobalID(){
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
+
 		//Then build a local contentvalues to hold the comparison data: 
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID , "Activity1@facebook.com");
 		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER , "Community1@facebook.com");
-		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_ACTOR, "Actor1");
-		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_OBJECT , "Object1");
-		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_VERB, "Verb1");
-		initialValues.put(SocialContract.CommunityActivity.GLOBAL_ID_TARGET, "Target1");
-		initialValues.put(SocialContract.CommunityActivity.ORIGIN, "Facebook");
+		initialValues.put(SocialContract.CommunityActivity.ACTOR, "Actor1");
+		initialValues.put(SocialContract.CommunityActivity.OBJECT , "Object1");
+		initialValues.put(SocialContract.CommunityActivity.VERB, "Verb1");
+		initialValues.put(SocialContract.CommunityActivity.TARGET, "Target1");
+		initialValues.put(SocialContract.CommunityActivity.ACCOUNT_TYPE, "Facebook");
 
 		//Then build a query towards the DB with the comparison data 
 		//as query parameters:
 		String[] projection ={
 				SocialContract.CommunityActivity.GLOBAL_ID,
 				SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER,
-				SocialContract.CommunityActivity.GLOBAL_ID_ACTOR,
-				SocialContract.CommunityActivity.GLOBAL_ID_OBJECT,
-				SocialContract.CommunityActivity.GLOBAL_ID_VERB,
-				SocialContract.CommunityActivity.GLOBAL_ID_TARGET,
-				SocialContract.CommunityActivity.ORIGIN
+				SocialContract.CommunityActivity.ACTOR,
+				SocialContract.CommunityActivity.OBJECT,
+				SocialContract.CommunityActivity.VERB,
+				SocialContract.CommunityActivity.TARGET,
+				SocialContract.CommunityActivity.ACCOUNT_TYPE
 			};
 		String selection = SocialContract.CommunityActivity.GLOBAL_ID + " = 'Activity1@facebook.com'";
 		
@@ -535,11 +510,11 @@ public void testInsertPeopleWithGlobalID(){
 		ContentValues returnedValues = new ContentValues();
 		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID , cursor.getString(0));
 		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
-		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
-		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
-		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_VERB , cursor.getString(4));
-		returnedValues.put(SocialContract.CommunityActivity.GLOBAL_ID_TARGET , cursor.getString(5));
-		returnedValues.put(SocialContract.CommunityActivity.ORIGIN, cursor.getString(6));
+		returnedValues.put(SocialContract.CommunityActivity.ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.CommunityActivity.OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.CommunityActivity.VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.CommunityActivity.TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.CommunityActivity.ACCOUNT_TYPE, cursor.getString(6));
 		
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
@@ -547,28 +522,27 @@ public void testInsertPeopleWithGlobalID(){
 		
 	}
 	public void testInsertServiceActivityWithGlobalID(){
-		testPop= new TestDataPopulator(resolver);
-		testPop.populate();
+
 		//Then build a local contentvalues to hold the comparison data: 
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID , "Activity1@google.com");
 		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER , "Service1@google.com");
-		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_ACTOR, "Actor1");
-		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_OBJECT , "Object1");
-		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_VERB, "Verb1");
-		initialValues.put(SocialContract.ServiceActivity.GLOBAL_ID_TARGET, "Target1");
-		initialValues.put(SocialContract.ServiceActivity.ORIGIN, "Google");
+		initialValues.put(SocialContract.ServiceActivity.ACTOR, "Actor1");
+		initialValues.put(SocialContract.ServiceActivity.OBJECT , "Object1");
+		initialValues.put(SocialContract.ServiceActivity.VERB, "Verb1");
+		initialValues.put(SocialContract.ServiceActivity.TARGET, "Target1");
+		initialValues.put(SocialContract.ServiceActivity.ACCOUNT_TYPE, "Google");
 
 		//Then build a query towards the DB with the comparison data 
 		//as query parameters:
 		String[] projection ={
 				SocialContract.ServiceActivity.GLOBAL_ID,
 				SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER,
-				SocialContract.ServiceActivity.GLOBAL_ID_ACTOR,
-				SocialContract.ServiceActivity.GLOBAL_ID_OBJECT,
-				SocialContract.ServiceActivity.GLOBAL_ID_VERB,
-				SocialContract.ServiceActivity.GLOBAL_ID_TARGET,
-				SocialContract.ServiceActivity.ORIGIN
+				SocialContract.ServiceActivity.ACTOR,
+				SocialContract.ServiceActivity.OBJECT,
+				SocialContract.ServiceActivity.VERB,
+				SocialContract.ServiceActivity.TARGET,
+				SocialContract.ServiceActivity.ACCOUNT_TYPE
 			};
 		String selection = SocialContract.ServiceActivity.GLOBAL_ID + " = 'Activity1@google.com'";
 		
@@ -582,11 +556,11 @@ public void testInsertPeopleWithGlobalID(){
 		ContentValues returnedValues = new ContentValues();
 		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID , cursor.getString(0));
 		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER , cursor.getString(1));
-		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_ACTOR , cursor.getString(2));
-		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_OBJECT , cursor.getString(3));
-		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_VERB , cursor.getString(4));
-		returnedValues.put(SocialContract.ServiceActivity.GLOBAL_ID_TARGET , cursor.getString(5));
-		returnedValues.put(SocialContract.ServiceActivity.ORIGIN, cursor.getString(6));
+		returnedValues.put(SocialContract.ServiceActivity.ACTOR , cursor.getString(2));
+		returnedValues.put(SocialContract.ServiceActivity.OBJECT , cursor.getString(3));
+		returnedValues.put(SocialContract.ServiceActivity.VERB , cursor.getString(4));
+		returnedValues.put(SocialContract.ServiceActivity.TARGET , cursor.getString(5));
+		returnedValues.put(SocialContract.ServiceActivity.ACCOUNT_TYPE, cursor.getString(6));
 		
 		assertEquals(returnedValues,initialValues);
 		cursor.close();
@@ -606,7 +580,7 @@ public void testInsertPeopleWithGlobalID(){
 			initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies"); //Optional
 			initialValues.put(SocialContract.Me.USER_NAME , "babak@societies.org");
 			initialValues.put(SocialContract.Me.PASSWORD , "XYz125");
-			initialValues.put(SocialContract.Me.ORIGIN , "societies.org");
+			initialValues.put(SocialContract.Me.ACCOUNT_TYPE , "societies.org");
 			
 			//Call insert in SocialProvider to initiate insertion.
 			//   Get _ID back and store it.
@@ -622,7 +596,7 @@ public void testInsertPeopleWithGlobalID(){
 					SocialContract.Me.DISPLAY_NAME,
 					SocialContract.Me.USER_NAME,
 					SocialContract.Me.PASSWORD,
-					SocialContract.Me.ORIGIN
+					SocialContract.Me.ACCOUNT_TYPE
 				};
 			//WHERE _id = ID of the newly created CIS:
 			String selection = SocialContract.Membership._ID + " = " +
@@ -644,7 +618,7 @@ public void testInsertPeopleWithGlobalID(){
 			returnedValues.put(SocialContract.Me.DISPLAY_NAME, cursor.getString(2));
 			returnedValues.put(SocialContract.Me.USER_NAME , cursor.getString(3));
 			returnedValues.put(SocialContract.Me.PASSWORD , cursor.getString(4));
-			returnedValues.put(SocialContract.Me.ORIGIN , cursor.getString(5));
+			returnedValues.put(SocialContract.Me.ACCOUNT_TYPE , cursor.getString(5));
 			assertEquals(returnedValues,initialValues);
 			cursor.close();
 		}
