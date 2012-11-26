@@ -34,11 +34,12 @@ public class PersonActivity extends Entity {
 	private int id = -1;
 	private String globalId;
 	private String globalIdFeedOwner;
-	private String globalIdActor;
-	private String globalIdObject;
-	private String globalIdVerb;
-	private String globalIdTarget;
-	private String creationDate;
+	private String actor;
+	private String object;
+	private String verb;
+	private String target;
+	private long creationDate;
+	private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the person activities that have been updated since the last
@@ -54,8 +55,8 @@ public class PersonActivity extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				null, /*CREATION_DATE + " > ?",*/
-				null, /*new String[] { String.valueOf(lastSync) },*/
+				CREATION_DATE + " > ?", // TODO: Maybe use last modified date?
+				new String[] { String.valueOf(lastSync) },
 				null);
 	}
 
@@ -64,11 +65,12 @@ public class PersonActivity extends Entity {
 		setId(					Entity.getInt(cursor, _ID));
 		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
 		setGlobalIdFeedOwner(	Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
-		setGlobalIdActor(		Entity.getString(cursor, GLOBAL_ID_ACTOR));
-		setGlobalIdObject(		Entity.getString(cursor, GLOBAL_ID_OBJECT));
-		setGlobalIdVerb(		Entity.getString(cursor, GLOBAL_ID_VERB));
-		setGlobalIdTarget(		Entity.getString(cursor, GLOBAL_ID_TARGET));
-		setCreationDate(		Entity.getString(cursor, CREATION_DATE));
+		setActor(				Entity.getString(cursor, ACTOR));
+		setObject(				Entity.getString(cursor, OBJECT));
+		setVerb(				Entity.getString(cursor, VERB));
+		setTarget(				Entity.getString(cursor, TARGET));
+		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
@@ -77,11 +79,12 @@ public class PersonActivity extends Entity {
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(GLOBAL_ID_FEED_OWNER, globalIdFeedOwner);
-		values.put(GLOBAL_ID_ACTOR, globalIdActor);
-		values.put(GLOBAL_ID_OBJECT, globalIdObject);
-		values.put(GLOBAL_ID_VERB, globalIdVerb);
-		values.put(GLOBAL_ID_TARGET, globalIdTarget);
+		values.put(ACTOR, actor);
+		values.put(OBJECT, object);
+		values.put(VERB, verb);
+		values.put(TARGET, target);
 		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
 		
 		return values;
 	}
@@ -124,43 +127,51 @@ public class PersonActivity extends Entity {
 		this.globalIdFeedOwner = globalIdFeedOwner;
 	}
 	
-	public String getGlobalIdActor() {
-		return globalIdActor;
+	public String getActor() {
+		return actor;
 	}
 	
-	public void setGlobalIdActor(String globalIdActor) {
-		this.globalIdActor = globalIdActor;
+	public void setActor(String actor) {
+		this.actor = actor;
 	}
 	
-	public String getGlobalIdObject() {
-		return globalIdObject;
+	public String getObject() {
+		return object;
 	}
 	
-	public void setGlobalIdObject(String globalIdObject) {
-		this.globalIdObject = globalIdObject;
+	public void setObject(String object) {
+		this.object = object;
 	}
 	
-	public String getGlobalIdVerb() {
-		return globalIdVerb;
+	public String getVerb() {
+		return verb;
 	}
 	
-	public void setGlobalIdVerb(String globalIdVerb) {
-		this.globalIdVerb = globalIdVerb;
+	public void setVerb(String verb) {
+		this.verb = verb;
 	}
 	
-	public String getGlobalIdTarget() {
-		return globalIdTarget;
+	public String getTarget() {
+		return target;
 	}
 	
-	public void setGlobalIdTarget(String globalIdTarget) {
-		this.globalIdTarget = globalIdTarget;
+	public void setTarget(String target) {
+		this.target = target;
 	}
 	
-	public String getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	public long getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(long lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 }

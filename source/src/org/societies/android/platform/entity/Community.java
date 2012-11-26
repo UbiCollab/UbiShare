@@ -37,8 +37,8 @@ public class Community extends Entity {
 	private String ownerId;
 	private String type;
 	private String description;
-	private String creationDate;
-	private String lastModifiedDate;
+	private long creationDate;
+	private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the communities that have been updated since the last
@@ -54,21 +54,21 @@ public class Community extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				null, /*LAST_MODIFIED_DATE + " > ?",*/
-				null, /*new String[] { String.valueOf(lastSync) },*/
+				LAST_MODIFIED_DATE + " > ?",
+				new String[] { String.valueOf(lastSync) },
 				null);
 	}
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getInt(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setName(				Entity.getString(cursor, NAME));
-		setOwnerId(				Entity.getString(cursor, OWNER_ID));
-		setType(				Entity.getString(cursor, TYPE));
-		setDescription(			Entity.getString(cursor, DESCRIPTION));
-		setCreationDate(		Entity.getString(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getInt(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setName(			Entity.getString(cursor, NAME));
+		setOwnerId(			Entity.getString(cursor, OWNER_ID));
+		setType(			Entity.getString(cursor, TYPE));
+		setDescription(		Entity.getString(cursor, DESCRIPTION));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
@@ -148,19 +148,19 @@ public class Community extends Entity {
 		this.description = description;
 	}
 	
-	public String getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public String getLastModifiedDate() {
+	public long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(String lastModifiedDate) {
+	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

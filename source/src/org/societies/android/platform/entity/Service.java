@@ -42,8 +42,8 @@ public class Service extends Entity {
 	private String dependency;
 	private String config;
 	private String url;
-	private String creationDate;
-	private String lastModifiedDate;
+	private long creationDate;
+	private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all services that have been updated since the last
@@ -59,26 +59,26 @@ public class Service extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				null, /*LAST_MODIFIED_DATE + " > ?",*/
-				null, /*new String[] { String.valueOf(lastSync) },*/
+				LAST_MODIFIED_DATE + " > ?",
+				new String[] { String.valueOf(lastSync) },
 				null);
 	}
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getInt(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setName(				Entity.getString(cursor, NAME));
-		setDescription(			Entity.getString(cursor, DESCRIPTION));
-		setOwnerId(				Entity.getString(cursor, OWNER_ID));
-		setType(				Entity.getString(cursor, TYPE));
-		setAppType(				Entity.getString(cursor, APP_TYPE));
-		setAvailable(			Entity.getBoolean(cursor, AVAILABLE));
-		setDependency(			Entity.getString(cursor, DEPENDENCY));
-		setConfig(				Entity.getString(cursor, CONFIG));
-		setUrl(					Entity.getString(cursor, URL));
-		setCreationDate(		Entity.getString(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getInt(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setName(			Entity.getString(cursor, NAME));
+		setDescription(		Entity.getString(cursor, DESCRIPTION));
+		setOwnerId(			Entity.getString(cursor, OWNER_ID));
+		setType(			Entity.getString(cursor, TYPE));
+		setAppType(			Entity.getString(cursor, APP_TYPE));
+		setAvailable(		Entity.getBoolean(cursor, AVAILABLE));
+		setDependency(		Entity.getString(cursor, DEPENDENCY));
+		setConfig(			Entity.getString(cursor, CONFIG));
+		setUrl(				Entity.getString(cursor, URL));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
@@ -203,19 +203,19 @@ public class Service extends Entity {
 		this.url = url;
 	}
 	
-	public String getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public String getLastModifiedDate() {
+	public long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(String lastModifiedDate) {
+	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

@@ -37,8 +37,8 @@ public class Sharing extends Entity {
 	private String globalIdOwner;
 	private String globalIdCommunity;
 	private String type;
-	private String creationDate;
-	private String lastModifiedDate;
+	private long creationDate;
+	private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the sharings that have been updated since the last
@@ -54,8 +54,8 @@ public class Sharing extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				null, /*LAST_MODIFIED_DATE + " > ?",*/
-				null, /*new String[] { String.valueOf(lastSync) },*/
+				LAST_MODIFIED_DATE + " > ?",
+				new String[] { String.valueOf(lastSync) },
 				null);
 	}
 	
@@ -67,8 +67,8 @@ public class Sharing extends Entity {
 		setGlobalIdOwner(		Entity.getString(cursor, GLOBAL_ID_OWNER));
 		setGlobalIdCommunity(	Entity.getString(cursor, GLOBAL_ID_COMMUNITY));
 		setType(				Entity.getString(cursor, TYPE));
-		//setCreationDate(		Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
-		//setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
+		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public class Sharing extends Entity {
 		values.put(GLOBAL_ID_OWNER, globalIdOwner);
 		values.put(GLOBAL_ID_COMMUNITY, globalIdCommunity);
 		values.put(TYPE, type);
-		//values.put(CREATION_DATE, creationDate); TODO: add creation date?
-		//values.put(LAST_MODIFIED_DATE, lastModifiedDate); TODO: add last modified date?
+		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
 		
 		return values;
 	}
@@ -148,19 +148,19 @@ public class Sharing extends Entity {
 		this.type = type;
 	}
 	
-	public String getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
 	
-	public String getLastModifiedDate() {
+	public long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	
-	public void setLastModifiedDate(String lastModifiedDate) {
+	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }

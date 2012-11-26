@@ -15,140 +15,132 @@
  */
 package org.societies.android.platform.entity;
 
-import java.util.List;
-
-import static org.societies.android.api.cis.SocialContract.People.*;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+import static org.societies.android.api.cis.SocialContract.Me.*;
+
 /**
- * A person entity.
+ * A me entity.
  * 
  * @author Kato
  */
-public class Person extends Entity {
+public class Me extends Entity {
 	
 	private int id = -1;
 	private String globalId;
 	private String name;
-	private String description;
-	private String email;
+	private String displayName;
+	private String username;
+	private String password;
 	private long creationDate;
 	private long lastModifiedDate;
-	
-	/**
-	 * Gets a list of all the people that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
-	 * @param resolver The content resolver.
-	 * @return A list of updated people.
-	 */
-	public static List<Person> getUpdatedPeople(long lastSync, ContentResolver resolver) {
-		return Entity.getEntities(
-				Person.class,
-				resolver,
-				CONTENT_URI,
-				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
-				null);
-	}
-	
+
 	@Override
 	protected void populate(Cursor cursor) {
 		setId(				Entity.getInt(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
-		setDescription(		Entity.getString(cursor, DESCRIPTION));
-		setEmail(			Entity.getString(cursor, EMAIL));
+		setDisplayName(		Entity.getString(cursor, DISPLAY_NAME));
+		setUsername(		Entity.getString(cursor, USER_NAME));
+		setPassword(		Entity.getString(cursor, PASSWORD));
 		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
 		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
-	
+
 	@Override
 	protected ContentValues getEntityValues() {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(NAME, name);
-		values.put(DESCRIPTION, description);
-		values.put(EMAIL, email);
+		values.put(DISPLAY_NAME, displayName);
+		values.put(USER_NAME, username);
+		values.put(PASSWORD, password);
 		values.put(CREATION_DATE, creationDate);
 		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
 		
 		return values;
 	}
-	
+
 	@Override
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
-	
-	@Override
-	public void fetchLocalId(ContentResolver resolver) {
-		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
-	}
-	
+
 	@Override
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	protected void setId(int id) {
 		this.id = id;
 	}
-	
+
+	@Override
+	public void fetchLocalId(ContentResolver resolver) {
+		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+	}
+
 	@Override
 	public String getGlobalId() {
 		return globalId;
 	}
-	
+
 	@Override
 	public void setGlobalId(String globalId) {
 		this.globalId = globalId;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public String getDescription() {
-		return description;
+
+	public String getDisplayName() {
+		return displayName;
 	}
-	
-	public void setDescription(String description) {
-		this.description = description;
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
-	
-	public String getEmail() {
-		return email;
+
+	public String getUsername() {
+		return username;
 	}
-	
-	public void setEmail(String email) {
-		this.email = email;
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
-	
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public long getCreationDate() {
 		return creationDate;
 	}
-	
+
 	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
-	
+
 	public long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
-	
+
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
+
 }

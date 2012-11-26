@@ -36,8 +36,8 @@ public class Relationship extends Entity {
 	private String globalIdP1;
 	private String globalIdP2;
 	private String type;
-	private String creationDate;
-	private String lastModifiedDate;
+	private long creationDate;
+	private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the relationships that have been updated since the last
@@ -53,20 +53,20 @@ public class Relationship extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				null, /*LAST_MODIFIED_DATE + " > ?",*/
-				null, /*new String[] { String.valueOf(lastSync) },*/
+				LAST_MODIFIED_DATE + " > ?",
+				new String[] { String.valueOf(lastSync) },
 				null);
 	}
 
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getInt(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdP1(			Entity.getString(cursor, GLOBAL_ID_P1));
-		setGlobalIdP2(			Entity.getString(cursor, GLOBAL_ID_P2));
-		setType(				Entity.getString(cursor, TYPE));
-		//setCreationDate(		Entity.getString(cursor, CREATION_DATE)); TODO: add creation date?
-		//setLastModifiedDate(	Entity.getString(cursor, LAST_MODIFIED_DATE)); TODO: add last modified date?
+		setId(				Entity.getInt(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setGlobalIdP1(		Entity.getString(cursor, GLOBAL_ID_P1));
+		setGlobalIdP2(		Entity.getString(cursor, GLOBAL_ID_P2));
+		setType(			Entity.getString(cursor, TYPE));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -77,8 +77,8 @@ public class Relationship extends Entity {
 		values.put(GLOBAL_ID_P1, globalIdP1);
 		values.put(GLOBAL_ID_P2, globalIdP2);
 		values.put(TYPE, type);
-		//values.put(CREATION_DATE, creationDate); TODO: add creation date?
-		//values.put(LAST_MODIFIED_DATE, lastModifiedDate); TODO: add last modified date?
+		values.put(CREATION_DATE, creationDate);
+		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
 		
 		return values;
 	}
@@ -137,19 +137,19 @@ public class Relationship extends Entity {
 		this.type = type;
 	}
 	
-	public String getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 	
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	public String getLastModifiedDate() {
+	public long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 
-	public void setLastModifiedDate(String lastModifiedDate) {
+	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }
