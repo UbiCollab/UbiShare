@@ -16,8 +16,6 @@
 package org.societies.android.sync.box;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.societies.android.platform.entity.Relationship;
 import org.societies.android.platform.entity.Service;
 import org.societies.android.platform.entity.ServiceActivity;
 import org.societies.android.platform.entity.Sharing;
+import org.societies.android.util.ThreadPool;
 
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
@@ -63,8 +62,16 @@ public class BoxHandler {
 	/* TEMPORARY CONSTANTS */
 	private static final String BOX_FOLDER_ROOT = "UbiShare";
 	/* END TEMPORARY CONSTANTS */
+
+	/** The character used as separator in entity file names. */
+	public static final String ENTITY_FILE_NAME_SEPARATOR = "_";
+	/** The file name format of uploaded entities. */
+	public static final String ENTITY_FILE_NAME_FORMAT =
+			"%s" + ENTITY_FILE_NAME_SEPARATOR + "%s";
+	/** The extension of deleted entity files. */
+	public static final String ENTITY_DELETED_EXTENSION = ".del";
 	
-	private List<BoxOperation> mOperations;
+	private ThreadPool mThreadPool;
 	private Map<Class<? extends Entity>, String> mFolderMap;
 	private BoxFolder mRootFolder;
 	private String mAuthToken;
@@ -78,7 +85,7 @@ public class BoxHandler {
 	 * @param resolver The content resolver.
 	 */
 	public BoxHandler(SharedPreferences preferences, ContentResolver resolver) {
-		mOperations = Collections.synchronizedList(new ArrayList<BoxOperation>());
+		mThreadPool = new ThreadPool(1);
 		mFolderMap = new HashMap<Class<? extends Entity>, String>();
 		mInitialized = false;
 		mResolver = resolver;
@@ -92,6 +99,8 @@ public class BoxHandler {
 	 */
 	public void initialize(String authToken) {
 		mAuthToken = authToken;
+		
+		mThreadPool.startExecution();
 		
 		initFolderMappings();
 		loadPreferences();
@@ -111,11 +120,9 @@ public class BoxHandler {
 	 * Cancels all running operations.
 	 */
 	public void cancelRunningOperations() {
-		synchronized (mOperations) {
-			for (BoxOperation operation : mOperations) {
-				operation.cancel();
-			}
-		}
+		try {
+			mThreadPool.stopExecution(true);
+		} catch (InterruptedException e) { /* IGNORED */ }
 	}
 	
 	/**
@@ -129,8 +136,7 @@ public class BoxHandler {
 			BoxUploadOperation operation =
 					new BoxUploadOperation(entity, mAuthToken, this, mResolver);
 			
-			mOperations.add(operation);
-			operation.start();
+			mThreadPool.add(operation);
 		}
 	}
 	
@@ -147,11 +153,8 @@ public class BoxHandler {
 				if (update.getUpdateType().equals(Update.UPDATE_FILE_ADDED) ||
 					update.getUpdateType().equals(Update.UPDATE_FILE_UPDATED)) {
 					for (BoxFile file : update.getFiles()) {
-						downloadEntity(file.getId(), update.getFolderId());
+						downloadEntity(file, update.getFolderId());
 					}
-				} else if (update.getUpdateType().equals(Update.UPDATE_FILE_DELETED)) {
-					// TODO: Delete local entity if this code is ever reached
-					Log.i(TAG, "Got deleted file update.");
 				}
 			}
 		}
@@ -192,46 +195,11 @@ public class BoxHandler {
 	}
 	
 	/**
-	 * Gets the entity class related to the specified folder.
-	 * @param folderId The ID of the folder.
-	 * @return The entity class related to the specified folder.
-	 */
-	public Class<? extends Entity> getEntityClass(long folderId) {
-		String folderName = null;
-		for (BoxFolder subFolder : mRootFolder.getFoldersInFolder()) {
-			if (subFolder.getId() == folderId)
-				folderName = subFolder.getFolderName();
-		}
-		
-		if (folderName != null) {
-			for (Class<? extends Entity> entity : mFolderMap.keySet()) {
-				if (mFolderMap.get(entity).equals(folderName))
-					return entity;
-			}
-		}
-		
-		throw new IllegalArgumentException(
-				"Entity class of folder ID " + folderId + " not found");
-	}
-	
-	/**
 	 * Waits for running operations to complete.
 	 * @throws InterruptedException If the thread is interrupted while waiting.
 	 */
 	public void waitForRunningOperationsToComplete() throws InterruptedException {
-		boolean wait = true;
-		
-		while (wait) {
-			wait = false;
-			
-			synchronized (mOperations) {
-				for (BoxOperation operation : mOperations)
-					wait |= operation.isAlive();
-			}
-			
-			if (wait)
-				Thread.sleep(100);
-		}
+		mThreadPool.stopExecution(false);
 	}
 	
 	/**
@@ -329,19 +297,16 @@ public class BoxHandler {
 	
 	/**
 	 * Downloads the specified entity.
-	 * @param fileId The file ID of the entity.
+	 * @param file The file to download.
 	 * @param folderId The ID of the folder containing the entity.
 	 */
-	private void downloadEntity(long fileId, long folderId) {
+	private void downloadEntity(BoxFile file, long folderId) {
 		BoxDownloadOperation operation = new BoxDownloadOperation(
-				fileId,
-				folderId,
+				file,
 				mAuthToken,
-				mResolver,
-				this);
+				mResolver);
 		
-		mOperations.add(operation);
-		operation.start();
+		mThreadPool.add(operation);
 	}
 	
 	/**
@@ -351,7 +316,7 @@ public class BoxHandler {
 	 */
 	private void downloadAllEntities(BoxFolder rootFolder) {
 		for (BoxFile file : rootFolder.getFilesInFolder())
-			downloadEntity(file.getId(), rootFolder.getId());
+			downloadEntity(file, rootFolder.getId());
 		
 		for (BoxFolder subFolder : rootFolder.getFoldersInFolder())
 			downloadAllEntities(subFolder);

@@ -37,15 +37,10 @@ import com.box.androidlib.ResponseParsers.FileResponseParser;
  *
  * @author Kato
  */
-public class BoxUploadOperation extends BoxOperation {
+public class BoxUploadOperation extends Thread {
 	
 	private static final String TAG = "BoxUploadOperation";
 	
-	/** The content of the temporary files. */
-	private static final String TEMP_CONTENT = ".";
-	/** The status returned when trying to upload to a deleted file. */
-	private static final String STATUS_FILE_DELETED = "e_file_deleted";
-
 	private Entity mEntity;
 	private BoxHandler mBoxHandler;
 	private BoxSynchronous mBoxInstance;
@@ -74,72 +69,69 @@ public class BoxUploadOperation extends BoxOperation {
 	@Override
 	public void run() {
 		try {
-			try {
-				long fileId = Long.parseLong(mEntity.getGlobalId());
-				uploadEntity(fileId, false);
-			} catch (NumberFormatException nfe) {
-				uploadEntity(getNewFileId(), true);
-			}
+			uploadEntity();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 	
 	/**
-	 * Uploads the entity to an existing file.
-	 * @param fileId The ID of the existing file.
-	 * @param updateEntity Whether or not the entity should be updated with a
-	 * new global ID.
+	 * Uploads the entity to a file.
 	 * @throws IOException If an error occurs while uploading.
 	 */
-	private void uploadEntity(long fileId, boolean updateEntity) throws IOException {
-		if (updateEntity)
-			mEntity.setGlobalId(String.valueOf(fileId));
+	private void uploadEntity() throws IOException {
+		String uploadAction = Box.UPLOAD_ACTION_OVERWRITE;
+		long fileId = -1;
+		long targetId = mBoxHandler.getFolderId(mEntity.getClass());
+		
+		try {
+			fileId = Long.parseLong(mEntity.getGlobalId());
+		} catch (NumberFormatException e) {
+			uploadAction = Box.UPLOAD_ACTION_UPLOAD;
+		}
+		
+		mEntity.setGlobalId("");
 		
 		FileResponseParser response = upload(
-				Box.UPLOAD_ACTION_OVERWRITE,
+				uploadAction,
 				mEntity.serialize(),
-				String.valueOf(fileId),
-				fileId);
+				String.valueOf(mEntity.hashCode()),
+				(fileId != -1 ? fileId : targetId));
 		
 		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
-			if (updateEntity)
+			fileId = response.getFile().getId();
+			mEntity.setGlobalId(String.valueOf(fileId));
+			
+			if (uploadAction.equals(Box.UPLOAD_ACTION_UPLOAD))
 				mEntity.update(mResolver);
-		} else if (response.getStatus().equals(STATUS_FILE_DELETED)) {
-			// TODO: Either delete local or upload new copy
-			// mEntity.delete(mResolver);
-			uploadEntity(getNewFileId(), true);
+			
+			renameFile(response.getFile());
+		} else if (response.getStatus().equals(FileUploadListener.STATUS_FILE_DELETED)) {
+			// This will only occur when debugging.
+			mEntity.setGlobalId("");
+			uploadEntity();
 		} else {
 			throw new IOException("Failed to upload entity: " + response.getStatus());
 		}
 	}
 	
 	/**
-	 * Creates a temporary file and returns it's ID.
-	 * @return The ID of the the temporary file.
-	 * @throws IOException If an error occurs while uploading.
+	 * Renames the specified file.
+	 * @param file The file to rename.
+	 * @throws IOException If an error occurs while renaming.
 	 */
-	private long getNewFileId() throws IOException {
-		FileResponseParser response = upload(
-				Box.UPLOAD_ACTION_UPLOAD,
-				TEMP_CONTENT,
-				String.valueOf(mEntity.serialize().hashCode()),
-				mBoxHandler.getFolderId(mEntity.getClass()));
+	private void renameFile(BoxFile file) throws IOException {
+		String status = mBoxInstance.rename(
+				mAuthToken,
+				Box.TYPE_FILE,
+				file.getId(),
+				String.format(
+						BoxHandler.ENTITY_FILE_NAME_FORMAT,
+						mEntity.getClass().getName(),
+						file.getId()));
 		
-		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
-			BoxFile tempFile = response.getFile();
-			
-			String status = mBoxInstance.rename(
-					mAuthToken,
-					Box.TYPE_FILE,
-					tempFile.getId(),
-					String.valueOf(tempFile.getId()));
-			
-			if (status.equals(RenameListener.STATUS_S_RENAME_NODE))
-				return tempFile.getId();
-		}
-		
-		throw new IOException("Failed to create temporary file");
+		if (!status.equals(RenameListener.STATUS_S_RENAME_NODE))
+			throw new IOException("Failed to rename file: " + file.getFileName());
 	}
 	
 	/**

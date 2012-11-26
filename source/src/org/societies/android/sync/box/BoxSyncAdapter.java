@@ -93,8 +93,6 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
 			processBoxUpdates(lastSync);
 			
-			mBoxHandler.waitForRunningOperationsToComplete();
-			
 			// TODO: Sync only updated entities
 			syncPeople(lastSync);
 			syncPeopleActivities(lastSync);
