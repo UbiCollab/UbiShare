@@ -25,8 +25,10 @@
 package org.societies.android.platform;
 
 
-import org.societies.android.api.cis.SocialContract;
+import java.util.Date;
 
+import org.societies.android.api.cis.SocialContract;
+import java.util.Date;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -139,18 +141,16 @@ public class LocalDBAdapter implements ISocialAdapter {
 	 * @see org.societies.android.platform.ISocialAdapter#insertPeople(android.content.ContentValues)
 	 */
 	public long insertPeople(ContentValues _values) {
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.People.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.People.NAME)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.People.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
-		//Add defaults for the non-mandatory fields:
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
+		//uncomment this when tests are fixed:
 		//inputValues.put(SocialContract.People.GLOBAL_ID, "Pending");
 		if (!inputValues.containsKey(SocialContract.People.DESCRIPTION))
-			inputValues.put(SocialContract.People.DESCRIPTION, "na");
+			inputValues.put(SocialContract.People.DESCRIPTION, SocialContract.VALUE_NOT_DEFINED);
 		if (!inputValues.containsKey(SocialContract.People.EMAIL))
-			inputValues.put(SocialContract.People.EMAIL, "na");
+			inputValues.put(SocialContract.People.EMAIL, SocialContract.VALUE_NOT_DEFINED);
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.PEOPLE_TABLE_NAME, null, inputValues);
@@ -179,17 +179,13 @@ public class LocalDBAdapter implements ISocialAdapter {
 	 */
 	public long insertCommunities(ContentValues _values) {
 		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Communities.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Communities.NAME)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Communities.OWNER_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Communities.TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Communities.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 		
 		if (!inputValues.containsKey(SocialContract.Communities.DESCRIPTION))
-			inputValues.put(SocialContract.Communities.DESCRIPTION, "na");
+			inputValues.put(SocialContract.Communities.DESCRIPTION, SocialContract.VALUE_NOT_DEFINED);
 		//remove this until we get a sync adapter:
 		//inputValues.put(SocialContract.Communities.GLOBAL_ID, "Pending");
 		
@@ -219,28 +215,13 @@ public class LocalDBAdapter implements ISocialAdapter {
 
 	public long insertServices(ContentValues _values) {
 		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Services.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.NAME)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.OWNER_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.APP_TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.ORIGIN)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Services.AVAILABLE)) parametersOK = false;
-		if (parametersOK == false) return -1;
-		//Add defaults for the non-mandatory fields:
-		if (!inputValues.containsKey(SocialContract.Services.DESCRIPTION))
-			inputValues.put(SocialContract.Services.DESCRIPTION, "na");
-		if (!inputValues.containsKey(SocialContract.Services.DEPENDENCY))
-			inputValues.put(SocialContract.Services.DEPENDENCY, "na");
-		if (!inputValues.containsKey(SocialContract.Services.CONFIG))
-			inputValues.put(SocialContract.Services.CONFIG, "na");
-		if (!inputValues.containsKey(SocialContract.Services.URL))
-			inputValues.put(SocialContract.Services.URL, "na");
-		//Set global_id to pending:
-		//inputValues.put(SocialContract.Services.GLOBAL_ID, "Pending");
-
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
+//		//Set global_id to pending:
+//		//inputValues.put(SocialContract.Services.GLOBAL_ID, "Pending");
+//
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.SERVICES_TABLE_NAME, null, inputValues);	
 	}
@@ -265,15 +246,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 
 	public long insertRelationship(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Relationship.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Relationship.GLOBAL_ID_P1)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Relationship.GLOBAL_ID_P2)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Relationship.TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Relationship.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 	
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.RELATIONSHIP_TABLE_NAME, null, inputValues);	
@@ -297,15 +273,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertMembership(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Membership.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Membership.GLOBAL_ID_MEMBER)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Membership.GLOBAL_ID_COMMUNITY)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Membership.TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Membership.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 	
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.MEMBERSHIP_TABLE_NAME, null, inputValues);	
@@ -328,16 +299,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertSharing(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Sharing.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Sharing.GLOBAL_ID_SERVICE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Sharing.GLOBAL_ID_OWNER)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Sharing.GLOBAL_ID_COMMUNITY)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Sharing.TYPE)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Sharing.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.SHARING_TABLE_NAME, null, inputValues);	
@@ -360,17 +325,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertPeopleActivity(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID_FEED_OWNER)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID_ACTOR)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID_OBJECT)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID_VERB)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.GLOBAL_ID_TARGET)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.PeopleActivity.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, null, inputValues);	
@@ -394,17 +352,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertCommunityActivity(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID_FEED_OWNER)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID_ACTOR)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID_OBJECT)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID_VERB)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.GLOBAL_ID_TARGET)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.CommunityActivity.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.COMMUNITIES_ACTIVITIY_TABLE_NAME, null, inputValues);	
@@ -427,17 +378,10 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertServiceActivity(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID_FEED_OWNER)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID_ACTOR)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID_OBJECT)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID_VERB)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.GLOBAL_ID_TARGET)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.ServiceActivity.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.SERVICES_ACTIVITIY_TABLE_NAME, null, inputValues);	
@@ -460,17 +404,13 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertMe(ContentValues _values) {
-		boolean parametersOK = true;
+		Date date = new Date();
 		ContentValues inputValues = new ContentValues(_values);
-		if(!inputValues.containsKey(SocialContract.Me.GLOBAL_ID)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Me.NAME)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Me.USER_NAME)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Me.PASSWORD)) parametersOK = false;
-		if(!inputValues.containsKey(SocialContract.Me.ORIGIN)) parametersOK = false;
-		if (parametersOK == false) return -1;
+		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
+		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
 		//Add defaults for the non-mandatory fields:
 		if (!inputValues.containsKey(SocialContract.Me.DISPLAY_NAME))
-			inputValues.put(SocialContract.Me.DISPLAY_NAME, "NA");
+			inputValues.put(SocialContract.Me.DISPLAY_NAME, SocialContract.VALUE_NOT_DEFINED);
 
 		db = dbHelper.getWritableDatabase();
 		return db.insert(SQLiteContract.ME_TABLE_NAME, null, inputValues);

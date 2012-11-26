@@ -181,7 +181,7 @@ public class SocialProvider extends ContentProvider{
 		case SocialContract.UriMatcherIndex.SERVICES:
 			newID = adapter.insertServices(_values);
 			if (newID == -1) { //_values does not contain correct parameters.
-				throw new IllegalArgumentException("Unsupported parameters for new service:" + _values.toString());
+				throw new IllegalArgumentException("Unsupported parameters for new service: " + _values.toString());
 			}
 			returnUri = Uri.withAppendedPath(_uri, Long.toString(newID));
 			break;
