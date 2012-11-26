@@ -31,7 +31,8 @@ import static org.societies.android.api.cis.SocialContract.Relationship.*;
  */
 public class Relationship extends Entity {
 
-	private int id = -1;
+	private int id = ENTITY_DEFAULT_ID;
+	
 	private String globalId;
 	private String globalIdP1;
 	private String globalIdP2;

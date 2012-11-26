@@ -38,6 +38,32 @@ public abstract class Entity {
 	
 	/** The format in which properties should be serialized. */
 	protected static final String SERIALIZE_FORMAT = "%s=%s\n";
+	/** The default local ID of an entity. */
+	protected static final int ENTITY_DEFAULT_ID = -1;
+	
+	/**
+	 * Removes the entity with the specified global ID from the database.
+	 * @param entityClass The class of the entity.
+	 * @param globalId The global ID of the entity.
+	 * @param resolver The content resolver.
+	 * @return The number of rows deleted in the database.
+	 */
+	public static <E extends Entity> int deleteEntity(
+			Class<E> entityClass, String globalId, ContentResolver resolver) {
+		int rowsDeleted = 0;
+		
+		try {
+			E entity = entityClass.newInstance();
+			entity.setGlobalId(globalId);
+			entity.fetchLocalId(resolver);
+			
+			rowsDeleted = entity.delete(resolver);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+		
+		return rowsDeleted;
+	}
 	
 	/**
 	 * Gets a list of entities of the specified type.
@@ -89,8 +115,8 @@ public abstract class Entity {
 	 * @param globalIdColumnName The name of the global ID column.
 	 * @param globalId The global ID of the entity.
 	 * @param resolver The content resolver.
-	 * @return The local ID of the entity with the specified global ID, or -1 if
-	 * it does not exist.
+	 * @return The local ID of the entity with the specified global ID, or
+	 * {@link Entity#ENTITY_DEFAULT_ID} if it does not exist.
 	 */
 	protected static int getLocalId(
 			Uri contentUri,
@@ -98,14 +124,14 @@ public abstract class Entity {
 			String globalIdColumnName,
 			String globalId,
 			ContentResolver resolver) {
-		int localId = -1;
+		int localId = ENTITY_DEFAULT_ID;
 		
 		Cursor cursor = null;
 		try {
 			cursor = resolver.query(
 					contentUri,
 					new String[] { idColumnName },
-					globalIdColumnName + "=?",
+					globalIdColumnName + " = ?",
 					new String[] { globalId },
 					null);
 			
@@ -194,11 +220,10 @@ public abstract class Entity {
 	 * @throws IllegalStateException If the entity is already in the database.
 	 */
 	public Uri insert(ContentResolver resolver) throws IllegalStateException {
-		if (getId() == -1) {
+		if (getId() == ENTITY_DEFAULT_ID)
 			return resolver.insert(getContentUri(), getEntityValues());
-		} else {
+		else
 			throw new IllegalStateException("The entity is already in the database.");
-		}
 	}
 	
 	/**
@@ -208,7 +233,7 @@ public abstract class Entity {
 	 * @throws IllegalStateException If the entity is not in the database.
 	 */
 	public int update(ContentResolver resolver) throws IllegalStateException {
-		if (getId() != -1) {
+		if (getId() != ENTITY_DEFAULT_ID) {
 			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
 			
 			return resolver.update(contentUri, getEntityValues(), null, null);
@@ -218,13 +243,13 @@ public abstract class Entity {
 	}
 	
 	/**
-	 * Deletes the entity in the database.
+	 * Removes the entity from the database.
 	 * @param resolver The content resolver.
 	 * @return The number of rows deleted.
 	 * @throws IllegalStateException If the entity is not in the database.
 	 */
 	public int delete(ContentResolver resolver) throws IllegalStateException {
-		if (getId() != -1) {
+		if (getId() != ENTITY_DEFAULT_ID) {
 			Uri contentUri = ContentUris.withAppendedId(getContentUri(), getId());
 			
 			return resolver.delete(contentUri, null, null);
@@ -240,7 +265,7 @@ public abstract class Entity {
 	 */
 	public String serialize() {
 		int localId = getId();
-		setId(-1); /* Prevent actual local ID from being serialized */
+		setId(ENTITY_DEFAULT_ID); /* Prevent actual local ID from being serialized */
 		
 		String serialized = null;
 		try {
@@ -289,7 +314,8 @@ public abstract class Entity {
 	
 	/**
 	 * Fetches the local ID of the entity from the database. If the entity
-	 * does not exist in the database, the local ID is set to -1.
+	 * does not exist in the database, the local ID is set to
+	 * {@link Entity#ENTITY_DEFAULT_ID}.
 	 * @param resolver The content resolver.
 	 */
 	public abstract void fetchLocalId(ContentResolver resolver);

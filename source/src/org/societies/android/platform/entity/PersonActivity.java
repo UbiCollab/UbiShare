@@ -31,7 +31,8 @@ import android.net.Uri;
  */
 public class PersonActivity extends Entity {
 
-	private int id = -1;
+	private int id = ENTITY_DEFAULT_ID;
+	
 	private String globalId;
 	private String globalIdFeedOwner;
 	private String actor;

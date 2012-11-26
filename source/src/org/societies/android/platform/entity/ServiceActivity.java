@@ -31,7 +31,8 @@ import static org.societies.android.api.cis.SocialContract.ServiceActivity.*;
  */
 public class ServiceActivity extends Entity {
 
-	private int id = -1;
+	private int id = ENTITY_DEFAULT_ID;
+	
 	private String globalId;
 	private String globalIdFeedOwner;
 	private String actor;
