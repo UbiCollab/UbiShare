@@ -45,8 +45,10 @@ import com.box.androidlib.DAO.BoxFolder;
 import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.SearchResult;
 import com.box.androidlib.DAO.Update;
+import com.box.androidlib.ResponseListeners.CreateFolderListener;
 import com.box.androidlib.ResponseListeners.GetUpdatesListener;
 import com.box.androidlib.ResponseParsers.AccountTreeResponseParser;
+import com.box.androidlib.ResponseParsers.FolderResponseParser;
 import com.box.androidlib.ResponseParsers.SearchResponseParser;
 import com.box.androidlib.ResponseParsers.UpdatesResponseParser;
 
@@ -125,6 +127,7 @@ public class BoxHandler {
 		} catch (InterruptedException e) { /* IGNORED */ }
 	}
 	
+	
 	/**
 	 * Uploads a database entity to Box.
 	 * @param entity The entity to upload.
@@ -133,10 +136,49 @@ public class BoxHandler {
 		if (!mInitialized)
 			throw new IllegalStateException("Not initialized.");
 		else {
-			BoxUploadOperation operation =
+			/*BoxUploadOperation operation =
 					new BoxUploadOperation(entity, mAuthToken, this, mResolver);
 			
-			mThreadPool.add(operation);
+			mThreadPool.add(operation);*/
+		}
+	}
+	
+	/**
+	 * Uploads a community to Box.
+	 * @param community The community to upload.
+	 * @throws IOException If an error occurs while uploading.
+	 */
+	public void uploadCommunity(Community community) throws IOException {
+		if (!mInitialized)
+			throw new IllegalStateException("Not initialized.");
+		else {
+			long targetId;
+			try {
+				targetId = Long.parseLong(community.getGlobalId());
+			} catch (NumberFormatException e) {
+				long creationDate = new Date().getTime() / 1000;
+				BoxFolder folder = createFolder(
+						community.getName() + ENTITY_FILE_NAME_SEPARATOR + creationDate, 0);
+				
+				community.setGlobalId(String.valueOf(folder.getId()));
+				
+				targetId = folder.getId();
+			}
+			
+			addUploadOperation(community, "meta", targetId);
+		}
+	}
+	
+	/**
+	 * Uploads a community activity to Box.
+	 * @param activity The activity to upload.
+	 */
+	public void uploadCommunityActivity(CommunityActivity activity) {
+		if (!mInitialized)
+			throw new IllegalStateException("Not initialized.");
+		else {
+			long targetId = Long.parseLong(activity.getGlobalIdFeedOwner());
+			addUploadOperation(activity, null, targetId);
 		}
 	}
 	
@@ -200,6 +242,21 @@ public class BoxHandler {
 	 */
 	public void waitForRunningOperationsToComplete() throws InterruptedException {
 		mThreadPool.stopExecution(false);
+	}
+	
+	/**
+	 * Adds an upload operation to the thread pool.
+	 * @param entity The entity to upload.
+	 * @param fileName The name of the file to upload to, or <code>null</code> if the
+	 * name should be automatically generated.
+	 * @param targetId The ID of the folder to upload to.
+	 */
+	private void addUploadOperation(Entity entity, String fileName, long targetId) {
+		BoxUploadOperation operation =
+				new BoxUploadOperation(
+						entity, fileName, targetId, mAuthToken, mResolver);
+		
+		mThreadPool.add(operation);
 	}
 	
 	/**
@@ -280,16 +337,34 @@ public class BoxHandler {
 	}
 	
 	/**
+	 * Creates a folder in Box.
+	 * @param name The name of the folder.
+	 * @param parentId The ID of the parent folder. The ID 0 (zero) is the
+	 * root folder.
+	 * @return The newly created folder, or <code>null</code> on error.
+	 * @throws IOException If an error occurs while creating folder.
+	 */
+	private BoxFolder createFolder(String name, long parentId) throws IOException {
+		FolderResponseParser response =
+				BoxSynchronous.getInstance(BoxConstants.API_KEY).createFolder(
+						mAuthToken,
+						parentId,
+						name,
+						false);
+		
+		if (response.getStatus().equals(CreateFolderListener.STATUS_CREATE_OK))
+			return response.getFolder();
+		else
+			return null;
+	}
+	
+	/**
 	 * Creates the folder structure.
 	 */
 	private void createFolderStructure() {
 		try {
 			for (Class<? extends Entity> entityClass : mFolderMap.keySet())
-				BoxSynchronous.getInstance(BoxConstants.API_KEY).createFolder(
-						mAuthToken,
-						getRootFolderId(),
-						mFolderMap.get(entityClass),
-						false);
+				createFolder(mFolderMap.get(entityClass), getRootFolderId());
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}

@@ -148,6 +148,41 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Gets the global ID of the entity corresponding to the specified content URI and
+	 * local ID. 
+	 * @param contentUri The content URL.
+	 * @param localId The local ID of the entity.
+	 * @param globalIdColumnName The name of the global ID column.
+	 * @param resolver The content resolver.
+	 * @return The global ID of the specified entity, or <code>null</code> if it does
+	 * not exist.
+	 */
+	protected static String getGlobalId(
+			Uri contentUri, long localId, String globalIdColumnName, ContentResolver resolver) {
+		String globalId = null;
+		
+		Cursor cursor = null;
+		try {
+			cursor = resolver.query(
+					ContentUris.withAppendedId(contentUri, localId),
+					new String[] { globalIdColumnName },
+					null,
+					null,
+					null);
+			
+			if (cursor.moveToNext())
+				globalId = Entity.getString(cursor, globalIdColumnName);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		} finally {
+			if (cursor != null)
+				cursor.close();
+		}
+		
+		return globalId;
+	}
+	
+	/**
 	 * Gets the value of the specified column as a string.
 	 * @param cursor The database cursor.
 	 * @param columnName The name of the column.

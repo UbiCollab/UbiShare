@@ -24,6 +24,8 @@
  */
 package org.societies.android.platform;
 
+import java.util.Date;
+
 import org.societies.android.api.cis.SocialContract;
 
 import android.content.ContentValues;
@@ -41,7 +43,7 @@ public class SocialDataSet {
 		adapter = _adapter;
 	}
 	public boolean populate(){
-   		populateMe();
+   		/*populateMe();
    		populatePeople();
    		populateCommunities();
    		populateServices();
@@ -50,7 +52,7 @@ public class SocialDataSet {
    		populateSharing();
    		populatePeopleActivities();
    		populateCommunityActivities();
-   		populateServiceActivities();
+   		populateServiceActivities();*/
    		return true;
 	}
     private void populateMe(){
@@ -60,7 +62,6 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Me.DISPLAY_NAME , "knut@redcross");
 		initialValues.put(SocialContract.Me.USER_NAME , "knutr");
 		initialValues.put(SocialContract.Me.PASSWORD , "XYZ123");
-		initialValues.put(SocialContract.Me.ORIGIN , "Red Cross");
 		adapter.insertMe(initialValues);
 
 		initialValues.clear();
@@ -70,7 +71,6 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Me.DISPLAY_NAME , "Knut@FB");
 		initialValues.put(SocialContract.Me.USER_NAME , "KnutRFacebook");
 		initialValues.put(SocialContract.Me.PASSWORD , "XYZ123");
-		initialValues.put(SocialContract.Me.ORIGIN , "Facebook");
 		adapter.insertMe(initialValues);
 	}
 	private void populatePeople() {
@@ -78,8 +78,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.GLOBAL_ID , "babak@societies.org");
 		initialValues.put(SocialContract.People.NAME , "Babak Farshchian");
 		initialValues.put(SocialContract.People.EMAIL , "Babak@societies.org");
-		initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Babak@SOCIETIES");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 		
 		initialValues.clear();
@@ -87,8 +88,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.GLOBAL_ID , "jacqueline@societies.org");
 		initialValues.put(SocialContract.People.NAME , "Jacqueline Floch");
 		initialValues.put(SocialContract.People.EMAIL , "Jacqueline@Facebook.com");
-		initialValues.put(SocialContract.People.ORIGIN , "Facebook");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Jacqueline@Facebook");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 		
 		initialValues.clear();
@@ -96,8 +98,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.GLOBAL_ID , "thomas@societies.org");
 		initialValues.put(SocialContract.People.NAME , "Thomas Vilarinho");
 		initialValues.put(SocialContract.People.EMAIL , "thomas@societies.org");
-		initialValues.put(SocialContract.People.ORIGIN , "SOCIETIES");
 		initialValues.put(SocialContract.People.DESCRIPTION , "thomas@societies");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 
 		initialValues.clear();
@@ -105,8 +108,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.GLOBAL_ID , "knut@redcross.org");
 		initialValues.put(SocialContract.People.NAME , "Knut Roedhale");
 		initialValues.put(SocialContract.People.EMAIL , "knut.roedhale@redcross.org");
-		initialValues.put(SocialContract.People.ORIGIN , "Red Cross");
 		initialValues.put(SocialContract.People.DESCRIPTION , "knut@redcross");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 
 		initialValues.clear();
@@ -114,8 +118,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.GLOBAL_ID , "tor@redcross.org");
 		initialValues.put(SocialContract.People.NAME , "Tor Torvaldsen");
 		initialValues.put(SocialContract.People.EMAIL , "t.t@redcross.org");
-		initialValues.put(SocialContract.People.ORIGIN , "Red Cross");
 		initialValues.put(SocialContract.People.DESCRIPTION , "tor@redcross");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 
 	}
@@ -126,8 +131,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Communities.TYPE , "disaster");
 		initialValues.put(SocialContract.Communities.NAME , "Larnaca");
 		initialValues.put(SocialContract.Communities.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Communities.ORIGIN, "Red Cross");
 		initialValues.put(SocialContract.Communities.DESCRIPTION , "A community of rescuers at Larnaca earthquake site");
+		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertCommunities(initialValues);
 
 		initialValues.clear();
@@ -136,8 +142,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Communities.TYPE , "disaster");
 		initialValues.put(SocialContract.Communities.NAME , "Nicosia");
 		initialValues.put(SocialContract.Communities.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Communities.ORIGIN, "Red Cross");
 		initialValues.put(SocialContract.Communities.DESCRIPTION , "A community of rescuers at Nicosia flood area");
+		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertCommunities(initialValues);
 
 		initialValues.clear();
@@ -146,8 +153,9 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Communities.TYPE , "sports");
 		initialValues.put(SocialContract.Communities.NAME , "Football");
 		initialValues.put(SocialContract.Communities.OWNER_ID, "thomas@societies.org");
-		initialValues.put(SocialContract.Communities.ORIGIN, "SINTEF");
 		initialValues.put(SocialContract.Communities.DESCRIPTION , "SINTEF company football team");
+		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertCommunities(initialValues);
 
 	}
@@ -158,12 +166,13 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Services.TYPE , "Disaster");
 		initialValues.put(SocialContract.Services.NAME , "iJacket");
 		initialValues.put(SocialContract.Services.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Services.ORIGIN, "Red Cross");
 		initialValues.put(SocialContract.Services.DESCRIPTION , "A service to communicate with rescuer jacket");
 		initialValues.put(SocialContract.Services.AVAILABLE, "false");
 		initialValues.put(SocialContract.Services.DEPENDENCY, "iJacketClient");
 		initialValues.put(SocialContract.Services.CONFIG, "jacket version");
 		initialValues.put(SocialContract.Services.URL, "http://files.ubicollab.net/apk/iJacket.apk");
+		initialValues.put(SocialContract.Services.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Services.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertServices(initialValues);
 
 		initialValues.clear();
@@ -172,12 +181,13 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Services.TYPE , "Disaster");
 		initialValues.put(SocialContract.Services.NAME , "iJacketClient");
 		initialValues.put(SocialContract.Services.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Services.ORIGIN, "Red Cross");
 		initialValues.put(SocialContract.Services.DESCRIPTION , "A service to communicate with iJacket");
 		initialValues.put(SocialContract.Services.AVAILABLE, "false");
 		initialValues.put(SocialContract.Services.DEPENDENCY, "iJacket");
 		initialValues.put(SocialContract.Services.CONFIG, "iJacket version");
 		initialValues.put(SocialContract.Services.URL, "http://files.ubicollab.net/apk/iJacketClient.apk");
+		initialValues.put(SocialContract.Services.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Services.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 
 		adapter.insertServices(initialValues);		
 	}
@@ -188,7 +198,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , "knut@redcross.org");
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P2, "tor@redcross.org");
 		initialValues.put(SocialContract.Relationship.TYPE , "friends");
-		initialValues.put(SocialContract.Relationship.ORIGIN, "Red Cross");
+		initialValues.put(SocialContract.Relationship.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Relationship.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertRelationship(initialValues);
 		
 		initialValues.clear();
@@ -197,7 +208,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P1 , "thomas@societies.org");
 		initialValues.put(SocialContract.Relationship.GLOBAL_ID_P2, "jacqueline@societies.org");
 		initialValues.put(SocialContract.Relationship.TYPE , "friends");
-		initialValues.put(SocialContract.Relationship.ORIGIN, "SOCIETIES");
+		initialValues.put(SocialContract.Relationship.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Relationship.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertRelationship(initialValues);
 	}
 	private void populateMemberships() {
@@ -207,7 +219,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "knut@redcross.org");
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Membership.TYPE , "coordinator");
-		initialValues.put(SocialContract.Membership.ORIGIN, "Red Cross");
+		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertMembership(initialValues);
 		
 		initialValues.clear();
@@ -216,7 +229,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "tor@redcross.org");
 		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Membership.TYPE , "member");
-		initialValues.put(SocialContract.Membership.ORIGIN, "Red Cross");
+		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertMembership(initialValues);
 	}
 	private void populateSharing() {
@@ -226,7 +240,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "s1xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.TYPE , "Monitor");
-		initialValues.put(SocialContract.Sharing.ORIGIN, "Red Cross");
+		initialValues.put(SocialContract.Sharing.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Sharing.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertSharing(initialValues);
 		
 		initialValues.clear();
@@ -235,7 +250,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "s2xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.TYPE , "Full access");
-		initialValues.put(SocialContract.Sharing.ORIGIN, "Red Cross");
+		initialValues.put(SocialContract.Sharing.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Sharing.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertSharing(initialValues);
 	}
 	private void populatePeopleActivities() {

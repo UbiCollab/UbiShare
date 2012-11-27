@@ -84,31 +84,36 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			ContentProviderClient provider,
 			SyncResult syncResult) {
 		try {
+			Log.i(TAG, "Sync Started.");
 			String authToken = mAccountManager.blockingGetAuthToken(
 				account, BoxConstants.AUTH_TOKEN_FLAG, true);
 			
+			Log.i(TAG, "Initializing...");
 			mBoxHandler.initialize(authToken);
 			
-			// TODO: Figure out the deleted files part
 			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
+			Log.i(TAG, "Last Sync: " + lastSync);
+			Log.i(TAG, "Fetching updates from Box...");
 			processBoxUpdates(lastSync);
 			
 			// TODO: Sync only updated entities
-			syncPeople(lastSync);
-			syncPeopleActivities(lastSync);
+			//syncPeople(lastSync);
+			//syncPeopleActivities(lastSync);
 			
 			syncCommunities(lastSync);
 			syncCommunityActivities(lastSync);
 			
 			syncMemberships(lastSync);
-			syncRelationships(lastSync);
+			//syncRelationships(lastSync);
 			
+			Log.i(TAG, "Waiting for operations to complete...");
 			mBoxHandler.waitForRunningOperationsToComplete();
 			
 			mPreferences.edit().putLong(
 					BoxConstants.PREFERENCE_LAST_SYNC,
 					new Date().getTime() / 1000
 			).commit();
+			Log.i(TAG, "Sync finished!");
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
@@ -125,6 +130,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		if (lastSync > 0)
 			updates = mBoxHandler.getUpdatesSince(lastSync);
 		
+		Log.i(TAG, "Processing updates: " + (updates == null ? "full_sync" : updates.size()));
 		mBoxHandler.processUpdates(updates);
 	}
 	
@@ -159,15 +165,16 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	/**
 	 * Synchronizes the communities.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws IOException 
 	 */
-	private void syncCommunities(long lastSync) {
+	private void syncCommunities(long lastSync) throws IOException {
 		Log.i(TAG, "Started Communities Sync");
 		
 		List<Community> communities =
 				Community.getUpdatedCommunities(lastSync, mResolver);
 		
 		for (Community community : communities)
-			mBoxHandler.uploadEntity(community);
+			mBoxHandler.uploadCommunity(community);
 	}
 	
 	/**
@@ -181,7 +188,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 				CommunityActivity.getUpdatedCommunityActivities(lastSync, mResolver);
 		
 		for (CommunityActivity activity : activities)
-			mBoxHandler.uploadEntity(activity);
+			mBoxHandler.uploadCommunityActivity(activity);
 	}
 	
 	/**

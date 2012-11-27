@@ -26,6 +26,8 @@ import android.util.Log;
  */
 public class ThreadPool {
 	
+	private static final String TAG = "ThreadPool";
+	
 	private final int mPoolSize;
 	private final LinkedList<Thread> mQueue;
 	private final Worker[] mWorkers;
@@ -49,6 +51,7 @@ public class ThreadPool {
 	 */
 	public void startExecution() {
 		if (!mIsWorking) {
+			Log.i(TAG, "Starting Execution...");
 			for (int i = 0; i < mPoolSize; i++) {
 				mWorkers[i] = new Worker();
 				mWorkers[i].start();
@@ -67,23 +70,34 @@ public class ThreadPool {
 	 * to terminate.
 	 */
 	public void stopExecution(boolean forced) throws InterruptedException {
+		Log.i(TAG, "Stopping execution (Forced: " + forced + ")...");
+		
 		mIsStopping = true;
 		
+		synchronized (mQueue) {
+			mQueue.notifyAll();
+		}
+		
 		if (forced) {
-			for (Worker worker : mWorkers)
-				worker.interrupt();
-			
 			synchronized (mQueue) {
 				mQueue.clear();
 			}
+			
+			for (Worker worker : mWorkers)
+				worker.interrupt();
 		}
 		
+		Log.i(TAG, "Waiting for workers to complete...");
 		boolean canStop;
 		do {
 			canStop = true;
 			
-			for (Worker worker : mWorkers)
-				canStop &= (!worker.isAlive() || worker.isIdle()) && mQueue.isEmpty();
+			for (Worker worker : mWorkers) {
+				if ((worker.isAlive() && !worker.isIdle()) || !mQueue.isEmpty()) {
+					canStop = false;
+					break;
+				}
+			}
 			
 			if (!canStop)
 				Thread.sleep(100);
@@ -99,6 +113,7 @@ public class ThreadPool {
 	 */
 	public void add(Thread thread) {
 		if (!mIsStopping) {
+			Log.i(TAG, "Adding thread to queue...");
 			synchronized (mQueue) {
 				mQueue.addLast(thread);
 				mQueue.notify();
@@ -123,15 +138,20 @@ public class ThreadPool {
 			
 			while (!isInterrupted()) {
 				try {
+					Log.i(TAG, "Waiting for notification...");
 					synchronized (mQueue) {
 						while (mQueue.isEmpty()) {
 							mQueue.wait();
 						}
-						mIsIdle = false;
 						
+						if (mIsStopping && mQueue.isEmpty())
+							break;
+						
+						mIsIdle = false;
 						mCurrentThread = mQueue.removeFirst();
 					}
 					
+					Log.i(TAG, "Running thread...");
 					try {
 						mCurrentThread.run();
 						mIsIdle = true;
@@ -140,10 +160,13 @@ public class ThreadPool {
 					}
 				} catch (InterruptedException e) { /* IGNORED */ }
 			}
+			
+			Log.i(TAG, "Worker complete!");
 		}
 		
 		@Override
 		public void interrupt() {
+			Log.i(TAG, "Worker interrupted!");
 			if (mCurrentThread != null && mCurrentThread.isAlive())
 				mCurrentThread.interrupt();
 			

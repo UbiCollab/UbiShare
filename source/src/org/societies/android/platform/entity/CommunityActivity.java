@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.People;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -33,13 +35,15 @@ public class CommunityActivity extends Entity {
 	private int id = ENTITY_DEFAULT_ID;
 	
 	private String globalId;
-	private String globalIdFeedOwner;
+	private long feedOwnerId;
 	private String actor;
 	private String object;
 	private String verb;
 	private String target;
 	private long creationDate;
 	private long lastModifiedDate;
+	
+	private String globalIdFeedOwner;
 	
 	/**
 	 * Gets a list of all the community activities that have been updated since the
@@ -50,7 +54,7 @@ public class CommunityActivity extends Entity {
 	 */
 	public static List<CommunityActivity> getUpdatedCommunityActivities(
 			long lastSync, ContentResolver resolver) {
-		return Entity.getEntities(
+		List<CommunityActivity> updatedActivities = Entity.getEntities(
 				CommunityActivity.class,
 				resolver,
 				CONTENT_URI,
@@ -58,19 +62,24 @@ public class CommunityActivity extends Entity {
 				CREATION_DATE + " > ?", // TODO: Maybe use last modified date?
 				new String[] { String.valueOf(lastSync) },
 				null);
+		
+		for (CommunityActivity activity : updatedActivities)
+			activity.fetchGlobalIds(resolver);
+		
+		return updatedActivities;
 	}
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getInt(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdFeedOwner(	Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
-		setActor(				Entity.getString(cursor, ACTOR));
-		setObject(				Entity.getString(cursor, OBJECT));
-		setVerb(				Entity.getString(cursor, VERB));
-		setTarget(				Entity.getString(cursor, TARGET));
-		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getInt(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setFeedOwnerId(		Entity.getLong(cursor, _ID_FEED_OWNER));
+		setActor(			Entity.getString(cursor, ACTOR));
+		setObject(			Entity.getString(cursor, OBJECT));
+		setVerb(			Entity.getString(cursor, VERB));
+		setTarget(			Entity.getString(cursor, TARGET));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
@@ -78,7 +87,7 @@ public class CommunityActivity extends Entity {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
-		values.put(GLOBAL_ID_FEED_OWNER, globalIdFeedOwner);
+		values.put(_ID_FEED_OWNER, feedOwnerId);
 		values.put(ACTOR, actor);
 		values.put(OBJECT, object);
 		values.put(VERB, verb);
@@ -94,9 +103,29 @@ public class CommunityActivity extends Entity {
 		return CONTENT_URI;
 	}
 	
+	/**
+	 * Fetches the global ID of the feed owner.
+	 * @param resolver The content resolver.
+	 */
+	public void fetchGlobalIds(ContentResolver resolver) {
+		setGlobalIdFeedOwner(
+				Entity.getGlobalId(
+						People.CONTENT_URI,
+						feedOwnerId,
+						People.GLOBAL_ID,
+						resolver));
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		setFeedOwnerId(
+				Entity.getLocalId(
+						People.CONTENT_URI,
+						People._ID,
+						People.GLOBAL_ID,
+						globalIdFeedOwner,
+						resolver));
 	}
 
 	@Override
@@ -119,12 +148,12 @@ public class CommunityActivity extends Entity {
 		this.globalId = globalId;
 	}
 	
-	public String getGlobalIdFeedOwner() {
-		return globalIdFeedOwner;
+	public long getFeedOwnerId() {
+		return feedOwnerId;
 	}
 	
-	public void setGlobalIdFeedOwner(String globalIdFeedOwner) {
-		this.globalIdFeedOwner = globalIdFeedOwner;
+	public void setFeedOwnerId(long feedOwnerId) {
+		this.feedOwnerId = feedOwnerId;
 	}
 	
 	public String getActor() {
@@ -173,5 +202,13 @@ public class CommunityActivity extends Entity {
 
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdFeedOwner() {
+		return globalIdFeedOwner;
+	}
+	
+	public void setGlobalIdFeedOwner(String globalIdFeedOwner) {
+		this.globalIdFeedOwner = globalIdFeedOwner;
 	}
 }

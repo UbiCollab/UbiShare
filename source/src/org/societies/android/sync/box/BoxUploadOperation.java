@@ -42,25 +42,30 @@ public class BoxUploadOperation extends Thread {
 	private static final String TAG = "BoxUploadOperation";
 	
 	private Entity mEntity;
-	private BoxHandler mBoxHandler;
 	private BoxSynchronous mBoxInstance;
 	private String mAuthToken;
 	private ContentResolver mResolver;
+	private long mTargetId;
+	private String mFileName;
 	
 	/**
-	 * Initializes a Box upload operation.
-	 * @param entity The entity to be uploaded.
+	 * Initializes an upload operation.
+	 * @param entity The entity to upload.
+	 * @param fileName The name of the file to upload to, or <code>null</code>
+	 * if the file name should be generated.
+	 * @param targetId The ID of the folder to upload to.
 	 * @param authToken The authentication token.
-	 * @param boxHandler The box handler instance.
 	 * @param resolver The content resolver.
 	 */
 	public BoxUploadOperation(
 			Entity entity,
+			String fileName,
+			long targetId,
 			String authToken,
-			BoxHandler boxHandler,
 			ContentResolver resolver) {
 		mEntity = entity;
-		mBoxHandler = boxHandler;
+		mFileName = fileName;
+		mTargetId = targetId;
 		mBoxInstance = BoxSynchronous.getInstance(BoxConstants.API_KEY);
 		mAuthToken = authToken;
 		mResolver = resolver;
@@ -80,32 +85,36 @@ public class BoxUploadOperation extends Thread {
 	 * @throws IOException If an error occurs while uploading.
 	 */
 	private void uploadEntity() throws IOException {
-		String uploadAction = Box.UPLOAD_ACTION_OVERWRITE;
 		long fileId = -1;
-		long targetId = mBoxHandler.getFolderId(mEntity.getClass());
 		
-		try {
-			fileId = Long.parseLong(mEntity.getGlobalId());
-		} catch (NumberFormatException e) {
+		String uploadAction = Box.UPLOAD_ACTION_OVERWRITE;
+		if (mFileName == null) {
+			try {
+				fileId = Long.parseLong(mEntity.getGlobalId());
+			} catch (NumberFormatException e) {
+				uploadAction = Box.UPLOAD_ACTION_UPLOAD;
+			}
+			mEntity.setGlobalId("");
+		} else {
 			uploadAction = Box.UPLOAD_ACTION_UPLOAD;
 		}
-		
-		mEntity.setGlobalId("");
 		
 		FileResponseParser response = upload(
 				uploadAction,
 				mEntity.serialize(),
-				String.valueOf(mEntity.hashCode()),
-				(fileId != -1 ? fileId : targetId));
+				(mFileName == null ? String.valueOf(mEntity.hashCode()) : mFileName),
+				(fileId != -1 ? fileId : mTargetId));
 		
 		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
 			fileId = response.getFile().getId();
-			mEntity.setGlobalId(String.valueOf(fileId));
+			
+			if (mFileName == null) {
+				mEntity.setGlobalId(String.valueOf(fileId));
+				renameFile(response.getFile());
+			}
 			
 			if (uploadAction.equals(Box.UPLOAD_ACTION_UPLOAD))
 				mEntity.update(mResolver);
-			
-			renameFile(response.getFile());
 		} else if (response.getStatus().equals(FileUploadListener.STATUS_FILE_DELETED)) {
 			// This will only occur when debugging.
 			mEntity.setGlobalId("");

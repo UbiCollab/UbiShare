@@ -17,6 +17,9 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.Communities;
+import org.societies.android.api.cis.SocialContract.People;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -34,11 +37,14 @@ public class Membership extends Entity {
 	private int id = ENTITY_DEFAULT_ID;
 	
 	private String globalId;
-	private String globalIdMember;
-	private String globalIdCommunity;
+	private long memberId;
+	private long communityId;
 	private String type;
 	private long creationDate;
 	private long lastModifiedDate;
+	
+	private String globalIdMember;
+	private String globalIdCommunity;
 	
 	/**
 	 * Gets a list of all the memberships that have been updated since the last
@@ -49,7 +55,7 @@ public class Membership extends Entity {
 	 */
 	public static List<Membership> getUpdatedMemberships(
 			long lastSync, ContentResolver resolver) {
-		return Entity.getEntities(
+		List<Membership> updatedMemberships = Entity.getEntities(
 				Membership.class,
 				resolver,
 				CONTENT_URI,
@@ -57,17 +63,22 @@ public class Membership extends Entity {
 				LAST_MODIFIED_DATE + " > ?",
 				new String[] { String.valueOf(lastSync) },
 				null);
+		
+		for (Membership membership : updatedMemberships)
+			membership.fetchGlobalIds(resolver);
+		
+		return updatedMemberships;
 	}
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getInt(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdMember(		Entity.getString(cursor, GLOBAL_ID_MEMBER));
-		setGlobalIdCommunity(	Entity.getString(cursor, GLOBAL_ID_COMMUNITY));
-		setType(				Entity.getString(cursor, TYPE));
-		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getInt(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));
+		setCommunityId(		Entity.getLong(cursor, _ID_COMMUNITY));
+		setType(			Entity.getString(cursor, TYPE));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -75,8 +86,8 @@ public class Membership extends Entity {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
-		values.put(GLOBAL_ID_MEMBER, globalIdMember);
-		values.put(GLOBAL_ID_COMMUNITY, globalIdCommunity);
+		values.put(_ID_MEMBER, memberId);
+		values.put(_ID_COMMUNITY, communityId);
 		values.put(TYPE, type);
 		values.put(CREATION_DATE, creationDate);
 		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
@@ -89,9 +100,43 @@ public class Membership extends Entity {
 		return CONTENT_URI;
 	}
 	
+	/**
+	 * Fetches the global ID of the member and the community.
+	 * @param resolver The content resolver.
+	 */
+	public void fetchGlobalIds(ContentResolver resolver) {
+		setGlobalIdCommunity(
+				Entity.getGlobalId(
+						Communities.CONTENT_URI,
+						communityId,
+						Communities.GLOBAL_ID,
+						resolver));
+		
+		setGlobalIdMember(
+				Entity.getGlobalId(
+						People.CONTENT_URI,
+						memberId,
+						People.GLOBAL_ID,
+						resolver));
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		setMemberId(
+				Entity.getLocalId(
+						People.CONTENT_URI,
+						People._ID,
+						People.GLOBAL_ID,
+						globalIdMember,
+						resolver));
+		setCommunityId(
+				Entity.getLocalId(
+						Communities.CONTENT_URI,
+						Communities._ID,
+						Communities.GLOBAL_ID,
+						globalIdCommunity,
+						resolver));
 	}
 
 	@Override
@@ -114,20 +159,20 @@ public class Membership extends Entity {
 		this.globalId = globalId;
 	}
 	
-	public String getGlobalIdMember() {
-		return globalIdMember;
+	public long getMemberId() {
+		return memberId;
 	}
 	
-	public void setGlobalIdMember(String globalIdMember) {
-		this.globalIdMember = globalIdMember;
+	public void setMemberId(long memberId) {
+		this.memberId = memberId;
 	}
 	
-	public String getGlobalIdCommunity() {
-		return globalIdCommunity;
+	public long getCommunityId() {
+		return communityId;
 	}
 	
-	public void setGlobalIdCommunity(String globalIdCommunity) {
-		this.globalIdCommunity = globalIdCommunity;
+	public void setCommunityId(long communityId) {
+		this.communityId = communityId;
 	}
 	
 	public String getType() {
@@ -152,5 +197,21 @@ public class Membership extends Entity {
 	
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdMember() {
+		return globalIdMember;
+	}
+
+	public void setGlobalIdMember(String globalIdMember) {
+		this.globalIdMember = globalIdMember;
+	}
+
+	public String getGlobalIdCommunity() {
+		return globalIdCommunity;
+	}
+
+	public void setGlobalIdCommunity(String globalIdCommunity) {
+		this.globalIdCommunity = globalIdCommunity;
 	}
 }
