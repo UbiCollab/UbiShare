@@ -39,7 +39,7 @@ public abstract class Entity {
 	/** The format in which properties should be serialized. */
 	protected static final String SERIALIZE_FORMAT = "%s=%s\n";
 	/** The default local ID of an entity. */
-	protected static final int ENTITY_DEFAULT_ID = -1;
+	protected static final long ENTITY_DEFAULT_ID = -1;
 	
 	/**
 	 * Removes the entity with the specified global ID from the database.
@@ -63,6 +63,33 @@ public abstract class Entity {
 		}
 		
 		return rowsDeleted;
+	}
+	
+	/**
+	 * Gets the entity with the specified ID.
+	 * @param entityClass The class of the entity.
+	 * @param id The local ID of the entity.
+	 * @param resolver The content resolver.
+	 * @return The entity with the specified ID, or <code>null</code> if it does not
+	 * exist.
+	 */
+	public static <E extends Entity> E getEntity(
+			Class<E> entityClass, long id, ContentResolver resolver) {
+		try {
+			E entity = entityClass.newInstance();
+			Uri contentUri = ContentUris.withAppendedId(entity.getContentUri(), id);
+			
+			List<E> result = Entity.getEntities(
+					entityClass, resolver, contentUri, null, null, null, null);
+			
+			if (result.size() > 0)
+				return result.get(0);
+			else
+				return null;
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+			return null;
+		}
 	}
 	
 	/**
@@ -118,13 +145,13 @@ public abstract class Entity {
 	 * @return The local ID of the entity with the specified global ID, or
 	 * {@link Entity#ENTITY_DEFAULT_ID} if it does not exist.
 	 */
-	protected static int getLocalId(
+	protected static long getLocalId(
 			Uri contentUri,
 			String idColumnName,
 			String globalIdColumnName,
 			String globalId,
 			ContentResolver resolver) {
-		int localId = ENTITY_DEFAULT_ID;
+		long localId = ENTITY_DEFAULT_ID;
 		
 		Cursor cursor = null;
 		try {
@@ -170,7 +197,7 @@ public abstract class Entity {
 					null,
 					null);
 			
-			if (cursor.moveToNext())
+			if (cursor.moveToFirst())
 				globalId = Entity.getString(cursor, globalIdColumnName);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -299,7 +326,7 @@ public abstract class Entity {
 	 * serialization fails.
 	 */
 	public String serialize() {
-		int localId = getId();
+		long localId = getId();
 		setId(ENTITY_DEFAULT_ID); /* Prevent actual local ID from being serialized */
 		
 		String serialized = null;
@@ -339,13 +366,13 @@ public abstract class Entity {
 	 * Gets the local ID of the entity.
 	 * @return The local ID of the entity.
 	 */
-	public abstract int getId();
+	public abstract long getId();
 	
 	/**
 	 * Sets the local ID of the entity.
 	 * @param id The local ID of the entity.
 	 */
-	protected abstract void setId(int id);
+	protected abstract void setId(long id);
 	
 	/**
 	 * Fetches the local ID of the entity from the database. If the entity

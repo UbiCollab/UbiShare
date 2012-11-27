@@ -34,7 +34,7 @@ import static org.societies.android.api.cis.SocialContract.Membership.*;
  */
 public class Membership extends Entity {
 
-	private int id = ENTITY_DEFAULT_ID;
+	private long id = ENTITY_DEFAULT_ID;
 	
 	private String globalId;
 	private long memberId;
@@ -72,7 +72,7 @@ public class Membership extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(				Entity.getInt(cursor, _ID));
+		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));
 		setCommunityId(		Entity.getLong(cursor, _ID_COMMUNITY));
@@ -140,12 +140,12 @@ public class Membership extends Entity {
 	}
 
 	@Override
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
 	@Override
-	protected void setId(int id) {
+	protected void setId(long id) {
 		this.id = id;
 	}
 	

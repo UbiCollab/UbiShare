@@ -31,7 +31,7 @@ import static org.societies.android.api.cis.SocialContract.Services.*;
  */
 public class Service extends Entity {
 
-	private int id = ENTITY_DEFAULT_ID;
+	private long id = ENTITY_DEFAULT_ID;
 	
 	private String globalId;
 	private String name;
@@ -67,7 +67,7 @@ public class Service extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(				Entity.getInt(cursor, _ID));
+		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
 		setDescription(		Entity.getString(cursor, DESCRIPTION));
@@ -113,12 +113,12 @@ public class Service extends Entity {
 	}
 	
 	@Override
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
 	@Override
-	protected void setId(int id) {
+	protected void setId(long id) {
 		this.id = id;
 	}
 	
