@@ -70,13 +70,7 @@ public class ThreadPool {
 	 * to terminate.
 	 */
 	public void stopExecution(boolean forced) throws InterruptedException {
-		Log.i(TAG, "Stopping execution (Forced: " + forced + ")...");
-		
 		mIsStopping = true;
-		
-		synchronized (mQueue) {
-			mQueue.notifyAll();
-		}
 		
 		if (forced) {
 			synchronized (mQueue) {
@@ -91,6 +85,10 @@ public class ThreadPool {
 		boolean canStop;
 		do {
 			canStop = true;
+			
+			synchronized (mQueue) {
+				mQueue.notifyAll();
+			}
 			
 			for (Worker worker : mWorkers) {
 				if ((worker.isAlive() && !worker.isIdle()) || !mQueue.isEmpty()) {
@@ -113,7 +111,6 @@ public class ThreadPool {
 	 */
 	public void add(Thread thread) {
 		if (!mIsStopping) {
-			Log.i(TAG, "Adding thread to queue...");
 			synchronized (mQueue) {
 				mQueue.addLast(thread);
 				mQueue.notify();
@@ -166,7 +163,6 @@ public class ThreadPool {
 		
 		@Override
 		public void interrupt() {
-			Log.i(TAG, "Worker interrupted!");
 			if (mCurrentThread != null && mCurrentThread.isAlive())
 				mCurrentThread.interrupt();
 			
