@@ -17,7 +17,7 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
-import org.societies.android.api.cis.SocialContract.People;
+import org.societies.android.api.cis.SocialContract.Communities;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -51,9 +51,10 @@ public class CommunityActivity extends Entity {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated community activities.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<CommunityActivity> getUpdatedCommunityActivities(
-			long lastSync, ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) throws Exception {
 		List<CommunityActivity> updatedActivities = Entity.getEntities(
 				CommunityActivity.class,
 				resolver,
@@ -110,9 +111,9 @@ public class CommunityActivity extends Entity {
 	public void fetchGlobalIds(ContentResolver resolver) {
 		setGlobalIdFeedOwner(
 				Entity.getGlobalId(
-						People.CONTENT_URI,
+						Communities.CONTENT_URI,
 						feedOwnerId,
-						People.GLOBAL_ID,
+						Communities.GLOBAL_ID,
 						resolver));
 	}
 	
@@ -121,9 +122,9 @@ public class CommunityActivity extends Entity {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
 		setFeedOwnerId(
 				Entity.getLocalId(
-						People.CONTENT_URI,
-						People._ID,
-						People.GLOBAL_ID,
+						Communities.CONTENT_URI,
+						Communities._ID,
+						Communities.GLOBAL_ID,
 						globalIdFeedOwner,
 						resolver));
 	}

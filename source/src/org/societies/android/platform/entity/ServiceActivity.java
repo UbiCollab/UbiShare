@@ -48,9 +48,10 @@ public class ServiceActivity extends Entity {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated service activities.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<ServiceActivity> getUpdatedServiceActivities(
-			long lastSync, ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				ServiceActivity.class,
 				resolver,

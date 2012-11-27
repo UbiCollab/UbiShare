@@ -46,8 +46,10 @@ public class Person extends Entity {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated people.
+	 * @throws Exception If an error occurs while fetching.
 	 */
-	public static List<Person> getUpdatedPeople(long lastSync, ContentResolver resolver) {
+	public static List<Person> getUpdatedPeople(
+			long lastSync, ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				Person.class,
 				resolver,

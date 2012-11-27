@@ -47,9 +47,10 @@ public class Community extends Entity {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated communities.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Community> getUpdatedCommunities(
-			long lastSync, ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				Community.class,
 				resolver,

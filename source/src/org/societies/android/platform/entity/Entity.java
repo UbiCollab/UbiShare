@@ -25,7 +25,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * Base class of entities.
@@ -33,8 +32,6 @@ import android.util.Log;
  * @author Kato
  */
 public abstract class Entity {
-	
-	private static final String TAG = "Entity";
 	
 	/** The format in which properties should be serialized. */
 	protected static final String SERIALIZE_FORMAT = "%s=%s\n";
@@ -47,20 +44,17 @@ public abstract class Entity {
 	 * @param globalId The global ID of the entity.
 	 * @param resolver The content resolver.
 	 * @return The number of rows deleted in the database.
+	 * @throws Exception If an error occurs while deleting.
 	 */
 	public static <E extends Entity> int deleteEntity(
-			Class<E> entityClass, String globalId, ContentResolver resolver) {
+			Class<E> entityClass, String globalId, ContentResolver resolver) throws Exception {
 		int rowsDeleted = 0;
 		
-		try {
-			E entity = entityClass.newInstance();
-			entity.setGlobalId(globalId);
-			entity.fetchLocalId(resolver);
-			
-			rowsDeleted = entity.delete(resolver);
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		E entity = entityClass.newInstance();
+		entity.setGlobalId(globalId);
+		entity.fetchLocalId(resolver);
+		
+		rowsDeleted = entity.delete(resolver);
 		
 		return rowsDeleted;
 	}
@@ -72,24 +66,20 @@ public abstract class Entity {
 	 * @param resolver The content resolver.
 	 * @return The entity with the specified ID, or <code>null</code> if it does not
 	 * exist.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static <E extends Entity> E getEntity(
-			Class<E> entityClass, long id, ContentResolver resolver) {
-		try {
-			E entity = entityClass.newInstance();
-			Uri contentUri = ContentUris.withAppendedId(entity.getContentUri(), id);
-			
-			List<E> result = Entity.getEntities(
-					entityClass, resolver, contentUri, null, null, null, null);
-			
-			if (result.size() > 0)
-				return result.get(0);
-			else
-				return null;
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
+			Class<E> entityClass, long id, ContentResolver resolver) throws Exception {
+		E entity = entityClass.newInstance();
+		Uri contentUri = ContentUris.withAppendedId(entity.getContentUri(), id);
+		
+		List<E> result = Entity.getEntities(
+				entityClass, resolver, contentUri, null, null, null, null);
+		
+		if (result.size() > 0)
+			return result.get(0);
+		else
 			return null;
-		}
 	}
 	
 	/**
@@ -102,6 +92,7 @@ public abstract class Entity {
 	 * @param selectionArgs The replacement values for any ?s in the selection filter.
 	 * @param sortOrder The sort order, or null for default order.
 	 * @return A list of entities of the specified type.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	protected static <E extends Entity> List<E> getEntities(
 			Class<E> entityClass,
@@ -110,7 +101,8 @@ public abstract class Entity {
 			String[] projection,
 			String selection,
 			String[] selectionArgs,
-			String sortOrder) {
+			String sortOrder
+	) throws Exception {
 		List<E> entities = new ArrayList<E>();
 		
 		Cursor cursor = null;
@@ -125,8 +117,6 @@ public abstract class Entity {
 					entities.add(entity);
 				}
 			}
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -164,8 +154,6 @@ public abstract class Entity {
 			
 			if (cursor.moveToFirst())
 				localId = getInt(cursor, idColumnName);
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -199,8 +187,6 @@ public abstract class Entity {
 			
 			if (cursor.moveToFirst())
 				globalId = Entity.getString(cursor, globalIdColumnName);
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -333,8 +319,6 @@ public abstract class Entity {
 		try {
 			Gson serializer = new Gson();
 			serialized = serializer.toJson(this);
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
 		} finally {
 			setId(localId); /* Restore local ID */
 		}
@@ -352,12 +336,9 @@ public abstract class Entity {
 	public static <T extends Entity> T deserialize(
 			String serialized, Class<T> entityClass) {
 		T entity = null;
-		try {
-			Gson serializer = new Gson();
-			entity = (T) serializer.fromJson(serialized, entityClass);
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		
+		Gson serializer = new Gson();
+		entity = (T) serializer.fromJson(serialized, entityClass);
 		
 		return entity;
 	}

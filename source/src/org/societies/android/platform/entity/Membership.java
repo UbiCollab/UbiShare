@@ -52,9 +52,10 @@ public class Membership extends Entity {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @param resolver The content resolver.
 	 * @return A list of updated memberships.
+	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Membership> getUpdatedMemberships(
-			long lastSync, ContentResolver resolver) {
+			long lastSync, ContentResolver resolver) throws Exception {
 		List<Membership> updatedMemberships = Entity.getEntities(
 				Membership.class,
 				resolver,
