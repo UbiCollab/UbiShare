@@ -17,6 +17,10 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.People;
+
+import com.google.renamedgson.annotations.Expose;
+
 import static org.societies.android.api.cis.SocialContract.Communities.*;
 
 import android.content.ContentResolver;
@@ -33,13 +37,15 @@ public class Community extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String name;
-	private String ownerId;
-	private String type;
-	private String description;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	@Expose private String name;
+	private long ownerId;
+	@Expose private String type;
+	@Expose private String description;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
+	
+	@Expose private String globalIdOwner;
 	
 	/**
 	 * Gets a list of all the communities that have been updated since the last
@@ -51,7 +57,7 @@ public class Community extends Entity {
 	 */
 	public static List<Community> getUpdatedCommunities(
 			long lastSync, ContentResolver resolver) throws Exception {
-		return Entity.getEntities(
+		List<Community> updatedCommunities = Entity.getEntities(
 				Community.class,
 				resolver,
 				CONTENT_URI,
@@ -59,6 +65,11 @@ public class Community extends Entity {
 				LAST_MODIFIED_DATE + " > ?",
 				new String[] { String.valueOf(lastSync) },
 				null);
+		
+		for (Community community : updatedCommunities)
+			community.fetchGlobalIds(resolver);
+		
+		return updatedCommunities;
 	}
 	
 	@Override
@@ -66,7 +77,7 @@ public class Community extends Entity {
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
-		setOwnerId(			Entity.getString(cursor, OWNER_ID));
+		setOwnerId(			Entity.getLong(cursor, _ID_OWNER));
 		setType(			Entity.getString(cursor, TYPE));
 		setDescription(		Entity.getString(cursor, DESCRIPTION));
 		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
@@ -79,7 +90,7 @@ public class Community extends Entity {
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(NAME, name);
-		values.put(OWNER_ID, ownerId);
+		values.put(_ID_OWNER, ownerId);
 		values.put(TYPE, type);
 		values.put(DESCRIPTION, description);
 		values.put(CREATION_DATE, creationDate);
@@ -93,9 +104,29 @@ public class Community extends Entity {
 		return CONTENT_URI;
 	}
 	
+	/**
+	 * Fetches the global ID of the owner.
+	 * @param resolver The content resolver.
+	 */
+	public void fetchGlobalIds(ContentResolver resolver) {
+		setGlobalIdOwner(
+				Entity.getGlobalId(
+						People.CONTENT_URI,
+						ownerId,
+						People.GLOBAL_ID,
+						resolver));
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		setOwnerId(
+				Entity.getLocalId(
+						People.CONTENT_URI,
+						People._ID,
+						People.GLOBAL_ID,
+						globalIdOwner,
+						resolver));
 	}
 
 	@Override
@@ -126,11 +157,11 @@ public class Community extends Entity {
 		this.name = name;
 	}
 	
-	public String getOwnerId() {
+	public long getOwnerId() {
 		return ownerId;
 	}
 	
-	public void setOwnerId(String ownerId) {
+	public void setOwnerId(long ownerId) {
 		this.ownerId = ownerId;
 	}
 	
@@ -164,5 +195,13 @@ public class Community extends Entity {
 	
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdOwner() {
+		return globalIdOwner;
+	}
+
+	public void setGlobalIdOwner(String globalIdOwner) {
+		this.globalIdOwner = globalIdOwner;
 	}
 }

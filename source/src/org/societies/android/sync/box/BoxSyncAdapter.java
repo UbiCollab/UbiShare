@@ -94,20 +94,24 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
 			Log.i(TAG, "Last Sync: " + lastSync);
 			Log.i(TAG, "Fetching updates from Box...");
-			processBoxUpdates(lastSync);
+			//processBoxUpdates(lastSync);
 			
 			// TODO: Sync only updated entities
 			//syncPeople(lastSync);
 			//syncPeopleActivities(lastSync);
 			
 			syncCommunities(lastSync);
+			
+			Log.i(TAG, "Waiting for community sync to complete...");
+			mBoxHandler.waitForRunningOperationsToComplete(false);
+			
 			syncCommunityActivities(lastSync);
 			
 			syncMemberships(lastSync);
 			//syncRelationships(lastSync);
 			
 			Log.i(TAG, "Waiting for operations to complete...");
-			mBoxHandler.waitForRunningOperationsToComplete();
+			mBoxHandler.waitForRunningOperationsToComplete(true);
 			
 			mPreferences.edit().putLong(
 					BoxConstants.PREFERENCE_LAST_SYNC,
@@ -124,50 +128,49 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws IOException If an error occurs while fetching updates.
 	 */
-	private void processBoxUpdates(long lastSync)
-			throws IOException {
+	private void processBoxUpdates(long lastSync) throws IOException {
 		List<Update> updates = null;
 		if (lastSync > 0)
 			updates = mBoxHandler.getUpdatesSince(lastSync);
 		
-		Log.i(TAG, "Processing updates: " + (updates == null ? "full_sync" : updates.size()));
 		mBoxHandler.processUpdates(updates);
 	}
 	
 	/**
 	 * Synchronizes the people.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncPeople(long lastSync) {
+	private void syncPeople(long lastSync) throws Exception {
 		Log.i(TAG, "Started People Sync");
 		
-		List<Person> people = Person.getUpdatedPeople(lastSync, mResolver);
+		List<Person> people = Person.getUpdatedPeople(0, mResolver);
 		
-		for (Person person : people) {
-			mBoxHandler.uploadEntity(person);
-		}
+		for (Person person : people)
+			Log.i(TAG, "Person ID: " + person.getId());
 	}
 	
 	/**
 	 * Synchronizes the people activities.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncPeopleActivities(long lastSync) {
+	private void syncPeopleActivities(long lastSync) throws Exception {
 		Log.i(TAG, "Started Person Activities Sync");
 		
 		List<PersonActivity> activities =
 				PersonActivity.getUpdatedPersonActivities(lastSync, mResolver);
 		
-		for (PersonActivity activity : activities)
-			mBoxHandler.uploadEntity(activity);
+		/*for (PersonActivity activity : activities)
+			mBoxHandler.uploadEntity(activity);*/
 	}
 	
 	/**
 	 * Synchronizes the communities.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
-	 * @throws IOException 
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncCommunities(long lastSync) throws IOException {
+	private void syncCommunities(long lastSync) throws Exception {
 		Log.i(TAG, "Started Communities Sync");
 		
 		List<Community> communities =
@@ -180,8 +183,9 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	/**
 	 * Synchronizes the community activities.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncCommunityActivities(long lastSync) {
+	private void syncCommunityActivities(long lastSync) throws Exception {
 		Log.i(TAG, "Started Community Activities Sync");
 		
 		List<CommunityActivity> activities =
@@ -194,28 +198,30 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	/**
 	 * Synchronizes the memberships.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncMemberships(long lastSync) {
+	private void syncMemberships(long lastSync) throws Exception {
 		Log.i(TAG, "Started Memberships Sync");
 		
 		List<Membership> memberships =
 				Membership.getUpdatedMemberships(lastSync, mResolver);
 		
 		for (Membership membership : memberships)
-			mBoxHandler.uploadEntity(membership);
+			mBoxHandler.uploadMembership(membership);
 	}
 	
 	/**
 	 * Synchronizes the relationships.
 	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncRelationships(long lastSync) {
+	private void syncRelationships(long lastSync) throws Exception {
 		Log.i(TAG, "Started Relationships Sync");
 		
 		List<Relationship> relationships =
 				Relationship.getUpdatedRelationships(lastSync, mResolver);
-		
+		/*
 		for (Relationship relationship : relationships)
-			mBoxHandler.uploadEntity(relationship);
+			mBoxHandler.uploadEntity(relationship);*/
 	}
 }

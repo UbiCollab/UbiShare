@@ -15,6 +15,8 @@
  */
 package org.societies.android.platform.entity;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -31,13 +33,13 @@ public class Me extends Entity {
 	
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String name;
-	private String displayName;
-	private String username;
-	private String password;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	@Expose private String name;
+	@Expose private String displayName;
+	@Expose private String username;
+	@Expose private String password;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
 
 	@Override
 	protected void populate(Cursor cursor) {
@@ -70,7 +72,7 @@ public class Me extends Entity {
 	protected Uri getContentUri() {
 		return CONTENT_URI;
 	}
-
+	
 	@Override
 	public long getId() {
 		return id;

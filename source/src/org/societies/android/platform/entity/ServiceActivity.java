@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -33,14 +35,16 @@ public class ServiceActivity extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String globalIdFeedOwner;
-	private String actor;
-	private String object;
-	private String verb;
-	private String target;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	private long feedOwnerId;
+	@Expose private String actor;
+	@Expose private String object;
+	@Expose private String verb;
+	@Expose private String target;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
+	
+	@Expose private String globalIdFeedOwner;
 	
 	/**
 	 * Gets a list of all service activities that have been updates since the last
@@ -64,15 +68,15 @@ public class ServiceActivity extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getLong(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdFeedOwner(	Entity.getString(cursor, GLOBAL_ID_FEED_OWNER));
-		setActor(				Entity.getString(cursor, ACTOR));
-		setObject(				Entity.getString(cursor, OBJECT));
-		setVerb(				Entity.getString(cursor, VERB));
-		setTarget(				Entity.getString(cursor, TARGET));
-		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getLong(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setFeedOwnerId(		Entity.getLong(cursor, _ID_FEED_OWNER));
+		setActor(			Entity.getString(cursor, ACTOR));
+		setObject(			Entity.getString(cursor, OBJECT));
+		setVerb(			Entity.getString(cursor, VERB));
+		setTarget(			Entity.getString(cursor, TARGET));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -80,7 +84,7 @@ public class ServiceActivity extends Entity {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
-		values.put(GLOBAL_ID_FEED_OWNER, globalIdFeedOwner);
+		values.put(_ID_FEED_OWNER, feedOwnerId);
 		values.put(ACTOR, actor);
 		values.put(OBJECT, object);
 		values.put(VERB, verb);
@@ -96,9 +100,14 @@ public class ServiceActivity extends Entity {
 		return CONTENT_URI;
 	}
 	
+	public void fetchGlobalIds(ContentResolver resolver) {
+		// TODO: implement
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		// TODO: feedOwnerId
 	}
 	
 	@Override
@@ -121,12 +130,12 @@ public class ServiceActivity extends Entity {
 		this.globalId = globalId;
 	}
 	
-	public String getGlobalIdFeedOwner() {
-		return globalIdFeedOwner;
+	public long getFeedOwnerId() {
+		return feedOwnerId;
 	}
 	
-	public void setGlobalIdFeedOwner(String globalIdFeedOwner) {
-		this.globalIdFeedOwner = globalIdFeedOwner;
+	public void setFeedOwnerId(long feedOwnerId) {
+		this.feedOwnerId = feedOwnerId;
 	}
 	
 	public String getActor() {
@@ -175,5 +184,13 @@ public class ServiceActivity extends Entity {
 
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdFeedOwner() {
+		return globalIdFeedOwner;
+	}
+
+	public void setGlobalIdFeedOwner(String globalIdFeedOwner) {
+		this.globalIdFeedOwner = globalIdFeedOwner;
 	}
 }

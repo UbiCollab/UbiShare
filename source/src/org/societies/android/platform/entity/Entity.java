@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.renamedgson.Gson;
+import com.google.renamedgson.GsonBuilder;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -312,18 +313,9 @@ public abstract class Entity {
 	 * serialization fails.
 	 */
 	public String serialize() {
-		long localId = getId();
-		setId(ENTITY_DEFAULT_ID); /* Prevent actual local ID from being serialized */
-		
-		String serialized = null;
-		try {
-			Gson serializer = new Gson();
-			serialized = serializer.toJson(this);
-		} finally {
-			setId(localId); /* Restore local ID */
-		}
-		
-		return serialized;
+		Gson serializer = new GsonBuilder()
+			.excludeFieldsWithoutExposeAnnotation().create();
+		return serializer.toJson(this);
 	}
 	
 	/**

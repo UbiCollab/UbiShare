@@ -20,6 +20,8 @@ import java.util.List;
 import org.societies.android.api.cis.SocialContract.Communities;
 import org.societies.android.api.cis.SocialContract.People;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -36,15 +38,15 @@ public class Membership extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
+	@Expose private String globalId;
 	private long memberId;
 	private long communityId;
-	private String type;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String type;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
 	
-	private String globalIdMember;
-	private String globalIdCommunity;
+	@Expose private String globalIdMember;
+	@Expose private String globalIdCommunity;
 	
 	/**
 	 * Gets a list of all the memberships that have been updated since the last

@@ -304,7 +304,7 @@ public class SocialProvider extends ContentProvider{
 		case SocialContract.UriMatcherIndex.PEOPLE_SHARP:
 			//I have to set selection to exact row ID:
 			rowID = _uri.getPathSegments().get(1);
-			return adapter.queryMe(_projection, SocialContract.People._ID+" = "+rowID,
+			return adapter.queryPeople(_projection, SocialContract.People._ID+" = "+rowID,
 					_selectionArgs, _sortOrder);
 			
 		case SocialContract.UriMatcherIndex.COMMUNITIES:
@@ -357,7 +357,7 @@ public class SocialProvider extends ContentProvider{
 			
 		case SocialContract.UriMatcherIndex.PEOPLE_ACTIVITY_SHARP:
 			//I have to set selection to exact row ID:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			return adapter.queryPeopleActivity(_projection, SocialContract.PeopleActivity._ID+" = "+rowID,
 					_selectionArgs, _sortOrder);
 
@@ -366,7 +366,7 @@ public class SocialProvider extends ContentProvider{
 			
 		case SocialContract.UriMatcherIndex.COMMUNITY_ACTIVITIY_SHARP:
 			//I have to set selection to exact row ID:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			return adapter.queryCommunityActivity(_projection, SocialContract.CommunityActivity._ID+" = "+rowID,
 					_selectionArgs, _sortOrder);
 
@@ -375,7 +375,7 @@ public class SocialProvider extends ContentProvider{
 			
 		case SocialContract.UriMatcherIndex.SERVICE_ACTIVITY_SHARP:
 			//I have to set selection to exact row ID:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			return adapter.queryServiceActivity(_projection, SocialContract.ServiceActivity._ID+" = "+rowID,
 					_selectionArgs, _sortOrder);
 		default:
@@ -538,7 +538,7 @@ public class SocialProvider extends ContentProvider{
 			return updateCount;
 			
 		case SocialContract.UriMatcherIndex.PEOPLE_ACTIVITY_SHARP:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			selection = SocialContract.PeopleActivity._ID+" = "+ rowID
 					+ (!TextUtils.isEmpty(_selection) ?
 							" AND (" + _selection + ")" : "");
@@ -557,7 +557,7 @@ public class SocialProvider extends ContentProvider{
 			return updateCount;
 			
 		case SocialContract.UriMatcherIndex.COMMUNITY_ACTIVITIY_SHARP:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			selection = SocialContract.CommunityActivity._ID+" = "+ rowID
 					+ (!TextUtils.isEmpty(_selection) ?
 							" AND (" + _selection + ")" : "");
@@ -576,7 +576,7 @@ public class SocialProvider extends ContentProvider{
 			return updateCount;
 			
 		case SocialContract.UriMatcherIndex.SERVICE_ACTIVITY_SHARP:
-			rowID = _uri.getPathSegments().get(1);
+			rowID = _uri.getPathSegments().get(2);
 			selection = SocialContract.ServiceActivity._ID+" = "+ rowID
 					+ (!TextUtils.isEmpty(_selection) ?
 							" AND (" + _selection + ")" : "");
@@ -783,7 +783,7 @@ public class SocialProvider extends ContentProvider{
 	    		
 	    	case SocialContract.UriMatcherIndex.PEOPLE_ACTIVITY_SHARP:
 				//If this is a # query, add row ID to the selection:
-				rowID = _uri.getPathSegments().get(1);
+				rowID = _uri.getPathSegments().get(2);
 				selection = SocialContract.PeopleActivity._ID+" = "+ rowID
 						+ (!TextUtils.isEmpty(_selection) ?
 								" AND (" + _selection + ")" : "");
@@ -807,7 +807,7 @@ public class SocialProvider extends ContentProvider{
 	    		
 	    	case SocialContract.UriMatcherIndex.COMMUNITY_ACTIVITIY_SHARP:
 				//If this is a # query, add row ID to the selection:
-				rowID = _uri.getPathSegments().get(1);
+				rowID = _uri.getPathSegments().get(2);
 				selection = SocialContract.CommunityActivity._ID+" = "+ rowID
 						+ (!TextUtils.isEmpty(_selection) ?
 								" AND (" + _selection + ")" : "");
@@ -831,7 +831,7 @@ public class SocialProvider extends ContentProvider{
 	    		
 	    	case SocialContract.UriMatcherIndex.SERVICE_ACTIVITY_SHARP:
 				//If this is a # query, add row ID to the selection:
-				rowID = _uri.getPathSegments().get(1);
+				rowID = _uri.getPathSegments().get(2);
 				selection = SocialContract.ServiceActivity._ID+" = "+ rowID
 						+ (!TextUtils.isEmpty(_selection) ?
 								" AND (" + _selection + ")" : "");

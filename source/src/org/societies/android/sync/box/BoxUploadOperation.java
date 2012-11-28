@@ -94,7 +94,7 @@ public class BoxUploadOperation extends Thread {
 			} catch (NumberFormatException e) {
 				uploadAction = Box.UPLOAD_ACTION_UPLOAD;
 			}
-			mEntity.setGlobalId("");
+			mEntity.setGlobalId(null);
 		} else {
 			uploadAction = Box.UPLOAD_ACTION_UPLOAD;
 		}
@@ -106,9 +106,8 @@ public class BoxUploadOperation extends Thread {
 				(fileId != -1 ? fileId : mTargetId));
 		
 		if (response.getStatus().equals(FileUploadListener.STATUS_UPLOAD_OK)) {
-			fileId = response.getFile().getId();
-			
 			if (mFileName == null) {
+				fileId = response.getFile().getId();
 				mEntity.setGlobalId(String.valueOf(fileId));
 				renameFile(response.getFile());
 			}
@@ -117,7 +116,7 @@ public class BoxUploadOperation extends Thread {
 				mEntity.update(mResolver);
 		} else if (response.getStatus().equals(FileUploadListener.STATUS_FILE_DELETED)) {
 			// This will only occur when debugging.
-			mEntity.setGlobalId("");
+			mEntity.setGlobalId(null);
 			uploadEntity();
 		} else {
 			throw new IOException("Failed to upload entity: " + response.getStatus());

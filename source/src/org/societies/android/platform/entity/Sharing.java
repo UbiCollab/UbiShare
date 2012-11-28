@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -33,13 +35,17 @@ public class Sharing extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String globalIdService;
-	private String globalIdOwner;
-	private String globalIdCommunity;
-	private String type;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	private long serviceId;
+	private long ownerId;
+	private long communityId;
+	@Expose private String type;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
+	
+	@Expose private String globalIdService;
+	@Expose private String globalIdOwner;
+	@Expose private String globalIdCommunity;
 	
 	/**
 	 * Gets a list of all the sharings that have been updated since the last
@@ -63,14 +69,14 @@ public class Sharing extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
-		setId(					Entity.getLong(cursor, _ID));
-		setGlobalId(			Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdService(		Entity.getString(cursor, GLOBAL_ID_SERVICE));
-		setGlobalIdOwner(		Entity.getString(cursor, GLOBAL_ID_OWNER));
-		setGlobalIdCommunity(	Entity.getString(cursor, GLOBAL_ID_COMMUNITY));
-		setType(				Entity.getString(cursor, TYPE));
-		setCreationDate(		Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(	Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setId(				Entity.getLong(cursor, _ID));
+		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setServiceId(		Entity.getLong(cursor, _ID_SERVICE));
+		setOwnerId(			Entity.getLong(cursor, _ID_OWNER));
+		setCommunityId(		Entity.getLong(cursor, _ID_COMMUNITY));
+		setType(			Entity.getString(cursor, TYPE));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override
@@ -78,9 +84,9 @@ public class Sharing extends Entity {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
-		values.put(GLOBAL_ID_SERVICE, globalIdService);
-		values.put(GLOBAL_ID_OWNER, globalIdOwner);
-		values.put(GLOBAL_ID_COMMUNITY, globalIdCommunity);
+		values.put(_ID_SERVICE, serviceId);
+		values.put(_ID_OWNER, ownerId);
+		values.put(_ID_COMMUNITY, communityId);
 		values.put(TYPE, type);
 		values.put(CREATION_DATE, creationDate);
 		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
@@ -93,9 +99,14 @@ public class Sharing extends Entity {
 		return CONTENT_URI;
 	}
 	
+	public void fetchGlobalIds(ContentResolver resolver) {
+		// TODO: implement
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		// TODO: serviceId, ownerId, communityId
 	}
 	
 	@Override
@@ -118,28 +129,28 @@ public class Sharing extends Entity {
 		this.globalId = globalId;
 	}
 	
-	public String getGlobalIdService() {
-		return globalIdService;
+	public long getServiceId() {
+		return serviceId;
 	}
 	
-	public void setGlobalIdService(String globalIdService) {
-		this.globalIdService = globalIdService;
+	public void setServiceId(long serviceId) {
+		this.serviceId = serviceId;
 	}
 	
-	public String getGlobalIdOwner() {
-		return globalIdOwner;
+	public long getOwnerId() {
+		return ownerId;
 	}
 	
-	public void setGlobalIdOwner(String globalIdOwner) {
-		this.globalIdOwner = globalIdOwner;
+	public void setOwnerId(long ownerId) {
+		this.ownerId = ownerId;
 	}
 	
-	public String getGlobalIdCommunity() {
-		return globalIdCommunity;
+	public long getCommunityId() {
+		return communityId;
 	}
 	
-	public void setGlobalIdCommunity(String globalIdCommunity) {
-		this.globalIdCommunity = globalIdCommunity;
+	public void setCommunityId(long communityId) {
+		this.communityId = communityId;
 	}
 	
 	public String getType() {
@@ -164,5 +175,29 @@ public class Sharing extends Entity {
 	
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdService() {
+		return globalIdService;
+	}
+
+	public void setGlobalIdService(String globalIdService) {
+		this.globalIdService = globalIdService;
+	}
+
+	public String getGlobalIdOwner() {
+		return globalIdOwner;
+	}
+
+	public void setGlobalIdOwner(String globalIdOwner) {
+		this.globalIdOwner = globalIdOwner;
+	}
+
+	public String getGlobalIdCommunity() {
+		return globalIdCommunity;
+	}
+
+	public void setGlobalIdCommunity(String globalIdCommunity) {
+		this.globalIdCommunity = globalIdCommunity;
 	}
 }

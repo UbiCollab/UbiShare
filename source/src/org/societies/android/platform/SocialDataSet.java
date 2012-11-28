@@ -43,16 +43,16 @@ public class SocialDataSet {
 		adapter = _adapter;
 	}
 	public boolean populate(){
-   		/*populateMe();
+   		//populateMe();
    		populatePeople();
    		populateCommunities();
-   		populateServices();
-   		populateRelationships();
+   		//populateServices();
+   		//populateRelationships();
    		populateMemberships();
-   		populateSharing();
-   		populatePeopleActivities();
+   		//populateSharing();
+   		//populatePeopleActivities();
    		populateCommunityActivities();
-   		populateServiceActivities();*/
+   		//populateServiceActivities();
    		return true;
 	}
     private void populateMe(){
@@ -75,88 +75,46 @@ public class SocialDataSet {
 	}
 	private void populatePeople() {
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.People.GLOBAL_ID , "babak@societies.org");
+		initialValues.put(SocialContract.People.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
+		initialValues.put(SocialContract.People.NAME , "Kato Stølen");
+		initialValues.put(SocialContract.People.EMAIL , "kato.stoelen@gmail.com");
+		initialValues.put(SocialContract.People.DESCRIPTION , "Kato@BOX");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
+		adapter.insertPeople(initialValues);
+		
+		initialValues.clear();
+
+		initialValues.put(SocialContract.People.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
 		initialValues.put(SocialContract.People.NAME , "Babak Farshchian");
-		initialValues.put(SocialContract.People.EMAIL , "Babak@societies.org");
-		initialValues.put(SocialContract.People.DESCRIPTION , "Babak@SOCIETIES");
+		initialValues.put(SocialContract.People.EMAIL , "babak@farshchian.com");
+		initialValues.put(SocialContract.People.DESCRIPTION , "Babak@BOX");
 		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
 		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
-		
-		initialValues.clear();
-
-		initialValues.put(SocialContract.People.GLOBAL_ID , "jacqueline@societies.org");
-		initialValues.put(SocialContract.People.NAME , "Jacqueline Floch");
-		initialValues.put(SocialContract.People.EMAIL , "Jacqueline@Facebook.com");
-		initialValues.put(SocialContract.People.DESCRIPTION , "Jacqueline@Facebook");
-		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertPeople(initialValues);
-		
-		initialValues.clear();
-
-		initialValues.put(SocialContract.People.GLOBAL_ID , "thomas@societies.org");
-		initialValues.put(SocialContract.People.NAME , "Thomas Vilarinho");
-		initialValues.put(SocialContract.People.EMAIL , "thomas@societies.org");
-		initialValues.put(SocialContract.People.DESCRIPTION , "thomas@societies");
-		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertPeople(initialValues);
-
-		initialValues.clear();
-
-		initialValues.put(SocialContract.People.GLOBAL_ID , "knut@redcross.org");
-		initialValues.put(SocialContract.People.NAME , "Knut Roedhale");
-		initialValues.put(SocialContract.People.EMAIL , "knut.roedhale@redcross.org");
-		initialValues.put(SocialContract.People.DESCRIPTION , "knut@redcross");
-		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertPeople(initialValues);
-
-		initialValues.clear();
-
-		initialValues.put(SocialContract.People.GLOBAL_ID , "tor@redcross.org");
-		initialValues.put(SocialContract.People.NAME , "Tor Torvaldsen");
-		initialValues.put(SocialContract.People.EMAIL , "t.t@redcross.org");
-		initialValues.put(SocialContract.People.DESCRIPTION , "tor@redcross");
-		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertPeople(initialValues);
-
 	}
 	private void populateCommunities(){
 		ContentValues initialValues = new ContentValues();
 		
-		initialValues.put(SocialContract.Communities.GLOBAL_ID , "c1xyz.societies.org");
-		initialValues.put(SocialContract.Communities.TYPE , "disaster");
-		initialValues.put(SocialContract.Communities.NAME , "Larnaca");
-		initialValues.put(SocialContract.Communities.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Communities.DESCRIPTION , "A community of rescuers at Larnaca earthquake site");
+		initialValues.put(SocialContract.Communities.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
+		initialValues.put(SocialContract.Communities.TYPE , "test");
+		initialValues.put(SocialContract.Communities.NAME , "TestCommunity1");
+		initialValues.put(SocialContract.Communities._ID_OWNER, 1);
+		initialValues.put(SocialContract.Communities.DESCRIPTION , "A test community");
 		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
 		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertCommunities(initialValues);
 
-		initialValues.clear();
+		/*initialValues.clear();
 	
-		initialValues.put(SocialContract.Communities.GLOBAL_ID , "c2xyz.societies.org");
-		initialValues.put(SocialContract.Communities.TYPE , "disaster");
-		initialValues.put(SocialContract.Communities.NAME , "Nicosia");
-		initialValues.put(SocialContract.Communities.OWNER_ID, "knut@redcross.org");
-		initialValues.put(SocialContract.Communities.DESCRIPTION , "A community of rescuers at Nicosia flood area");
+		initialValues.put(SocialContract.Communities.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
+		initialValues.put(SocialContract.Communities.TYPE , "test");
+		initialValues.put(SocialContract.Communities.NAME , "TestCommunity2");
+		initialValues.put(SocialContract.Communities._ID_OWNER, 0);
+		initialValues.put(SocialContract.Communities.DESCRIPTION , "A second test community");
 		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
 		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertCommunities(initialValues);
-
-		initialValues.clear();
-		
-		initialValues.put(SocialContract.Communities.GLOBAL_ID , "c3xyz.societies.org");
-		initialValues.put(SocialContract.Communities.TYPE , "sports");
-		initialValues.put(SocialContract.Communities.NAME , "Football");
-		initialValues.put(SocialContract.Communities.OWNER_ID, "thomas@societies.org");
-		initialValues.put(SocialContract.Communities.DESCRIPTION , "SINTEF company football team");
-		initialValues.put(SocialContract.Communities.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.Communities.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertCommunities(initialValues);
+		adapter.insertCommunities(initialValues);*/
 
 	}
 	private void populateServices() {
@@ -215,9 +173,9 @@ public class SocialDataSet {
 	private void populateMemberships() {
 		ContentValues initialValues = new ContentValues();
 		
-		initialValues.put(SocialContract.Membership.GLOBAL_ID , "mem1xyz.redcross.org");
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "knut@redcross.org");
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
+		initialValues.put(SocialContract.Membership.GLOBAL_ID, SocialContract.GLOBAL_ID_PENDING);
+		initialValues.put(SocialContract.Membership._ID_MEMBER , 1);
+		initialValues.put(SocialContract.Membership._ID_COMMUNITY, 1);
 		initialValues.put(SocialContract.Membership.TYPE , "coordinator");
 		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
 		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
@@ -225,9 +183,9 @@ public class SocialDataSet {
 		
 		initialValues.clear();
 		
-		initialValues.put(SocialContract.Membership.GLOBAL_ID , "mem2xyz.redcross.org");
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_MEMBER , "tor@redcross.org");
-		initialValues.put(SocialContract.Membership.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
+		initialValues.put(SocialContract.Membership.GLOBAL_ID, SocialContract.GLOBAL_ID_PENDING);
+		initialValues.put(SocialContract.Membership._ID_MEMBER , 2);
+		initialValues.put(SocialContract.Membership._ID_COMMUNITY, 1);
 		initialValues.put(SocialContract.Membership.TYPE , "member");
 		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
 		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
@@ -259,7 +217,17 @@ public class SocialDataSet {
 		
 	}
 	private void populateCommunityActivities() {
-		// TODO Auto-generated method stub
+		ContentValues values = new ContentValues();
+		
+		values.put(SocialContract.CommunityActivity.GLOBAL_ID, SocialContract.GLOBAL_ID_PENDING);
+		values.put(SocialContract.CommunityActivity._ID_FEED_OWNER, 1);
+		values.put(SocialContract.CommunityActivity.ACTOR, "Actor");
+		values.put(SocialContract.CommunityActivity.OBJECT, "Object");
+		values.put(SocialContract.CommunityActivity.VERB, "Verb");
+		values.put(SocialContract.CommunityActivity.TARGET, "Target");
+		values.put(SocialContract.CommunityActivity.CREATION_DATE, new Date().getTime() / 1000);
+		values.put(SocialContract.CommunityActivity.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
+		adapter.insertCommunityActivity(values);
 		
 	}
 	private void populateServiceActivities() {

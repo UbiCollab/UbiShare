@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import com.google.renamedgson.annotations.Expose;
+
 import static org.societies.android.api.cis.SocialContract.People.*;
 
 import android.content.ContentResolver;
@@ -33,12 +35,12 @@ public class Person extends Entity {
 	
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String name;
-	private String description;
-	private String email;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	@Expose private String name;
+	@Expose private String description;
+	@Expose private String email;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
 	
 	/**
 	 * Gets a list of all the people that have been updated since the last

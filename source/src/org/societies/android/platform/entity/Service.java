@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -33,18 +35,20 @@ public class Service extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String name;
-	private String description;
-	private String ownerId;
-	private String type;
-	private String appType;
-	private boolean available;
-	private String dependency;
-	private String config;
-	private String url;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	@Expose private String name;
+	@Expose private String description;
+	private long ownerId;
+	@Expose private String type;
+	@Expose private String appType;
+	@Expose private boolean available;
+	@Expose private String dependency;
+	@Expose private String config;
+	@Expose private String url;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
+	
+	@Expose private String globalIdOwner;
 	
 	/**
 	 * Gets a list of all services that have been updated since the last
@@ -72,7 +76,7 @@ public class Service extends Entity {
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
 		setDescription(		Entity.getString(cursor, DESCRIPTION));
-		setOwnerId(			Entity.getString(cursor, OWNER_ID));
+		setOwnerId(			Entity.getLong(cursor, _ID_OWNER));
 		setType(			Entity.getString(cursor, TYPE));
 		setAppType(			Entity.getString(cursor, APP_TYPE));
 		setAvailable(		Entity.getBoolean(cursor, AVAILABLE));
@@ -90,7 +94,7 @@ public class Service extends Entity {
 		values.put(GLOBAL_ID, globalId);
 		values.put(NAME, name);
 		values.put(DESCRIPTION, description);
-		values.put(OWNER_ID, ownerId);
+		values.put(_ID_OWNER, ownerId);
 		values.put(TYPE, type);
 		values.put(APP_TYPE, appType);
 		values.put(AVAILABLE, available);
@@ -108,9 +112,14 @@ public class Service extends Entity {
 		return CONTENT_URI;
 	}
 	
+	public void fetchGlobalIds(ContentResolver resolver) {
+		// TODO: implement
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		// TODO: ownerId
 	}
 	
 	@Override
@@ -149,11 +158,11 @@ public class Service extends Entity {
 		this.description = description;
 	}
 	
-	public String getOwnerId() {
+	public long getOwnerId() {
 		return ownerId;
 	}
 	
-	public void setOwnerId(String ownerId) {
+	public void setOwnerId(long ownerId) {
 		this.ownerId = ownerId;
 	}
 	
@@ -219,5 +228,13 @@ public class Service extends Entity {
 	
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdOwner() {
+		return globalIdOwner;
+	}
+
+	public void setGlobalIdOwner(String globalIdOwner) {
+		this.globalIdOwner = globalIdOwner;
 	}
 }

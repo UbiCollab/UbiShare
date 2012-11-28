@@ -105,7 +105,9 @@ public class BoxDownloadOperation extends Thread {
 		Entity entity = Entity.deserialize(serialized, entityClass);
 		
 		if (entity != null) {
-			entity.setGlobalId(String.valueOf(mFile.getId()));
+			if (entity.getGlobalId() == null || entity.getGlobalId().length() == 0)
+				entity.setGlobalId(String.valueOf(mFile.getId()));
+			
 			entity.fetchLocalId(mResolver);
 		}
 		

@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.societies.android.api.cis.SocialContract.Communities;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -34,16 +36,16 @@ public class CommunityActivity extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
+	@Expose private String globalId;
 	private long feedOwnerId;
-	private String actor;
-	private String object;
-	private String verb;
-	private String target;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String actor;
+	@Expose private String object;
+	@Expose private String verb;
+	@Expose private String target;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
 	
-	private String globalIdFeedOwner;
+	@Expose private String globalIdFeedOwner;
 	
 	/**
 	 * Gets a list of all the community activities that have been updated since the

@@ -17,6 +17,8 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import com.google.renamedgson.annotations.Expose;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -33,12 +35,15 @@ public class Relationship extends Entity {
 
 	private long id = ENTITY_DEFAULT_ID;
 	
-	private String globalId;
-	private String globalIdP1;
-	private String globalIdP2;
-	private String type;
-	private long creationDate;
-	private long lastModifiedDate;
+	@Expose private String globalId;
+	private long p1Id;
+	private long p2Id;
+	@Expose private String type;
+	@Expose private long creationDate;
+	@Expose private long lastModifiedDate;
+	
+	@Expose private String globalIdP1;
+	@Expose private String globalIdP2;
 	
 	/**
 	 * Gets a list of all the relationships that have been updated since the last
@@ -64,8 +69,8 @@ public class Relationship extends Entity {
 	protected void populate(Cursor cursor) {
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
-		setGlobalIdP1(		Entity.getString(cursor, GLOBAL_ID_P1));
-		setGlobalIdP2(		Entity.getString(cursor, GLOBAL_ID_P2));
+		setP1Id(			Entity.getLong(cursor, _ID_P1));
+		setP2Id(			Entity.getLong(cursor, _ID_P2));
 		setType(			Entity.getString(cursor, TYPE));
 		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
 		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
@@ -76,8 +81,8 @@ public class Relationship extends Entity {
 		ContentValues values = new ContentValues();
 		
 		values.put(GLOBAL_ID, globalId);
-		values.put(GLOBAL_ID_P1, globalIdP1);
-		values.put(GLOBAL_ID_P2, globalIdP2);
+		values.put(_ID_P1, p1Id);
+		values.put(_ID_P2, p2Id);
 		values.put(TYPE, type);
 		values.put(CREATION_DATE, creationDate);
 		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
@@ -90,9 +95,14 @@ public class Relationship extends Entity {
 		return CONTENT_URI;
 	}
 	
+	public void fetchGlobalIds(ContentResolver resolver) {
+		// TODO: implement
+	}
+	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		// TODO: p1id, p2id
 	}
 	
 	@Override
@@ -115,20 +125,20 @@ public class Relationship extends Entity {
 		this.globalId = globalId;
 	}
 	
-	public String getGlobalIdP1() {
-		return globalIdP1;
+	public long getP1Id() {
+		return p1Id;
 	}
 	
-	public void setGlobalIdP1(String globalIdP1) {
-		this.globalIdP1 = globalIdP1;
+	public void setP1Id(long p1Id) {
+		this.p1Id = p1Id;
 	}
 	
-	public String getGlobalIdP2() {
-		return globalIdP2;
+	public long getP2Id() {
+		return p2Id;
 	}
 	
-	public void setGlobalIdP2(String globalIdP2) {
-		this.globalIdP2 = globalIdP2;
+	public void setP2Id(long p2Id) {
+		this.p2Id = p2Id;
 	}
 	
 	public String getType() {
@@ -153,5 +163,21 @@ public class Relationship extends Entity {
 
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getGlobalIdP1() {
+		return globalIdP1;
+	}
+
+	public void setGlobalIdP1(String globalIdP1) {
+		this.globalIdP1 = globalIdP1;
+	}
+
+	public String getGlobalIdP2() {
+		return globalIdP2;
+	}
+
+	public void setGlobalIdP2(String globalIdP2) {
+		this.globalIdP2 = globalIdP2;
 	}
 }
