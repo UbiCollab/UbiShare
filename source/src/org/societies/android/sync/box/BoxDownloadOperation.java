@@ -60,12 +60,16 @@ public class BoxDownloadOperation extends Thread {
 	@Override
 	public void run() {
 		try {
+			Class<? extends Entity> entityClass = getEntityClass();
+			if (entityClass == null)
+				return;
+			
 			if (isDeletedFile()) {
 				Entity.deleteEntity(
-						getEntityClass(), String.valueOf(mFile.getId()), mResolver);
+						entityClass, String.valueOf(mFile.getId()), mResolver);
 			} else {
 				String serialized = downloadFileContents();
-				Entity entity = getEntity(serialized);
+				Entity entity = getEntity(serialized, entityClass);
 				
 				if (entity.getId() == -1)
 					entity.insert(mResolver);
@@ -80,28 +84,35 @@ public class BoxDownloadOperation extends Thread {
 	/**
 	 * Gets the entity class of the file to download.
 	 * @return The entity class of the file to download.
-	 * @throws ClassNotFoundException If the entity class is not found.
 	 * @throws ClassCastException If the class is not a subclass of {@link Entity}.
 	 */
-	private Class<? extends Entity> getEntityClass()
-			throws ClassNotFoundException, ClassCastException {
+	private Class<? extends Entity> getEntityClass() throws ClassCastException {
 		String fileName = mFile.getFileName();
 		int separatorIndex = fileName.indexOf(BoxHandler.ENTITY_FILE_NAME_SEPARATOR);
-		String className = fileName.substring(0, separatorIndex);
 		
-		return Class.forName(className).asSubclass(Entity.class);
+		if (separatorIndex != -1) {
+			String className = fileName.substring(0, separatorIndex);
+			
+			try {
+				return Class.forName(className).asSubclass(Entity.class);
+			} catch (ClassNotFoundException e) {
+				Log.i(TAG, "Unknown file: " + fileName);
+			}
+		}
+		
+		return null;
 	}
 
 	/**
 	 * Gets the entity represented by the specified string.
 	 * @param serialized The serialized entity.
+	 * @param entityClass The class of the entity.
 	 * @return The entity represented by the specified string, or <code>null</code>
 	 * if the entity cannot be deserialized.
 	 * @throws ClassNotFoundException If the entity class is not found.
 	 */
-	private Entity getEntity(String serialized) throws ClassNotFoundException {
-		Class<? extends Entity> entityClass = getEntityClass();
-		
+	private Entity getEntity(String serialized, Class<? extends Entity> entityClass)
+			throws ClassNotFoundException {
 		Entity entity = Entity.deserialize(serialized, entityClass);
 		
 		if (entity != null) {
@@ -142,8 +153,6 @@ public class BoxDownloadOperation extends Thread {
 						"Failed to download file: " + response.getStatus());
 			else
 				fileContents = outStream.toString();
-		} catch (IOException e) {
-			throw e;
 		} finally {
 			if (outStream != null)
 				outStream.close();

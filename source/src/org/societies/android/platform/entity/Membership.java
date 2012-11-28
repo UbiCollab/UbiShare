@@ -63,8 +63,8 @@ public class Membership extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
+				LAST_MODIFIED_DATE + " > " + lastSync,
+				null,
 				null);
 		
 		for (Membership membership : updatedMemberships)
@@ -80,8 +80,8 @@ public class Membership extends Entity {
 		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));
 		setCommunityId(		Entity.getLong(cursor, _ID_COMMUNITY));
 		setType(			Entity.getString(cursor, TYPE));
-		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE) / 1000);
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE) / 1000);
 	}
 
 	@Override
@@ -103,11 +103,8 @@ public class Membership extends Entity {
 		return CONTENT_URI;
 	}
 	
-	/**
-	 * Fetches the global ID of the member and the community.
-	 * @param resolver The content resolver.
-	 */
-	public void fetchGlobalIds(ContentResolver resolver) {
+	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
 		setGlobalIdCommunity(
 				Entity.getGlobalId(
 						Communities.CONTENT_URI,

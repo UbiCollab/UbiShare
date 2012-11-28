@@ -17,9 +17,7 @@ package org.societies.android.sync.box;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,29 +28,24 @@ import org.societies.android.platform.entity.CommunityActivity;
 import org.societies.android.platform.entity.Entity;
 import org.societies.android.platform.entity.Membership;
 import org.societies.android.platform.entity.Person;
-import org.societies.android.platform.entity.PersonActivity;
-import org.societies.android.platform.entity.Relationship;
-import org.societies.android.platform.entity.Service;
-import org.societies.android.platform.entity.ServiceActivity;
-import org.societies.android.platform.entity.Sharing;
 
 import android.content.ContentResolver;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFile;
 import com.box.androidlib.DAO.BoxFolder;
-import com.box.androidlib.DAO.DAO;
-import com.box.androidlib.DAO.SearchResult;
 import com.box.androidlib.DAO.Update;
 import com.box.androidlib.ResponseListeners.CreateFolderListener;
+import com.box.androidlib.ResponseListeners.GetAccountTreeListener;
+import com.box.androidlib.ResponseListeners.GetFileInfoListener;
 import com.box.androidlib.ResponseListeners.GetUpdatesListener;
 import com.box.androidlib.ResponseListeners.InviteCollaboratorsListener;
+import com.box.androidlib.ResponseListeners.RenameListener;
 import com.box.androidlib.ResponseParsers.AccountTreeResponseParser;
+import com.box.androidlib.ResponseParsers.FileResponseParser;
 import com.box.androidlib.ResponseParsers.FolderResponseParser;
-import com.box.androidlib.ResponseParsers.SearchResponseParser;
 import com.box.androidlib.ResponseParsers.UpdatesResponseParser;
 
 /**
@@ -62,10 +55,8 @@ import com.box.androidlib.ResponseParsers.UpdatesResponseParser;
  */
 public class BoxHandler {
 	
-	/* TEMPORARY CONSTANTS */
-	//private static final String BOX_FOLDER_ROOT = "UbiShare";
-	/* END TEMPORARY CONSTANTS */
-
+	private static final String TAG = "BoxHandler";
+	
 	/** The character used as separator in entity file names. */
 	public static final String ENTITY_FILE_NAME_SEPARATOR = "_";
 	/** The file name format of uploaded entities. */
@@ -78,24 +69,18 @@ public class BoxHandler {
 	public static final long BOX_ROOT_FOLDER_ID = 0;
 	
 	private ExecutorService mThreadPool;
-	//private Map<Class<? extends Entity>, String> mFolderMap;
-	//private BoxFolder mRootFolder;
 	private String mAuthToken;
 	private boolean mInitialized;
 	private ContentResolver mResolver;
-	//private SharedPreferences mPreferences;
+	private BoxSynchronous mBoxInstance;
 	
 	/**
 	 * Initializes a new BoxHandler.
-	 * @param preferences The shared preferences.
 	 * @param resolver The content resolver.
 	 */
-	public BoxHandler(SharedPreferences preferences, ContentResolver resolver) {
-		mThreadPool = Executors.newSingleThreadExecutor();
-		//mFolderMap = new HashMap<Class<? extends Entity>, String>();
+	public BoxHandler(ContentResolver resolver) {
 		mInitialized = false;
 		mResolver = resolver;
-		//mPreferences = preferences;
 	}
 	
 	/**
@@ -105,15 +90,19 @@ public class BoxHandler {
 	 */
 	public void initialize(String authToken) {
 		mAuthToken = authToken;
+		mThreadPool = Executors.newSingleThreadExecutor();
+		mBoxInstance = BoxSynchronous.getInstance(BoxConstants.API_KEY);
 		
 		mInitialized = true;
 	}
 	
 	/**
 	 * Cancels all running operations.
+	 * @throws InterruptedException If the thread is interrupted while waiting.
 	 */
-	public void cancelRunningOperations() {
+	public void cancelRunningOperations() throws InterruptedException {
 		mThreadPool.shutdownNow();
+		mThreadPool.awaitTermination(30, TimeUnit.SECONDS);
 	}
 	
 	/**
@@ -215,9 +204,8 @@ public class BoxHandler {
 	public List<Update> getUpdatesSince(long timestamp) throws IOException {
 		long unixTimeNow = new Date().getTime() / 1000;
 		
-		UpdatesResponseParser response =
-				BoxSynchronous.getInstance(BoxConstants.API_KEY).getUpdates(
-						mAuthToken, timestamp, unixTimeNow, null);
+		UpdatesResponseParser response = mBoxInstance.getUpdates(
+				mAuthToken, timestamp, unixTimeNow, null);
 		
 		if (response.getStatus().equals(GetUpdatesListener.STATUS_S_GET_UPDATES))
 			return response.getUpdates();
@@ -226,19 +214,69 @@ public class BoxHandler {
 	}
 	
 	/**
-	 * Gets the folder ID of the specified entity class.
-	 * @param entityClass The entity class.
-	 * @return The ID of the folder related to the specified entity class.
+	 * Marks the specified entities as deleted in Box.
+	 * @param deletedEntities The entities that is deleted.
+	 * @throws Exception If an error occurs while marking.
 	 */
-	/*public long getFolderId(Class<? extends Entity> entityClass) {
-		for (BoxFolder subFolder : mRootFolder.getFoldersInFolder()) {
-			if (subFolder.getFolderName().equals(mFolderMap.get(entityClass)))
-				return subFolder.getId();
+	public void deleteEntities(List<Entity> deletedEntities) throws Exception {
+		for (Entity entity : deletedEntities) {
+			if (entity instanceof Community)
+				deleteCommunity((Community) entity);
+			else {
+				try {
+					FileResponseParser response =  mBoxInstance.getFileInfo(
+							mAuthToken, Long.parseLong(entity.getGlobalId()));
+					
+					if (!response.getStatus().equals(GetFileInfoListener.STATUS_S_GET_FILE_INFO))
+						Log.e(TAG, "Failed to get file info: " + response.getStatus());
+					else
+						markAsDeleted(response.getFile(), entity);
+				} catch (NumberFormatException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+			}
 		}
-		
-		throw new IllegalArgumentException(
-				"Folder of entity type " + entityClass.getName() + " not found");
-	}*/
+	}
+	
+	/**
+	 * Marks a community as deleted in Box.
+	 * @param community The community that is deleted.
+	 * @throws Exception If an error occurs while marking.
+	 */
+	private void deleteCommunity(Community community) throws Exception {
+		try {
+			long targetId = Long.parseLong(community.getGlobalId());
+			BoxFolder communityFolder = getDirectoryTree(targetId);
+			
+			for (BoxFile file : communityFolder.getFilesInFolder())
+				markAsDeleted(file, community);
+		} catch (NumberFormatException e) {
+			Log.i(TAG, "Tried to delete unsynced community.");
+		}
+	}
+	
+	/**
+	 * Marks a file as deleted in Box.
+	 * @param file The file to mark.
+	 * @param entity The entity related to the file.
+	 * @throws Exception If an error occurs while marking.
+	 */
+	private void markAsDeleted(BoxFile file, Entity entity) throws Exception {
+		if (!file.getFileName().endsWith(ENTITY_DELETED_EXTENSION)) {
+			String status = mBoxInstance.rename(
+					mAuthToken,
+					Box.TYPE_FILE,
+					file.getId(),
+					file.getFileName() + ENTITY_DELETED_EXTENSION);
+			
+			if (status.equals(RenameListener.STATUS_E_NO_ACCESS)
+					|| status.equals(RenameListener.STATUS_E_FILENAME_IN_USE)
+					|| status.equals(RenameListener.STATUS_E_RENAME_NODE))
+				Entity.setUnsuccessfulDelete(entity, mResolver);
+			else if (status.equals(RenameListener.STATUS_E_NO_TARGET))
+				Entity.deleteEntity(entity.getClass(), entity.getGlobalId(), mResolver);
+		}
+	}
 	
 	/**
 	 * Waits for running operations to complete.
@@ -248,7 +286,7 @@ public class BoxHandler {
 	 */
 	public void waitForRunningOperationsToComplete(boolean stop) throws InterruptedException {
 		mThreadPool.shutdown();
-		mThreadPool.awaitTermination(100, TimeUnit.SECONDS);
+		mThreadPool.awaitTermination(30, TimeUnit.SECONDS);
 		
 		if (!stop) {
 			mThreadPool = Executors.newSingleThreadExecutor();
@@ -279,7 +317,7 @@ public class BoxHandler {
 	private void inviteCollaborator(long personId, long targetId) throws Exception {
 		Person collaborator = Entity.getEntity(Person.class, personId, mResolver);
 		
-		String status = BoxSynchronous.getInstance(BoxConstants.API_KEY).inviteCollaborators(
+		String status = mBoxInstance.inviteCollaborators(
 				mAuthToken,
 				Box.TYPE_FOLDER,
 				targetId,
@@ -287,89 +325,13 @@ public class BoxHandler {
 				new String[] { collaborator.getEmail() },
 				Box.ITEM_ROLE_EDITOR,
 				false,
-				false,
+				true,
 				null);
 		
-		if (!status.equals(InviteCollaboratorsListener.STATUS_S_INVITE_COLLABORATORS))
+		if (!status.equals(InviteCollaboratorsListener.STATUS_S_INVITE_COLLABORATORS)
+				&& !status.equals(InviteCollaboratorsListener.STATUS_USER_ALREADY_COLLABORATOR))
 			throw new IOException("Failed to invite collaborator: " + status);
 	}
-	
-	/**
-	 * Initializes the mapping of entities and box folders.
-	 */
-	/*private void initFolderMappings() {
-		mFolderMap.put(Community.class, "communities");
-		mFolderMap.put(CommunityActivity.class, "communities_activity");
-		mFolderMap.put(Membership.class, "memberships");
-		mFolderMap.put(Person.class, "people");
-		mFolderMap.put(PersonActivity.class, "people_activity");
-		mFolderMap.put(Relationship.class, "relationships");
-		mFolderMap.put(Service.class, "services");
-		mFolderMap.put(ServiceActivity.class, "services_activity");
-		mFolderMap.put(Sharing.class, "sharings");
-	}*/
-	
-	/**
-	 * Loads the preferences.
-	 */
-	/*private void loadPreferences() {
-		String rootJson = mPreferences.getString(
-				BoxConstants.PREFERENCE_DIRECTORY_TREE, null);
-		
-		if (rootJson != null)
-			mRootFolder = DAO.fromJSON(rootJson, BoxFolder.class);
-	}*/
-	
-	/**
-	 * Fetches the directory three of the root folder and stores it in 
-	 * the shared preferences.
-	 */
-	/*private void fetchDirectoryTree() {
-		try {
-			// TODO: Add root folder to shared preferences (Setup app)
-			SearchResponseParser searchParser =
-					BoxSynchronous.getInstance(BoxConstants.API_KEY).search(
-							mAuthToken,
-							BOX_FOLDER_ROOT,
-							Box.SORT_RELEVANCE,
-							1,
-							1,
-							Box.DIRECTION_DESC,
-							new String[0]);
-			
-			SearchResult searchResult = searchParser.getSearchResult();
-			BoxFolder root = searchResult.getFolders().get(0);
-			
-			AccountTreeResponseParser treeParser =
-					BoxSynchronous.getInstance(BoxConstants.API_KEY).getAccountTree(
-							mAuthToken,
-							root.getId(),
-							new String[] {
-								Box.PARAM_SIMPLE,
-								Box.PARAM_NOFILES
-							});
-			
-			mRootFolder = treeParser.getFolder();
-			
-			mPreferences.edit().putString(
-					BoxConstants.PREFERENCE_DIRECTORY_TREE,
-					DAO.toJSON(mRootFolder)
-			).commit();
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
-	}*/
-	
-	/**
-	 * Gets the ID of the root folder.
-	 * @return The ID of the root folder.
-	 */
-	/*private long getRootFolderId() {
-		if (mRootFolder != null)
-			return mRootFolder.getId();
-		else
-			throw new IllegalStateException("Root folder not initialized");
-	}*/
 	
 	/**
 	 * Creates a folder in Box.
@@ -380,30 +342,14 @@ public class BoxHandler {
 	 * @throws IOException If an error occurs while creating folder.
 	 */
 	private BoxFolder createFolder(String name, long parentId) throws IOException {
-		FolderResponseParser response =
-				BoxSynchronous.getInstance(BoxConstants.API_KEY).createFolder(
-						mAuthToken,
-						parentId,
-						name,
-						false);
+		FolderResponseParser response = mBoxInstance.createFolder(
+				mAuthToken, parentId, name, false);
 		
 		if (response.getStatus().equals(CreateFolderListener.STATUS_CREATE_OK))
 			return response.getFolder();
 		else
 			return null;
 	}
-	
-	/**
-	 * Creates the folder structure.
-	 */
-	/*private void createFolderStructure() {
-		try {
-			for (Class<? extends Entity> entityClass : mFolderMap.keySet())
-				createFolder(mFolderMap.get(entityClass), getRootFolderId());
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
-	}*/
 	
 	/**
 	 * Downloads the specified entity.
@@ -437,13 +383,23 @@ public class BoxHandler {
 	 * @throws IOException If an error occurs while downloading.
 	 */
 	private void downloadAllEntities(long folderId) throws IOException {
-		AccountTreeResponseParser treeParser =
-				BoxSynchronous.getInstance(BoxConstants.API_KEY).getAccountTree(
-						mAuthToken,
-						folderId,
-						new String[] { Box.PARAM_SIMPLE });
+		downloadAllEntities(getDirectoryTree(folderId));
+	}
+	
+	/**
+	 * Gets the directory three of the specified folder.
+	 * @param rootFolderId The ID of the root folder in the tree.
+	 * @return The directory tree of the specified folder.
+	 * @throws IOException If an error occurs while fetching directory tree.
+	 */
+	private BoxFolder getDirectoryTree(long rootFolderId) throws IOException {
+		AccountTreeResponseParser treeParser = mBoxInstance.getAccountTree(
+				mAuthToken, rootFolderId, new String[] { Box.PARAM_SIMPLE });
 		
-		downloadAllEntities(treeParser.getFolder());
+		if (!treeParser.getStatus().equals(GetAccountTreeListener.STATUS_LISTING_OK))
+			throw new IOException("Failed to get directory tree of folder: " + rootFolderId);
+		else
+			return treeParser.getFolder();
 	}
 	
 	/**

@@ -99,7 +99,8 @@ public class Sharing extends Entity {
 		return CONTENT_URI;
 	}
 	
-	public void fetchGlobalIds(ContentResolver resolver) {
+	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
 		// TODO: implement
 	}
 	

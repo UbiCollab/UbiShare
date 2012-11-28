@@ -18,6 +18,8 @@ package org.societies.android.platform.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.SyncColumns;
+
 import com.google.renamedgson.Gson;
 import com.google.renamedgson.GsonBuilder;
 
@@ -49,15 +51,51 @@ public abstract class Entity {
 	 */
 	public static <E extends Entity> int deleteEntity(
 			Class<E> entityClass, String globalId, ContentResolver resolver) throws Exception {
-		int rowsDeleted = 0;
-		
 		E entity = entityClass.newInstance();
 		entity.setGlobalId(globalId);
 		entity.fetchLocalId(resolver);
 		
-		rowsDeleted = entity.delete(resolver);
+		return entity.delete(resolver);
+	}
+	
+	/**
+	 * Gets the deleted entities of the specified type.
+	 * @param entityClass The class of the entities.
+	 * @param resolver The content resolver.
+	 * @return The deleted entities of the specified type.
+	 * @throws Exception If an error occurs while fetching.
+	 */
+	public static <E extends Entity> List<E> getDeletedEntities(
+			Class<E> entityClass, ContentResolver resolver) throws Exception {
+		E entity = entityClass.newInstance();
 		
-		return rowsDeleted;
+		List<E> result = Entity.getEntities(
+				entityClass,
+				resolver,
+				entity.getContentUri(),
+				null,
+				SyncColumns.DELETED + " = 1",
+				null,
+				null);
+		
+		for (Entity resultEntity : result)
+			resultEntity.fetchGlobalIds(resolver);
+		
+		return result;
+	}
+	
+	/**
+	 * Sets the flag for unsuccessful delete on the specified entity.
+	 * @param entity The entity unsuccessfully deleted.
+	 * @param resolver The content resolver.
+	 * @return Whether or not the flag was successfully set.
+	 */
+	public static boolean setUnsuccessfulDelete(Entity entity, ContentResolver resolver) {
+		Uri contentUri = ContentUris.withAppendedId(entity.getContentUri(), entity.getId());
+		ContentValues values = new ContentValues();
+		values.put(SyncColumns.DELETED, 2);
+		
+		return resolver.update(contentUri, values, null, null) > 0;
 	}
 	
 	/**
@@ -76,6 +114,9 @@ public abstract class Entity {
 		
 		List<E> result = Entity.getEntities(
 				entityClass, resolver, contentUri, null, null, null, null);
+		
+		for (Entity resultEntity : result)
+			resultEntity.fetchGlobalIds(resolver);
 		
 		if (result.size() > 0)
 			return result.get(0);
@@ -346,6 +387,12 @@ public abstract class Entity {
 	 * @param id The local ID of the entity.
 	 */
 	protected abstract void setId(long id);
+	
+	/**
+	 * Fetches any global IDs used as foreign keys while syncing.
+	 * @param resolver The content resolver.
+	 */
+	protected abstract void fetchGlobalIds(ContentResolver resolver);
 	
 	/**
 	 * Fetches the local ID of the entity from the database. If the entity

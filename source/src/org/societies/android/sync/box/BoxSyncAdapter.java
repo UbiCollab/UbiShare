@@ -16,12 +16,14 @@
 package org.societies.android.sync.box;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.entity.Community;
 import org.societies.android.platform.entity.CommunityActivity;
+import org.societies.android.platform.entity.Entity;
 import org.societies.android.platform.entity.Membership;
 import org.societies.android.platform.entity.Person;
 import org.societies.android.platform.entity.PersonActivity;
@@ -49,10 +51,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	private static final String TAG = "BoxSyncAdapter";
 	
+	/** The minimum amount of time between each sync, in seconds. */
+	private static final int MIN_SYNC_INTERVAL = 10;
+	
 	private ContentResolver mResolver;
 	private AccountManager mAccountManager;
 	private BoxHandler mBoxHandler;
 	private SharedPreferences mPreferences;
+	private boolean mIsCancelled;
 
 	/**
 	 * Initiates a new BoxSyncAdapter.
@@ -66,12 +72,17 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 				BoxConstants.PREFERENCE_FILE, Context.MODE_PRIVATE);
 		mResolver = context.getContentResolver();
 		mAccountManager = AccountManager.get(context);
-		mBoxHandler = new BoxHandler(mPreferences, mResolver);
+		mBoxHandler = new BoxHandler(mResolver);
+		mIsCancelled = false;
 	}
 	
 	@Override
 	public void onSyncCanceled() {
-		mBoxHandler.cancelRunningOperations();
+		mIsCancelled = true;
+		
+		try {
+			mBoxHandler.cancelRunningOperations();
+		} catch (InterruptedException e) { /* IGNORED */ }
 		
 		super.onSyncCanceled();
 	}
@@ -92,11 +103,19 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			mBoxHandler.initialize(authToken);
 			
 			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
-			Log.i(TAG, "Last Sync: " + lastSync);
-			Log.i(TAG, "Fetching updates from Box...");
-			//processBoxUpdates(lastSync);
+			Log.i(TAG, "Last Sync: " + new Date(lastSync * 1000) + " (" + lastSync + ")");
 			
-			// TODO: Sync only updated entities
+			if ((new Date().getTime() / 1000) - lastSync < MIN_SYNC_INTERVAL) {
+				Log.i(TAG, "Terminating sync: last sync completed within the last " + 
+							MIN_SYNC_INTERVAL + " seconds.");
+				mBoxHandler.waitForRunningOperationsToComplete(true);
+				return;
+			}
+			
+			processBoxUpdates(lastSync);
+			
+			processDeletedEntities();
+			
 			//syncPeople(lastSync);
 			//syncPeopleActivities(lastSync);
 			
@@ -117,10 +136,32 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 					BoxConstants.PREFERENCE_LAST_SYNC,
 					new Date().getTime() / 1000
 			).commit();
+			
 			Log.i(TAG, "Sync finished!");
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Processes the deleted entities.
+	 * @throws Exception If an error occurs while processing.
+	 */
+	private void processDeletedEntities() throws Exception {
+		if (mIsCancelled) return;
+		
+		Log.i(TAG, "Processing deleted entities...");
+		
+		List<Entity> deletedEntities = new ArrayList<Entity>();
+		
+		deletedEntities.addAll(Entity.getDeletedEntities(Community.class, mResolver));
+		deletedEntities.addAll(Entity.getDeletedEntities(CommunityActivity.class, mResolver));
+		deletedEntities.addAll(Entity.getDeletedEntities(Membership.class, mResolver));
+		// TODO: add the rest
+		
+		Log.i(TAG, "Deleting entities: " + deletedEntities.size());
+		
+		mBoxHandler.deleteEntities(deletedEntities);
 	}
 
 	/**
@@ -129,9 +170,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws IOException If an error occurs while fetching updates.
 	 */
 	private void processBoxUpdates(long lastSync) throws IOException {
+		if (mIsCancelled) return;
+		
+		Log.i(TAG, "Fetching updates from Box...");
+		
 		List<Update> updates = null;
 		if (lastSync > 0)
 			updates = mBoxHandler.getUpdatesSince(lastSync);
+		
+		Log.i(TAG, "Processing updates: " + (updates == null ? "full_sync" : updates.size()));
 		
 		mBoxHandler.processUpdates(updates);
 	}
@@ -142,9 +189,13 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncPeople(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started People Sync");
 		
 		List<Person> people = Person.getUpdatedPeople(0, mResolver);
+		
+		Log.i(TAG, "Syncing people: " + people.size());
 		
 		for (Person person : people)
 			Log.i(TAG, "Person ID: " + person.getId());
@@ -156,10 +207,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncPeopleActivities(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started Person Activities Sync");
 		
 		List<PersonActivity> activities =
 				PersonActivity.getUpdatedPersonActivities(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing person activities: " + activities.size());
 		
 		/*for (PersonActivity activity : activities)
 			mBoxHandler.uploadEntity(activity);*/
@@ -171,10 +226,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncCommunities(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started Communities Sync");
 		
 		List<Community> communities =
 				Community.getUpdatedCommunities(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing communities: " + communities.size());
 		
 		for (Community community : communities)
 			mBoxHandler.uploadCommunity(community);
@@ -186,10 +245,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncCommunityActivities(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started Community Activities Sync");
 		
 		List<CommunityActivity> activities =
 				CommunityActivity.getUpdatedCommunityActivities(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing community activities: " + activities.size());
 		
 		for (CommunityActivity activity : activities)
 			mBoxHandler.uploadCommunityActivity(activity);
@@ -201,10 +264,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncMemberships(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started Memberships Sync");
 		
 		List<Membership> memberships =
 				Membership.getUpdatedMemberships(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing memberships: " + memberships.size());
 		
 		for (Membership membership : memberships)
 			mBoxHandler.uploadMembership(membership);
@@ -216,10 +283,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception If an error occurs while syncing.
 	 */
 	private void syncRelationships(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
 		Log.i(TAG, "Started Relationships Sync");
 		
 		List<Relationship> relationships =
 				Relationship.getUpdatedRelationships(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing relationships: " + relationships.size());
+		
 		/*
 		for (Relationship relationship : relationships)
 			mBoxHandler.uploadEntity(relationship);*/

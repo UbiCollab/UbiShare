@@ -93,6 +93,11 @@ public class Person extends Entity {
 	}
 	
 	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
+		// Deliberately empty
+	}
+	
+	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
 	}

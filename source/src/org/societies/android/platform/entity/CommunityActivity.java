@@ -62,8 +62,8 @@ public class CommunityActivity extends Entity {
 				resolver,
 				CONTENT_URI,
 				null,
-				CREATION_DATE + " > ?", // TODO: Maybe use last modified date?
-				new String[] { String.valueOf(lastSync) },
+				CREATION_DATE + " > " + lastSync,
+				null,
 				null);
 		
 		for (CommunityActivity activity : updatedActivities)
@@ -81,8 +81,8 @@ public class CommunityActivity extends Entity {
 		setObject(			Entity.getString(cursor, OBJECT));
 		setVerb(			Entity.getString(cursor, VERB));
 		setTarget(			Entity.getString(cursor, TARGET));
-		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
-		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE) / 1000);
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE) / 1000);
 	}
 	
 	@Override
@@ -106,11 +106,8 @@ public class CommunityActivity extends Entity {
 		return CONTENT_URI;
 	}
 	
-	/**
-	 * Fetches the global ID of the feed owner.
-	 * @param resolver The content resolver.
-	 */
-	public void fetchGlobalIds(ContentResolver resolver) {
+	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
 		setGlobalIdFeedOwner(
 				Entity.getGlobalId(
 						Communities.CONTENT_URI,

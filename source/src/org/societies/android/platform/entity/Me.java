@@ -82,6 +82,12 @@ public class Me extends Entity {
 	protected void setId(long id) {
 		this.id = id;
 	}
+	
+	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
+		// Deliberately empty
+		
+	}
 
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
@@ -145,5 +151,4 @@ public class Me extends Entity {
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-
 }

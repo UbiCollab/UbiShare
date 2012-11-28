@@ -100,11 +100,8 @@ public class PersonActivity extends Entity {
 		return CONTENT_URI;
 	}
 	
-	/**
-	 * Gets the global ID of the feed owner.
-	 * @param resolver The content resolver.
-	 */
-	public void fetchGlobalIds(ContentResolver resolver) {
+	@Override
+	protected void fetchGlobalIds(ContentResolver resolver) {
 		// TODO: implement
 	}
 	
