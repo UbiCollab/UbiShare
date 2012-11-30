@@ -79,6 +79,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.NAME , "Kato Stølen");
 		initialValues.put(SocialContract.People.EMAIL , "kato.stoelen@gmail.com");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Kato@BOX");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 		
 		initialValues.clear();
@@ -87,6 +89,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.NAME , "Babak Farshchian");
 		initialValues.put(SocialContract.People.EMAIL , "babak@farshchian.com");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Babak@BOX");
+		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 	}
 	private void populateCommunities(){
@@ -165,6 +169,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Membership._ID_MEMBER , 1);
 		initialValues.put(SocialContract.Membership._ID_COMMUNITY, 1);
 		initialValues.put(SocialContract.Membership.TYPE , "coordinator");
+		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertMembership(initialValues);
 		
 		initialValues.clear();
@@ -173,6 +179,8 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.Membership._ID_MEMBER , 2);
 		initialValues.put(SocialContract.Membership._ID_COMMUNITY, 1);
 		initialValues.put(SocialContract.Membership.TYPE , "member");
+		initialValues.put(SocialContract.Membership.CREATION_DATE, new Date().getTime() / 1000);
+		initialValues.put(SocialContract.Membership.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertMembership(initialValues);
 	}
 	private void populateSharing() {
@@ -205,6 +213,8 @@ public class SocialDataSet {
 		values.put(SocialContract.CommunityActivity.OBJECT, "Object");
 		values.put(SocialContract.CommunityActivity.VERB, "Verb");
 		values.put(SocialContract.CommunityActivity.TARGET, "Target");
+		values.put(SocialContract.CommunityActivity.CREATION_DATE, new Date().getTime() / 1000);
+		values.put(SocialContract.CommunityActivity.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertCommunityActivity(values);
 		
 	}

@@ -80,8 +80,8 @@ public class Membership extends Entity {
 		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));
 		setCommunityId(		Entity.getLong(cursor, _ID_COMMUNITY));
 		setType(			Entity.getString(cursor, TYPE));
-		setCreationDate(	Entity.getLong(cursor, CREATION_DATE) / 1000);
-		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE) / 1000);
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 
 	@Override

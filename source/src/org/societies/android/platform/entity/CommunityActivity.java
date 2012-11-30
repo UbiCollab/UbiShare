@@ -81,8 +81,8 @@ public class CommunityActivity extends Entity {
 		setObject(			Entity.getString(cursor, OBJECT));
 		setVerb(			Entity.getString(cursor, VERB));
 		setTarget(			Entity.getString(cursor, TARGET));
-		setCreationDate(	Entity.getLong(cursor, CREATION_DATE) / 1000);
-		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE) / 1000);
+		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
+		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
 	
 	@Override
