@@ -15,12 +15,14 @@
  */
 package org.societies.android.account.box;
 
+import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.R;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -99,6 +101,11 @@ public class BoxAuthenticatorService extends Service {
 			result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+			
+			ContentResolver.setIsSyncable(account, authority, 1);
+			ContentResolver.addPeriodicSync(
+					account, authority, new Bundle(), BoxConstants.ACCOUNT_SYNC_FREQUENCY);
+			ContentResolver.setSyncAutomatically(account, authority, true);
 		}
 		
 		return result;
