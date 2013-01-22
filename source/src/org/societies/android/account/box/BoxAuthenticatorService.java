@@ -106,6 +106,8 @@ public class BoxAuthenticatorService extends Service {
 			ContentResolver.addPeriodicSync(
 					account, authority, new Bundle(), BoxConstants.ACCOUNT_SYNC_FREQUENCY);
 			ContentResolver.setSyncAutomatically(account, authority, true);
+			
+			insertMeRecord(context, account);
 		}
 		
 		return result;
@@ -113,5 +115,6 @@ public class BoxAuthenticatorService extends Service {
 	
 	private static void insertMeRecord(Context context, Account account) {
 		// TODO: IMPLEMENT
+		// TODO: UPDATE ME AND PEOPLE ENTITIES
 	}
 }
