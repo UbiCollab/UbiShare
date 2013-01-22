@@ -110,4 +110,8 @@ public class BoxAuthenticatorService extends Service {
 		
 		return result;
 	}
+	
+	private static void insertMeRecord(Context context, Account account) {
+		// TODO: IMPLEMENT
+	}
 }
