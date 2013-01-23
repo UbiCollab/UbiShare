@@ -18,10 +18,11 @@ package org.societies.android.platform.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.societies.android.api.cis.SocialContract.SyncColumns;
+import static org.societies.android.api.cis.SocialContract.SyncColumns.*;
 
 import com.google.renamedgson.Gson;
 import com.google.renamedgson.GsonBuilder;
+import com.google.renamedgson.annotations.Expose;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -40,6 +41,9 @@ public abstract class Entity {
 	protected static final String SERIALIZE_FORMAT = "%s=%s\n";
 	/** The default local ID of an entity. */
 	protected static final long ENTITY_DEFAULT_ID = -1;
+	
+	@Expose private String accountType;
+	@Expose private String accountName;
 	
 	/**
 	 * Removes the entity with the specified global ID from the database.
@@ -74,7 +78,7 @@ public abstract class Entity {
 				resolver,
 				entity.getContentUri(),
 				null,
-				SyncColumns.DELETED + " = 1",
+				DELETED + " = 1",
 				null,
 				null);
 		
@@ -93,7 +97,7 @@ public abstract class Entity {
 	public static boolean setUnsuccessfulDelete(Entity entity, ContentResolver resolver) {
 		Uri contentUri = ContentUris.withAppendedId(entity.getContentUri(), entity.getId());
 		ContentValues values = new ContentValues();
-		values.put(SyncColumns.DELETED, 2);
+		values.put(DELETED, 2);
 		
 		return resolver.update(contentUri, values, null, null) > 0;
 	}
@@ -289,7 +293,10 @@ public abstract class Entity {
 	 * Populates the entity with the values from the specified cursor.
 	 * @param cursor The database cursor.
 	 */
-	protected abstract void populate(Cursor cursor);
+	protected void populate(Cursor cursor) {
+		setAccountType(Entity.getString(cursor, ACCOUNT_TYPE));
+		setAccountName(Entity.getString(cursor, ACCOUNT_NAME));
+	}
 	
 	/**
 	 * Gets the values of the entity.
@@ -389,7 +396,7 @@ public abstract class Entity {
 	protected abstract void setId(long id);
 	
 	/**
-	 * Fetches any global IDs used as foreign keys while syncing.
+	 * Fetches any global IDs used as foreign keys while synchronizing.
 	 * @param resolver The content resolver.
 	 */
 	protected abstract void fetchGlobalIds(ContentResolver resolver);
@@ -413,4 +420,36 @@ public abstract class Entity {
 	 * @param globalId The global ID of the entity.
 	 */
 	public abstract void setGlobalId(String globalId);
+
+	/**
+	 * Gets the account type of the entity.
+	 * @return The account type of the entity.
+	 */
+	public String getAccountType() {
+		return accountType;
+	}
+
+	/**
+	 * Sets the account type of the entity.
+	 * @param accountType The account type to set.
+	 */
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	/**
+	 * Gets the account name of the entity.
+	 * @return The account name of the entity.
+	 */
+	public String getAccountName() {
+		return accountName;
+	}
+
+	/**
+	 * Sets the account name of the entity.
+	 * @param accountName The account name to set.
+	 */
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
 }

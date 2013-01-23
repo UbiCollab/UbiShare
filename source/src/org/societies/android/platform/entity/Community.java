@@ -74,6 +74,8 @@ public class Community extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));

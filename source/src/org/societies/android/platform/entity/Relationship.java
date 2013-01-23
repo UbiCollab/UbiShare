@@ -67,6 +67,8 @@ public class Relationship extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setP1Id(			Entity.getLong(cursor, _ID_P1));

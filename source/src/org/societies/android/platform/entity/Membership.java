@@ -75,6 +75,8 @@ public class Membership extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));

@@ -68,6 +68,8 @@ public class ServiceActivity extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setFeedOwnerId(		Entity.getLong(cursor, _ID_FEED_OWNER));
