@@ -17,6 +17,10 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.Communities;
+import org.societies.android.api.cis.SocialContract.People;
+import org.societies.android.api.cis.SocialContract.Services;
+
 import com.google.renamedgson.annotations.Expose;
 
 import android.content.ContentResolver;
@@ -103,13 +107,50 @@ public class Sharing extends Entity {
 	
 	@Override
 	protected void fetchGlobalIds(ContentResolver resolver) {
-		// TODO: implement
+		setGlobalIdCommunity(
+				Entity.getGlobalId(
+						Communities.CONTENT_URI,
+						communityId,
+						Communities.GLOBAL_ID,
+						resolver));
+		setGlobalIdOwner(
+				Entity.getGlobalId(
+						People.CONTENT_URI,
+						ownerId,
+						People.GLOBAL_ID,
+						resolver));
+		setGlobalIdService(
+				Entity.getGlobalId(
+						Services.CONTENT_URI,
+						serviceId,
+						Services.GLOBAL_ID,
+						resolver));
 	}
 	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
-		// TODO: serviceId, ownerId, communityId
+		setServiceId(
+				Entity.getLocalId(
+						Services.CONTENT_URI,
+						Services._ID,
+						Services.GLOBAL_ID,
+						globalIdService,
+						resolver));
+		setOwnerId(
+				Entity.getLocalId(
+						People.CONTENT_URI,
+						People._ID,
+						People.GLOBAL_ID,
+						globalIdOwner,
+						resolver));
+		setCommunityId(
+				Entity.getLocalId(
+						Communities.CONTENT_URI,
+						Communities._ID,
+						Communities.GLOBAL_ID,
+						globalIdCommunity,
+						resolver));
 	}
 	
 	@Override
