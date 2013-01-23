@@ -61,7 +61,7 @@ public class Sharing extends Entity {
 	 */
 	public static List<Sharing> getUpdatedSharings(
 			long lastSync, ContentResolver resolver) throws Exception {
-		return Entity.getEntities(
+		List<Sharing> sharings = Entity.getEntities(
 				Sharing.class,
 				resolver,
 				CONTENT_URI,
@@ -69,6 +69,11 @@ public class Sharing extends Entity {
 				LAST_MODIFIED_DATE + " > ?",
 				new String[] { String.valueOf(lastSync) },
 				null);
+		
+		for (Sharing sharing : sharings)
+			sharing.fetchGlobalIds(resolver);
+		
+		return sharings;
 	}
 	
 	@Override

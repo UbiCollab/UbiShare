@@ -51,6 +51,12 @@ public final class SQLiteContract {
 			SocialContract.People.NAME + " text," +
 			SocialContract.People.DESCRIPTION + " text," +
 			SocialContract.People.EMAIL + " text," +
+			SocialContract.People.EMAIL2 + " text," +
+			SocialContract.People.EMAIL3 + " text," +
+			SocialContract.People.PHONE + " text," +
+			SocialContract.People.PHONE2 + " text," +
+			SocialContract.People.PHONE3 + " text," +
+			SocialContract.People.ADDRESS + " text," +
 			SocialContract.People.RELEVANCE + " integer,"+
 			SocialContract.People.CREATION_DATE + " integer," +
 			SocialContract.People.LAST_MODIFIED_DATE + " integer," +

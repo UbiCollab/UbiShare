@@ -28,6 +28,7 @@ import org.societies.android.platform.entity.Membership;
 import org.societies.android.platform.entity.Person;
 import org.societies.android.platform.entity.PersonActivity;
 import org.societies.android.platform.entity.Relationship;
+import org.societies.android.platform.entity.Sharing;
 
 import com.box.androidlib.DAO.Update;
 
@@ -116,9 +117,6 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			processDeletedEntities();
 			
-			//syncPeople(lastSync);
-			//syncPeopleActivities(lastSync);
-			
 			syncCommunities(lastSync);
 			
 			Log.i(TAG, "Waiting for community sync to complete...");
@@ -127,7 +125,8 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			syncCommunityActivities(lastSync);
 			
 			syncMemberships(lastSync);
-			//syncRelationships(lastSync);
+			
+			syncSharings(lastSync);
 			
 			Log.i(TAG, "Waiting for operations to complete...");
 			mBoxHandler.waitForRunningOperationsToComplete(true);
@@ -295,5 +294,23 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		/*
 		for (Relationship relationship : relationships)
 			mBoxHandler.uploadEntity(relationship);*/
+	}
+	
+	/**
+	 * Synchronizes the sharings.
+	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * @throws Exception If an error occurs while syncing.
+	 */
+	private void syncSharings(long lastSync) throws Exception {
+		if (mIsCancelled) return;
+		
+		Log.i(TAG, "Started Sharing Sync");
+		
+		List<Sharing> sharings = Sharing.getUpdatedSharings(lastSync, mResolver);
+		
+		Log.i(TAG, "Syncing sharings: " + sharings.size());
+		
+		for (Sharing sharing : sharings)
+			mBoxHandler.uploadSharing(sharing);
 	}
 }
