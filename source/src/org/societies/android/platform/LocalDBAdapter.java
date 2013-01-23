@@ -141,19 +141,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 	 * @see org.societies.android.platform.ISocialAdapter#insertPeople(android.content.ContentValues)
 	 */
 	public long insertPeople(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-		//uncomment this when tests are fixed:
-		//inputValues.put(SocialContract.People.GLOBAL_ID, "Pending");
-		if (!inputValues.containsKey(SocialContract.People.DESCRIPTION))
-			inputValues.put(SocialContract.People.DESCRIPTION, SocialContract.VALUE_NOT_DEFINED);
-		if (!inputValues.containsKey(SocialContract.People.EMAIL))
-			inputValues.put(SocialContract.People.EMAIL, SocialContract.VALUE_NOT_DEFINED);
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.PEOPLE_TABLE_NAME, null, inputValues);
+		return db.insert(SQLiteContract.PEOPLE_TABLE_NAME, null, _values);
 	}
 
 	public Cursor queryPeople(String[] _projection, String _selection,
@@ -178,19 +167,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 	 * @see org.societies.android.platform.ISocialAdapter#insertCommunities(android.content.ContentValues)
 	 */
 	public long insertCommunities(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-		
-		if (!inputValues.containsKey(SocialContract.Communities.DESCRIPTION))
-			inputValues.put(SocialContract.Communities.DESCRIPTION, SocialContract.VALUE_NOT_DEFINED);
-		//remove this until we get a sync adapter:
-		//inputValues.put(SocialContract.Communities.GLOBAL_ID, "Pending");
-		
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.COMMUNITIES_TABLE_NAME, null, inputValues);
+		return db.insert(SQLiteContract.COMMUNITIES_TABLE_NAME, null, _values);
 	}
 
 	public Cursor queryCommunities(String[] _projection, String _selection,
@@ -214,16 +192,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 
 	public long insertServices(ContentValues _values) {
-		//Need to check whether all mandatory fields are provided:
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-//		//Set global_id to pending:
-//		//inputValues.put(SocialContract.Services.GLOBAL_ID, "Pending");
-//
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.SERVICES_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.SERVICES_TABLE_NAME, null, _values);	
 	}
 
 	public Cursor queryServices(String[] _projection, String _selection,
@@ -246,13 +216,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 	}
 
 	public long insertRelationship(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-	
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.RELATIONSHIP_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.RELATIONSHIP_TABLE_NAME, null, _values);	
 	}
 	
 	public Cursor queryRelationship(String[] _projection, String _selection,
@@ -273,13 +238,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertMembership(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-	
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.MEMBERSHIP_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.MEMBERSHIP_TABLE_NAME, null, _values);	
 	}
 	public Cursor queryMembership(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
@@ -299,13 +259,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertSharing(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.SHARING_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.SHARING_TABLE_NAME, null, _values);	
 	}
 	public Cursor querySharing(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
@@ -325,13 +280,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertPeopleActivity(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.PEOPLE_ACTIVITIY_TABLE_NAME, null, _values);	
 	}
 	public Cursor queryPeopleActivity(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
@@ -352,13 +302,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertCommunityActivity(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.COMMUNITIES_ACTIVITIY_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.COMMUNITIES_ACTIVITIY_TABLE_NAME, null, _values);	
 	}
 	public Cursor queryCommunityActivity(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
@@ -378,13 +323,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertServiceActivity(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.SERVICES_ACTIVITIY_TABLE_NAME, null, inputValues);	
+		return db.insert(SQLiteContract.SERVICES_ACTIVITIY_TABLE_NAME, null, _values);	
 	}
 	public Cursor queryServiceActivity(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder){
@@ -404,16 +344,8 @@ public class LocalDBAdapter implements ISocialAdapter {
 				_selection, _selectionArgs);
 	}
 	public long insertMe(ContentValues _values) {
-		Date date = new Date();
-		ContentValues inputValues = new ContentValues(_values);
-		inputValues.put(SocialContract.People.CREATION_DATE, date.getTime());
-		inputValues.put(SocialContract.People.LAST_MODIFIED_DATE, date.getTime());
-		//Add defaults for the non-mandatory fields:
-		if (!inputValues.containsKey(SocialContract.Me.DISPLAY_NAME))
-			inputValues.put(SocialContract.Me.DISPLAY_NAME, SocialContract.VALUE_NOT_DEFINED);
-
 		db = dbHelper.getWritableDatabase();
-		return db.insert(SQLiteContract.ME_TABLE_NAME, null, inputValues);
+		return db.insert(SQLiteContract.ME_TABLE_NAME, null, _values);
 	}
 	public Cursor queryMe(String[] _projection, String _selection,
 			String[] _selectionArgs, String _sortOrder) {
