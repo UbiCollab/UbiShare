@@ -31,14 +31,17 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * Base class of entities.
+ * Base class of database entities.
  * 
  * @author Kato
  */
 public abstract class Entity {
 	
-	/** The format in which properties should be serialized. */
-	protected static final String SERIALIZE_FORMAT = "%s=%s\n";
+	/** Specifies which account type entities have to belong to. */
+	public static String SELECTION_ACCOUNT_TYPE = null;
+	/** Specifies which account name entities have to belong to. */
+	public static String SELECTION_ACCOUNT_NAME = null;
+	
 	/** The default local ID of an entity. */
 	protected static final long ENTITY_DEFAULT_ID = -1;
 	
@@ -153,6 +156,8 @@ public abstract class Entity {
 		
 		Cursor cursor = null;
 		try {
+			selection = Entity.prepareSelection(selection);
+			
 			cursor = resolver.query(contentUri, projection, selection, selectionArgs, sortOrder);
 			
 			if (cursor.moveToFirst()) {
@@ -171,6 +176,26 @@ public abstract class Entity {
 		return entities;
 	}
 	
+	/**
+	 * Prepares the selection clause of a query.
+	 * @param selection The selection.
+	 * @return The prepared selection.
+	 */
+	private static String prepareSelection(String selection) {
+		String preparedSelection = selection;
+		
+		if (SELECTION_ACCOUNT_TYPE != null) {
+			if (selection == null)
+				preparedSelection = String.format(
+						"%s = %s", ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
+			else
+				preparedSelection = String.format(
+						"(%s) AND %s = %s", selection, ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
+		}
+		
+		return preparedSelection;
+	}
+
 	/**
 	 * Gets the local ID of the entity with the specified global ID.
 	 * @param contentUri The content URL.
