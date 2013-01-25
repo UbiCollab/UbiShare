@@ -57,7 +57,7 @@ public class Me extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(_ID_PEOPLE, personId);
 		values.put(NAME, name);

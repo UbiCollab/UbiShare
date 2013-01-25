@@ -327,7 +327,14 @@ public abstract class Entity {
 	 * Gets the values of the entity.
 	 * @return A mapping between property name and value.
 	 */
-	protected abstract ContentValues getEntityValues();
+	protected ContentValues getEntityValues() {
+		ContentValues values = new ContentValues();
+		
+		values.put(ACCOUNT_NAME, accountName);
+		values.put(ACCOUNT_TYPE, accountType);
+		
+		return values;
+	}
 	
 	/**
 	 * Gets the content URL of the entity.

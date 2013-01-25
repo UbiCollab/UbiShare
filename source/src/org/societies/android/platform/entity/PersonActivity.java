@@ -83,7 +83,7 @@ public class PersonActivity extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(_ID_FEED_OWNER, feedOwnerId);
