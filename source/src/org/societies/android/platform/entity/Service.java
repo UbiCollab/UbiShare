@@ -45,8 +45,8 @@ public class Service extends Entity {
 	@Expose private String dependency;
 	@Expose private String config;
 	@Expose private String url;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdOwner;
 	

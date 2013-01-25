@@ -39,8 +39,8 @@ public class Relationship extends Entity {
 	private long p1Id;
 	private long p2Id;
 	@Expose private String type;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdP1;
 	@Expose private String globalIdP2;

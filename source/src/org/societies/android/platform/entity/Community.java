@@ -42,8 +42,8 @@ public class Community extends Entity {
 	private long ownerId;
 	@Expose private String type;
 	@Expose private String description;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdOwner;
 	

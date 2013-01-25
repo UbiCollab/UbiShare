@@ -42,8 +42,8 @@ public class CommunityActivity extends Entity {
 	@Expose private String object;
 	@Expose private String verb;
 	@Expose private String target;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdFeedOwner;
 	

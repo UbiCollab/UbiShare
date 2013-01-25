@@ -39,8 +39,8 @@ public class Person extends Entity {
 	@Expose private String name;
 	@Expose private String description;
 	@Expose private String email;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	/**
 	 * Gets a list of all the people that have been updated since the last

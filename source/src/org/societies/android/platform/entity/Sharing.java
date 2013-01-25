@@ -44,8 +44,8 @@ public class Sharing extends Entity {
 	private long ownerId;
 	private long communityId;
 	@Expose private String type;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdService;
 	@Expose private String globalIdOwner;

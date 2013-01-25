@@ -33,20 +33,20 @@ public class Me extends Entity {
 	
 	private long id = ENTITY_DEFAULT_ID;
 	
-	@Expose private String globalId;
+	@Expose private long personId;
 	@Expose private String name;
 	@Expose private String displayName;
 	@Expose private String username;
 	@Expose private String password;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 
 	@Override
 	protected void populate(Cursor cursor) {
 		super.populate(cursor);
 		
 		setId(				Entity.getLong(cursor, _ID));
-		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
+		setPersonId(		Entity.getLong(cursor, _ID_PEOPLE));
 		setName(			Entity.getString(cursor, NAME));
 		setDisplayName(		Entity.getString(cursor, DISPLAY_NAME));
 		setUsername(		Entity.getString(cursor, USER_NAME));
@@ -59,7 +59,7 @@ public class Me extends Entity {
 	protected ContentValues getEntityValues() {
 		ContentValues values = new ContentValues();
 		
-		values.put(GLOBAL_ID, globalId);
+		values.put(_ID_PEOPLE, personId);
 		values.put(NAME, name);
 		values.put(DISPLAY_NAME, displayName);
 		values.put(USER_NAME, username);
@@ -88,22 +88,29 @@ public class Me extends Entity {
 	@Override
 	protected void fetchGlobalIds(ContentResolver resolver) {
 		// Deliberately empty
-		
 	}
 
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
-		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
+		// Deliberately empty
 	}
 
 	@Override
 	public String getGlobalId() {
-		return globalId;
+		return null; /* NOT USED */
 	}
 
 	@Override
 	public void setGlobalId(String globalId) {
-		this.globalId = globalId;
+		// Deliberately empty
+	}
+	
+	public long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(long personId) {
+		this.personId = personId;
 	}
 
 	public String getName() {
