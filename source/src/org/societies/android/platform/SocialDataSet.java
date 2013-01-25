@@ -46,10 +46,10 @@ public class SocialDataSet {
    		//populateMe();
    		populatePeople();
    		populateCommunities();
-   		populateServices();
+   		//populateServices();
    		//populateRelationships();
    		populateMemberships();
-   		populateSharing();
+   		//populateSharing();
    		//populatePeopleActivities();
    		populateCommunityActivities();
    		//populateServiceActivities();
@@ -120,10 +120,10 @@ public class SocialDataSet {
 	private void populateServices() {
 		ContentValues initialValues = new ContentValues();
 		
-		initialValues.put(SocialContract.Services.GLOBAL_ID, "s1xyz.societies.org");
+		initialValues.put(SocialContract.Services.GLOBAL_ID , "s1xyz.societies.org");
 		initialValues.put(SocialContract.Services.TYPE , "Disaster");
 		initialValues.put(SocialContract.Services.NAME , "iJacket");
-		initialValues.put(SocialContract.Services._ID_OWNER, 2);
+		initialValues.put(SocialContract.Services.OWNER_ID, "knut@redcross.org");
 		initialValues.put(SocialContract.Services.DESCRIPTION , "A service to communicate with rescuer jacket");
 		initialValues.put(SocialContract.Services.AVAILABLE, "false");
 		initialValues.put(SocialContract.Services.DEPENDENCY, "iJacketClient");
@@ -133,10 +133,10 @@ public class SocialDataSet {
 
 		initialValues.clear();
 		
-		initialValues.put(SocialContract.Services.GLOBAL_ID, "s2xyz.societies.org");
+		initialValues.put(SocialContract.Services.GLOBAL_ID , "s2xyz.societies.org");
 		initialValues.put(SocialContract.Services.TYPE , "Disaster");
 		initialValues.put(SocialContract.Services.NAME , "iJacketClient");
-		initialValues.put(SocialContract.Services._ID_OWNER, 2);
+		initialValues.put(SocialContract.Services.OWNER_ID, "knut@redcross.org");
 		initialValues.put(SocialContract.Services.DESCRIPTION , "A service to communicate with iJacket");
 		initialValues.put(SocialContract.Services.AVAILABLE, "false");
 		initialValues.put(SocialContract.Services.DEPENDENCY, "iJacket");
@@ -186,19 +186,17 @@ public class SocialDataSet {
 	private void populateSharing() {
 		ContentValues initialValues = new ContentValues();
 		
-		initialValues.put(SocialContract.Sharing.GLOBAL_ID, SocialContract.GLOBAL_ID_PENDING);
-		initialValues.put(SocialContract.Sharing._ID_SERVICE , 1);
-		initialValues.put(SocialContract.Sharing._ID_COMMUNITY, 1);
-		initialValues.put(SocialContract.Sharing._ID_OWNER, 2);
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha1xyz.redcross.org");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "s1xyz.societies.org");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.TYPE , "Monitor");
 		adapter.insertSharing(initialValues);
 		
 		initialValues.clear();
 		
-		initialValues.put(SocialContract.Sharing.GLOBAL_ID, SocialContract.GLOBAL_ID_PENDING);
-		initialValues.put(SocialContract.Sharing._ID_SERVICE , 2);
-		initialValues.put(SocialContract.Sharing._ID_COMMUNITY, 1);
-		initialValues.put(SocialContract.Sharing._ID_OWNER, 2);
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID , "sha2xyz.redcross.org");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_SERVICE , "s2xyz.societies.org");
+		initialValues.put(SocialContract.Sharing.GLOBAL_ID_COMMUNITY, "c1xyz.societies.org");
 		initialValues.put(SocialContract.Sharing.TYPE , "Full access");
 		adapter.insertSharing(initialValues);
 	}
