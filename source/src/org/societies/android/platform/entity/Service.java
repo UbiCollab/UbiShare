@@ -45,8 +45,8 @@ public class Service extends Entity {
 	@Expose private String dependency;
 	@Expose private String config;
 	@Expose private String url;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdOwner;
 	
@@ -72,6 +72,8 @@ public class Service extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
@@ -89,7 +91,7 @@ public class Service extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(NAME, name);

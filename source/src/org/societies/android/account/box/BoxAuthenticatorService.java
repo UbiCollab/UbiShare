@@ -15,17 +15,24 @@
  */
 package org.societies.android.account.box;
 
+import org.societies.android.api.cis.SocialContract;
+import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.R;
+import org.societies.android.platform.entity.Me;
+import org.societies.android.platform.entity.Person;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * A service wrapper for BoxAuthenticator.
@@ -34,9 +41,13 @@ import android.os.Parcelable;
  */
 public class BoxAuthenticatorService extends Service {
 
-	//private static final String TAG = "AccountAuthenticatorService";
+	private static final String TAG = "AccountAuthenticatorService";
+	
 	private static BoxAuthenticator mAuthenticator;
 	
+	/**
+	 * Initializes the service.
+	 */
 	public BoxAuthenticatorService() {
 		super();
 	}
@@ -90,17 +101,81 @@ public class BoxAuthenticatorService extends Service {
 	public static Bundle addAccount(
 			Context context, String username, String password, Bundle userdata) {
 		Bundle result = null;
-		String authority = context.getString(R.string.box_account_type);
+		String accountType = context.getString(R.string.box_account_type);
+		String authority = context.getString(R.string.provider_authority);
 		
-		Account account = new Account(username, authority);
+		Account account = new Account(username, accountType);
 		AccountManager manager = AccountManager.get(context);
 		
+		Log.i(TAG, "Adding Account...");
 		if (manager.addAccountExplicitly(account, password, userdata)) {
 			result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+			
+			ContentResolver.setIsSyncable(account, authority, 1);
+			ContentResolver.setSyncAutomatically(account, authority, true);
+			ContentResolver.addPeriodicSync(
+					account, authority, new Bundle(), BoxConstants.ACCOUNT_SYNC_FREQUENCY);
+			
+			insertRecords(context, account);
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Inserts a record into the Me and People table.
+	 * @param context The context to use.
+	 * @param account The Box account.
+	 */
+	private static void insertRecords(Context context, Account account) {
+		ContentResolver resolver = context.getContentResolver();
+		
+		Person personEntity = getPersonEntity(account);
+		
+		Log.i(TAG, "Inserting People Record...");
+		Uri personUri = personEntity.insert(resolver);
+		long id = Long.parseLong(personUri.getLastPathSegment());
+		
+		Log.i(TAG, "Inserting Me Record...");
+		Me meEntity = getMeEntity(account, id);
+		meEntity.insert(resolver);
+	}
+	
+	/**
+	 * Gets a Person entity populated with the account information.
+	 * @param account The Box account.
+	 * @return A Person entity.
+	 */
+	private static Person getPersonEntity(Account account) {
+		Person personEntity = new Person();
+		personEntity.setAccountName(account.name);
+		personEntity.setAccountType(account.type);
+		personEntity.setEmail(account.name);
+		personEntity.setName(account.name);
+		personEntity.setDescription(new String());
+		personEntity.setGlobalId(SocialContract.GLOBAL_ID_PENDING);
+		
+		return personEntity;
+	}
+	
+	/**
+	 * Gets a Me entity populated with the account information.
+	 * @param account The Box account.
+	 * @param personId The ID of the record in the People table.
+	 * @return A Me entity.
+	 */
+	private static Me getMeEntity(Account account, long personId) {
+		Me meEntity = new Me();
+		meEntity.setAccountName(account.name);
+		meEntity.setAccountType(account.type);
+		meEntity.setDisplayName(account.name);
+		meEntity.setName(account.name);
+		meEntity.setPassword(new String());
+		meEntity.setUsername(account.name);
+		meEntity.setPersonId(personId);
+		
+		return meEntity;
 	}
 }

@@ -17,6 +17,10 @@ package org.societies.android.platform.entity;
 
 import java.util.List;
 
+import org.societies.android.api.cis.SocialContract.Communities;
+import org.societies.android.api.cis.SocialContract.People;
+import org.societies.android.api.cis.SocialContract.Services;
+
 import com.google.renamedgson.annotations.Expose;
 
 import android.content.ContentResolver;
@@ -40,8 +44,8 @@ public class Sharing extends Entity {
 	private long ownerId;
 	private long communityId;
 	@Expose private String type;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdService;
 	@Expose private String globalIdOwner;
@@ -57,7 +61,7 @@ public class Sharing extends Entity {
 	 */
 	public static List<Sharing> getUpdatedSharings(
 			long lastSync, ContentResolver resolver) throws Exception {
-		return Entity.getEntities(
+		List<Sharing> sharings = Entity.getEntities(
 				Sharing.class,
 				resolver,
 				CONTENT_URI,
@@ -65,10 +69,17 @@ public class Sharing extends Entity {
 				LAST_MODIFIED_DATE + " > ?",
 				new String[] { String.valueOf(lastSync) },
 				null);
+		
+		for (Sharing sharing : sharings)
+			sharing.fetchGlobalIds(resolver);
+		
+		return sharings;
 	}
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setServiceId(		Entity.getLong(cursor, _ID_SERVICE));
@@ -81,7 +92,7 @@ public class Sharing extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(_ID_SERVICE, serviceId);
@@ -101,13 +112,50 @@ public class Sharing extends Entity {
 	
 	@Override
 	protected void fetchGlobalIds(ContentResolver resolver) {
-		// TODO: implement
+		setGlobalIdCommunity(
+				Entity.getGlobalId(
+						Communities.CONTENT_URI,
+						communityId,
+						Communities.GLOBAL_ID,
+						resolver));
+		setGlobalIdOwner(
+				Entity.getGlobalId(
+						People.CONTENT_URI,
+						ownerId,
+						People.GLOBAL_ID,
+						resolver));
+		setGlobalIdService(
+				Entity.getGlobalId(
+						Services.CONTENT_URI,
+						serviceId,
+						Services.GLOBAL_ID,
+						resolver));
 	}
 	
 	@Override
 	public void fetchLocalId(ContentResolver resolver) {
 		setId(Entity.getLocalId(CONTENT_URI, _ID, GLOBAL_ID, globalId, resolver));
-		// TODO: serviceId, ownerId, communityId
+		setServiceId(
+				Entity.getLocalId(
+						Services.CONTENT_URI,
+						Services._ID,
+						Services.GLOBAL_ID,
+						globalIdService,
+						resolver));
+		setOwnerId(
+				Entity.getLocalId(
+						People.CONTENT_URI,
+						People._ID,
+						People.GLOBAL_ID,
+						globalIdOwner,
+						resolver));
+		setCommunityId(
+				Entity.getLocalId(
+						Communities.CONTENT_URI,
+						Communities._ID,
+						Communities.GLOBAL_ID,
+						globalIdCommunity,
+						resolver));
 	}
 	
 	@Override

@@ -42,8 +42,8 @@ public class Membership extends Entity {
 	private long memberId;
 	private long communityId;
 	@Expose private String type;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdMember;
 	@Expose private String globalIdCommunity;
@@ -75,6 +75,8 @@ public class Membership extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setMemberId(		Entity.getLong(cursor, _ID_MEMBER));
@@ -86,7 +88,7 @@ public class Membership extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(_ID_MEMBER, memberId);
