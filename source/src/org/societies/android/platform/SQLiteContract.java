@@ -41,9 +41,9 @@ public final class SQLiteContract {
 			SocialContract.Me.SYNC1 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.Me.SYNC2 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.Me.SYNC3 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
-			SocialContract.Me.SYNC4 + " integer," +
-			SocialContract.Me.SYNC5 + " integer," +
-			SocialContract.Me.SYNC6 + " integer );";
+			SocialContract.Me.SYNC4 + " integer not null default -1," +
+			SocialContract.Me.SYNC5 + " integer not null default -1," +
+			SocialContract.Me.SYNC6 + " integer not null default -1 );";
 
 	public static final String PEOPLE_TABLE_CREATE = "create table if not exists " + PEOPLE_TABLE_NAME
 			+ " (" + 
@@ -58,7 +58,7 @@ public final class SQLiteContract {
 			SocialContract.People.PHONE2 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.PHONE3 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.ADDRESS + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
-			SocialContract.People.RELEVANCE + " integer,"+
+			SocialContract.People.RELEVANCE + " integer not null default -1," +
 			SocialContract.People.CREATION_DATE + " integer not null default "+SocialContract.DEFAULT_NOW_DATE+"," +
 			SocialContract.People.LAST_MODIFIED_DATE + " integer not null default "+SocialContract.DEFAULT_NOW_DATE+"," +
 			SocialContract.People.ACCOUNT_NAME + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
@@ -68,9 +68,9 @@ public final class SQLiteContract {
 			SocialContract.People.SYNC1 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.SYNC2 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.SYNC3 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
-			SocialContract.People.SYNC4 + " integer," +
-			SocialContract.People.SYNC5 + " integer," +
-			SocialContract.People.SYNC6 + " integer );";
+			SocialContract.People.SYNC4 + " integer not null default -1," +
+			SocialContract.People.SYNC5 + " integer not null default -1," +
+			SocialContract.People.SYNC6 + " integer not null default -1 );";
 
 	public static final String COMMUNITIES_TABLE_CREATE = "create table if not exists " + COMMUNITIES_TABLE_NAME
 			+ " (" + 
@@ -81,7 +81,7 @@ public final class SQLiteContract {
 			SocialContract.Communities.OWNER_ID + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.Communities.TYPE + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.Communities.DESCRIPTION + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
-			SocialContract.Communities.RELEVANCE + " integer," +
+			SocialContract.Communities.RELEVANCE + " integer not null default -1," +
 			SocialContract.Communities.CREATION_DATE + " integer not null default "+SocialContract.DEFAULT_NOW_DATE+"," +
 			SocialContract.Communities.LAST_MODIFIED_DATE + " integer not null default "+SocialContract.DEFAULT_NOW_DATE+"," +
 			SocialContract.Communities.ACCOUNT_NAME + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
