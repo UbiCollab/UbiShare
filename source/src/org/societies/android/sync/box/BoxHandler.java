@@ -28,6 +28,7 @@ import org.societies.android.platform.entity.CommunityActivity;
 import org.societies.android.platform.entity.Entity;
 import org.societies.android.platform.entity.Membership;
 import org.societies.android.platform.entity.Person;
+import org.societies.android.platform.entity.Sharing;
 
 import android.content.ContentResolver;
 import android.util.Log;
@@ -147,6 +148,20 @@ public class BoxHandler {
 		else {
 			long targetId = Long.parseLong(activity.getGlobalIdFeedOwner());
 			addUploadOperation(activity, null, targetId);
+		}
+	}
+	
+	/**
+	 * Uploads a sharing to Box.
+	 * @param sharing The sharing to upload.
+	 */
+	public void uploadSharing(Sharing sharing)
+	{
+		if (!mInitialized)
+			throw new IllegalStateException("Not initialized.");
+		else {
+			long targetId = Long.parseLong(sharing.getGlobalIdCommunity());
+			addUploadOperation(sharing, null, targetId);
 		}
 	}
 	
@@ -286,7 +301,7 @@ public class BoxHandler {
 	 */
 	public void waitForRunningOperationsToComplete(boolean stop) throws InterruptedException {
 		mThreadPool.shutdown();
-		mThreadPool.awaitTermination(30, TimeUnit.SECONDS);
+		mThreadPool.awaitTermination(120, TimeUnit.SECONDS);
 		
 		if (!stop) {
 			mThreadPool = Executors.newSingleThreadExecutor();

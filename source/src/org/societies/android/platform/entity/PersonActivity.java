@@ -41,8 +41,8 @@ public class PersonActivity extends Entity {
 	@Expose private String object;
 	@Expose private String verb;
 	@Expose private String target;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdFeedOwner;
 	
@@ -68,6 +68,8 @@ public class PersonActivity extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setFeedOwnerId(		Entity.getLong(cursor, _ID_FEED_OWNER));
@@ -81,7 +83,7 @@ public class PersonActivity extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(_ID_FEED_OWNER, feedOwnerId);

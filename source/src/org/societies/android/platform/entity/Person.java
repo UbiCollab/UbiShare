@@ -39,8 +39,8 @@ public class Person extends Entity {
 	@Expose private String name;
 	@Expose private String description;
 	@Expose private String email;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	/**
 	 * Gets a list of all the people that have been updated since the last
@@ -64,6 +64,8 @@ public class Person extends Entity {
 	
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setName(			Entity.getString(cursor, NAME));
@@ -75,7 +77,7 @@ public class Person extends Entity {
 	
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(NAME, name);

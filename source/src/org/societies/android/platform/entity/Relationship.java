@@ -39,8 +39,8 @@ public class Relationship extends Entity {
 	private long p1Id;
 	private long p2Id;
 	@Expose private String type;
-	@Expose private long creationDate;
-	@Expose private long lastModifiedDate;
+	@Expose private long creationDate = System.currentTimeMillis() / 1000;
+	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	@Expose private String globalIdP1;
 	@Expose private String globalIdP2;
@@ -67,6 +67,8 @@ public class Relationship extends Entity {
 
 	@Override
 	protected void populate(Cursor cursor) {
+		super.populate(cursor);
+		
 		setId(				Entity.getLong(cursor, _ID));
 		setGlobalId(		Entity.getString(cursor, GLOBAL_ID));
 		setP1Id(			Entity.getLong(cursor, _ID_P1));
@@ -78,7 +80,7 @@ public class Relationship extends Entity {
 
 	@Override
 	protected ContentValues getEntityValues() {
-		ContentValues values = new ContentValues();
+		ContentValues values = super.getEntityValues();
 		
 		values.put(GLOBAL_ID, globalId);
 		values.put(_ID_P1, p1Id);

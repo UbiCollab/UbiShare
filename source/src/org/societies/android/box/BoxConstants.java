@@ -32,7 +32,7 @@ public final class BoxConstants {
 	/** The account userdata auth-token key. */
 	public static final String ACCOUNT_USERDATA_AUTH_TOKEN = "authToken";
 	/** The account sync frequency. */
-	public static final long ACCOUNT_SYNC_FREQUENCY = 600;
+	public static final long ACCOUNT_SYNC_FREQUENCY = 120;
 	
 	/** The name of the share preference file. */
 	public static final String PREFERENCE_FILE = "preferences.box";
