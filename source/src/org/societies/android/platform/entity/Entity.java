@@ -46,7 +46,7 @@ public abstract class Entity {
 	protected static final long ENTITY_DEFAULT_ID = -1;
 	
 	@Expose private String accountType;
-	@Expose private String accountName;
+	private String accountName;
 	
 	/**
 	 * Removes the entity with the specified global ID from the database.
@@ -187,10 +187,10 @@ public abstract class Entity {
 		if (SELECTION_ACCOUNT_TYPE != null) {
 			if (selection == null)
 				preparedSelection = String.format(
-						"%s = %s", ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
+						"%s = '%s'", ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
 			else
 				preparedSelection = String.format(
-						"(%s) AND %s = %s", selection, ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
+						"(%s) AND %s = '%s'", selection, ACCOUNT_TYPE, SELECTION_ACCOUNT_TYPE);
 		}
 		
 		return preparedSelection;
