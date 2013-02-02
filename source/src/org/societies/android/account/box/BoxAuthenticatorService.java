@@ -19,7 +19,6 @@ import org.societies.android.api.cis.SocialContract;
 import org.societies.android.box.BoxConstants;
 import org.societies.android.platform.R;
 import org.societies.android.platform.entity.Me;
-import org.societies.android.platform.entity.Person;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -28,6 +27,7 @@ import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -132,23 +132,22 @@ public class BoxAuthenticatorService extends Service {
 	private static void insertRecords(Context context, Account account) {
 		ContentResolver resolver = context.getContentResolver();
 		
-		Person personEntity = getPersonEntity(account);
-		
 		Log.i(TAG, "Inserting People Record...");
-		Uri personUri = personEntity.insert(resolver);
-		long id = Long.parseLong(personUri.getLastPathSegment());
+		long id = insertPersonEntity(account, resolver);
 		
 		Log.i(TAG, "Inserting Me Record...");
-		Me meEntity = getMeEntity(account, id);
-		meEntity.insert(resolver);
+		insertMeEntity(account, id, resolver);
 	}
 	
 	/**
-	 * Gets a Person entity populated with the account information.
+	 * Inserts a record into the People table.
 	 * @param account The Box account.
-	 * @return A Person entity.
+	 * @param resolver The content resolver.
+	 * @return The ID of the inserted record, or -1 on error.
 	 */
-	private static Person getPersonEntity(Account account) {
+	private static long insertPersonEntity(Account account, ContentResolver resolver) {
+		/* TO BE USED WHEN PEOPLE TABLE IS SYNCHRONIZED
+		 * 
 		Person personEntity = new Person();
 		personEntity.setAccountName(account.name);
 		personEntity.setAccountType(account.type);
@@ -157,16 +156,37 @@ public class BoxAuthenticatorService extends Service {
 		personEntity.setDescription(new String());
 		personEntity.setGlobalId(SocialContract.GLOBAL_ID_PENDING);
 		
-		return personEntity;
+		Uri personUri = personEntity.insert(resolver);
+		long id = Long.parseLong(personUri.getLastPathSegment());
+		
+		*/
+		
+		long id = -1;
+		
+		Cursor cursor = resolver.query(
+				SocialContract.People.CONTENT_URI,
+				new String[] { SocialContract.People._ID },
+				SocialContract.People.EMAIL + " = ?",
+				new String[] { account.name },
+				null);
+		
+		if (cursor.moveToFirst())
+			id = cursor.getLong(cursor.getColumnIndex(SocialContract.People._ID));
+		
+		cursor.close();
+		
+		return id;
 	}
 	
 	/**
-	 * Gets a Me entity populated with the account information.
+	 * Inserts a record into the Me table.
 	 * @param account The Box account.
-	 * @param personId The ID of the record in the People table.
-	 * @return A Me entity.
+	 * @param personId The ID of the related record in the People table.
+	 * @param resolver The content resolver.
+	 * @return The URI of the inserted record.
 	 */
-	private static Me getMeEntity(Account account, long personId) {
+	private static Uri insertMeEntity(
+			Account account, long personId, ContentResolver resolver) {
 		Me meEntity = new Me();
 		meEntity.setAccountName(account.name);
 		meEntity.setAccountType(account.type);
@@ -176,6 +196,6 @@ public class BoxAuthenticatorService extends Service {
 		meEntity.setUsername(account.name);
 		meEntity.setPersonId(personId);
 		
-		return meEntity;
+		return meEntity.insert(resolver);
 	}
 }
