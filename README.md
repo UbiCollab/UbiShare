@@ -7,6 +7,11 @@ In order to use UbiShare see [this wiki](https://github.com/UbiCollab/UbiCollabS
 
 #Change log
 
+##Version 0.4.0
+* New: Use of dirty flag. DIRTY_FLAG has to be set to 1 when a record in a DB is changed in order for synch adapter to sync it to the service. After a successful sync, DIRTY_FLAG is changed back to 0.
+* New: Person has a new field USER_NAME.
+
+
 ##Version 0.3.2:
 * Minor pudates to default values in the SQLite DB.
 * Added one test for testing default values in SWLite DB.

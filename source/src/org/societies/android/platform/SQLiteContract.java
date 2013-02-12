@@ -51,6 +51,7 @@ public final class SQLiteContract {
 			SocialContract.People.GLOBAL_ID + " text not null default "+SocialContract.GLOBAL_ID_PENDING+"," +
 			SocialContract.People.NAME + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.DESCRIPTION + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
+			SocialContract.People.USER_NAME + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.EMAIL + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.EMAIL2 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
 			SocialContract.People.EMAIL3 + " text not null default " +SocialContract.VALUE_NOT_DEFINED+"," +
