@@ -337,7 +337,7 @@ public class BoxHandler {
 				Box.TYPE_FOLDER,
 				targetId,
 				null,
-				new String[] { collaborator.getEmail() },
+				new String[] { collaborator.getUserName() },
 				Box.ITEM_ROLE_EDITOR,
 				false,
 				true,

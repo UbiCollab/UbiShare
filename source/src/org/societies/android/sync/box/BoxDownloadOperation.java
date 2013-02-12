@@ -70,6 +70,8 @@ public class BoxDownloadOperation extends Thread {
 			} else {
 				String serialized = downloadFileContents();
 				Entity entity = getEntity(serialized, entityClass);
+				entity.setAccountName(Entity.SELECTION_ACCOUNT_NAME);
+				entity.setAccountType(Entity.SELECTION_ACCOUNT_TYPE);
 				
 				if (entity.getId() == -1)
 					entity.insert(mResolver);

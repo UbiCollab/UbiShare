@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.societies.android.box.BoxConstants;
-import org.societies.android.platform.R;
 import org.societies.android.platform.entity.Community;
 import org.societies.android.platform.entity.CommunityActivity;
 import org.societies.android.platform.entity.Entity;
@@ -76,8 +75,6 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		mAccountManager = AccountManager.get(context);
 		mBoxHandler = new BoxHandler(mResolver);
 		
-		Entity.SELECTION_ACCOUNT_TYPE = context.getString(R.string.box_account_type);
-		
 		mIsCancelled = false;
 	}
 	
@@ -101,6 +98,10 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			SyncResult syncResult) {
 		try {
 			Log.i(TAG, "Sync Started.");
+			
+			Entity.SELECTION_ACCOUNT_TYPE = account.type;
+			Entity.SELECTION_ACCOUNT_NAME = account.name;
+			
 			String authToken = mAccountManager.blockingGetAuthToken(
 				account, BoxConstants.AUTH_TOKEN_FLAG, true);
 			

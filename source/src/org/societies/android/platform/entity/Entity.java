@@ -22,7 +22,6 @@ import static org.societies.android.api.cis.SocialContract.SyncColumns.*;
 
 import com.google.renamedgson.Gson;
 import com.google.renamedgson.GsonBuilder;
-import com.google.renamedgson.annotations.Expose;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -45,8 +44,9 @@ public abstract class Entity {
 	/** The default local ID of an entity. */
 	protected static final long ENTITY_DEFAULT_ID = -1;
 	
-	@Expose private String accountType;
-	private String accountName;
+	private String accountType = SELECTION_ACCOUNT_TYPE;
+	private String accountName = SELECTION_ACCOUNT_NAME;
+	private int dirty;
 	
 	/**
 	 * Removes the entity with the specified global ID from the database.
@@ -321,6 +321,7 @@ public abstract class Entity {
 	protected void populate(Cursor cursor) {
 		setAccountType(Entity.getString(cursor, ACCOUNT_TYPE));
 		setAccountName(Entity.getString(cursor, ACCOUNT_NAME));
+		setDirty(Entity.getInt(cursor, DIRTY));
 	}
 	
 	/**
@@ -332,6 +333,7 @@ public abstract class Entity {
 		
 		values.put(ACCOUNT_NAME, accountName);
 		values.put(ACCOUNT_TYPE, accountType);
+		values.put(DIRTY, dirty);
 		
 		return values;
 	}
@@ -483,5 +485,21 @@ public abstract class Entity {
 	 */
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
+	}
+
+	/**
+	 * Gets the dirty flag of the entity.
+	 * @return The dirty flag of the entity.
+	 */
+	public int getDirty() {
+		return dirty;
+	}
+
+	/**
+	 * Sets the dirty flag of the entity.
+	 * @param dirty The dirty flag to set.
+	 */
+	public void setDirty(int dirty) {
+		this.dirty = dirty;
 	}
 }
