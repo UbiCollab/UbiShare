@@ -3,9 +3,14 @@ UbiShare
 
 Share ubiquitously!
 
-In order to use UbiShare see https://github.com/UbiCollab/UbiCollabSDK/wiki
+In order to use UbiShare see [this wiki](https://github.com/UbiCollab/UbiCollabSDK/wiki).
 
 #Change log
+
+##Version 0.3.2:
+* Minor pudates to default values in the SQLite DB.
+* Added one test for testing default values in SWLite DB.
+* Merged pull request from Kato.
 
 ##Version 0.3.1: 
 * Updated DB creation code to reflect constraints in the latest SocialContract documentation. Now all properties get default values in the DB upon table creation, according to SocialProvider documentation. Fixes #30. 

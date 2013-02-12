@@ -577,7 +577,7 @@ public void testInsertPeopleWithGlobalID(){
 			ContentValues initialValues = new ContentValues();
 			initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
 			initialValues.put(SocialContract.Me.NAME , "Babak Farshchian");
-			initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies"); //Optional
+			initialValues.put(SocialContract.Me.DISPLAY_NAME , "Babak Societies");
 			initialValues.put(SocialContract.Me.USER_NAME , "babak@societies.org");
 			initialValues.put(SocialContract.Me.PASSWORD , "XYz125");
 			initialValues.put(SocialContract.Me.ACCOUNT_TYPE , "societies.org");
@@ -622,4 +622,57 @@ public void testInsertPeopleWithGlobalID(){
 			assertEquals(returnedValues,initialValues);
 			cursor.close();
 		}
+	/**
+	 * Test that default values in the DB are being set correctly.
+	 * Does not test default for creation date and last modified date. 
+	 */
+	public void testDefaultValuesForMe(){
+		//Create local ContentValues to hold the initial membership data.
+		ContentValues initialValues = new ContentValues();
+		//I cannot insert it all empty (Don't know why, it us not hull?)
+		initialValues.put(SocialContract.Me.GLOBAL_ID , "babak@societies.org");
+		
+		//Insert all empty values in Me table.
+		Uri newMeUri= 
+				resolver.insert(SocialContract.Me.CONTENT_URI, 
+						initialValues);
+		
+		//Try to query the newly inserted record.
+		//What columns to get:
+		String[] projection ={
+				SocialContract.Me._ID_PEOPLE, //0
+				SocialContract.Me.DISPLAY_NAME, //1
+				SocialContract.Me.NAME, //2
+				SocialContract.Me.PASSWORD, //3
+				SocialContract.Me.USER_NAME, //4
+				SocialContract.Me.ACCOUNT_NAME, //5
+				SocialContract.Me.ACCOUNT_TYPE, //6
+				SocialContract.Me.DELETED, //7
+				SocialContract.Me.DIRTY, //8
+				SocialContract.Me.GLOBAL_ID //9
+			};
+		//WHERE _id = ID of the newly created CIS:
+		String selection = SocialContract.Membership._ID + " = " +
+			newMeUri.getLastPathSegment();
+		Cursor cursor = resolver.query(SocialContract.Me.CONTENT_URI,
+				projection, selection, null, null);
+		
+		//Fail if the cursor is null:
+		assertFalse(cursor == null);
+		//if (cursor == null)	return;
+		//Succeed if cursor is not empty:
+		assertTrue(cursor.moveToFirst());
+		//check if default values are set correctly.
+		assertEquals(cursor.getInt(0), -1);
+		assertEquals(SocialContract.VALUE_NOT_DEFINED, cursor.getString(1));
+		assertEquals(SocialContract.VALUE_NOT_DEFINED, cursor.getString(2));
+		assertEquals(SocialContract.VALUE_NOT_DEFINED, cursor.getString(3));
+		assertEquals(SocialContract.VALUE_NOT_DEFINED, cursor.getString(4));
+		assertEquals(SocialContract.VALUE_NOT_DEFINED, cursor.getString(5));
+		assertEquals(SocialContract.ACCOUNT_TYPE_LOCAL, cursor.getString(6));
+		assertEquals(0, cursor.getInt(7));
+		assertEquals(0, cursor.getInt(8));
+		cursor.close();
+	}
+	
 }
