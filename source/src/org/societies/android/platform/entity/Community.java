@@ -48,21 +48,19 @@ public class Community extends Entity {
 	@Expose private String globalIdOwner;
 	
 	/**
-	 * Gets a list of all the communities that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" communities.
 	 * @param resolver The content resolver.
 	 * @return A list of updated communities.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Community> getUpdatedCommunities(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		List<Community> updatedCommunities = Entity.getEntities(
 				Community.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > " + lastSync,
+				DIRTY + " = 1",
 				null,
 				null);
 		
