@@ -166,7 +166,7 @@ public class BoxAuthenticatorService extends Service {
 		Cursor cursor = resolver.query(
 				SocialContract.People.CONTENT_URI,
 				new String[] { SocialContract.People._ID },
-				SocialContract.People.EMAIL + " = ?",
+				SocialContract.People.USER_NAME + " = ?",
 				new String[] { account.name },
 				null);
 		

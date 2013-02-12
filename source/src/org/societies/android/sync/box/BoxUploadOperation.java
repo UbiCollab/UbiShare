@@ -112,8 +112,8 @@ public class BoxUploadOperation extends Thread {
 				renameFile(response.getFile());
 			}
 			
-			if (uploadAction.equals(Box.UPLOAD_ACTION_UPLOAD))
-				mEntity.update(mResolver);
+			mEntity.setDirty(0);
+			mEntity.update(mResolver);
 		} else if (response.getStatus().equals(FileUploadListener.STATUS_FILE_DELETED)) {
 			// This will only occur when debugging.
 			mEntity.setGlobalId(null);
