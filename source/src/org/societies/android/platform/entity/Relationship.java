@@ -46,22 +46,20 @@ public class Relationship extends Entity {
 	@Expose private String globalIdP2;
 	
 	/**
-	 * Gets a list of all the relationships that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" relationships.
 	 * @param resolver The content resolver.
 	 * @return A list of updated relationships.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Relationship> getUpdatedRelationships(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				Relationship.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 	}
 

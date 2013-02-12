@@ -49,21 +49,19 @@ public class Membership extends Entity {
 	@Expose private String globalIdCommunity;
 	
 	/**
-	 * Gets a list of all the memberships that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" memberships.
 	 * @param resolver The content resolver.
 	 * @return A list of updated memberships.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Membership> getUpdatedMemberships(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		List<Membership> updatedMemberships = Entity.getEntities(
 				Membership.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > " + lastSync,
+				DIRTY + " = 1",
 				null,
 				null);
 		
