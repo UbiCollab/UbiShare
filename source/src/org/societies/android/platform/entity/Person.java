@@ -39,6 +39,7 @@ public class Person extends Entity {
 	@Expose private String name;
 	@Expose private String description;
 	@Expose private String email;
+	@Expose private String userName;
 	@Expose private long creationDate = System.currentTimeMillis() / 1000;
 	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
@@ -69,6 +70,7 @@ public class Person extends Entity {
 		setName(			Entity.getString(cursor, NAME));
 		setDescription(		Entity.getString(cursor, DESCRIPTION));
 		setEmail(			Entity.getString(cursor, EMAIL));
+		setUserName(		Entity.getString(cursor, USER_NAME));
 		setCreationDate(	Entity.getLong(cursor, CREATION_DATE));
 		setLastModifiedDate(Entity.getLong(cursor, LAST_MODIFIED_DATE));
 	}
@@ -81,6 +83,7 @@ public class Person extends Entity {
 		values.put(NAME, name);
 		values.put(DESCRIPTION, description);
 		values.put(EMAIL, email);
+		values.put(USER_NAME, userName);
 		values.put(CREATION_DATE, creationDate);
 		values.put(LAST_MODIFIED_DATE, lastModifiedDate);
 		
@@ -160,5 +163,13 @@ public class Person extends Entity {
 	
 	public void setLastModifiedDate(long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }
