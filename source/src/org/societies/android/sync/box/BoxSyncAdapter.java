@@ -272,8 +272,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		Log.i(TAG, "Syncing memberships: " + memberships.size());
 		
-		for (Membership membership : memberships)
-			mBoxHandler.uploadMembership(membership);
+		mBoxHandler.uploadMemberships(memberships);
 	}
 	
 	/**

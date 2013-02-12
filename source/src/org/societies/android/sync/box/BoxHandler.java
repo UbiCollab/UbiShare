@@ -16,6 +16,7 @@
 package org.societies.android.sync.box;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -170,19 +171,27 @@ public class BoxHandler {
 	 * @param membership The membership to upload.
 	 * @throws Exception If an error occurs while uploading.
 	 */
-	public void uploadMembership(Membership membership) throws Exception {
+	public void uploadMemberships(List<Membership> memberships) throws Exception {
 		if (!mInitialized)
 			throw new IllegalStateException("Not initialized.");
 		else {
-			long targetId = Long.parseLong(membership.getGlobalIdCommunity());
-			
 			Community community = Entity.getEntity(
-					Community.class, membership.getCommunityId(), mResolver);
+					Community.class, memberships.get(0).getCommunityId(), mResolver);
 			
-			if (community.getOwnerId() != membership.getMemberId())
-				inviteCollaborator(membership.getMemberId(), targetId);
+			long targetId = Long.parseLong(community.getGlobalId());
+			List<String> emails = new ArrayList<String>();
 			
-			addUploadOperation(membership, null, targetId);
+			for (Membership membership : memberships) {
+				addUploadOperation(membership, null, targetId);
+				
+				if (community.getOwnerId() != membership.getMemberId()) {
+					Person collaborator = Entity.getEntity(
+							Person.class, membership.getMemberId(), mResolver);
+					emails.add(collaborator.getUserName());
+				}
+			}
+			
+			inviteCollaborators(emails.toArray(new String[emails.size()]), targetId);
 		}
 	}
 	
@@ -325,19 +334,17 @@ public class BoxHandler {
 	
 	/**
 	 * Invites a collaborator to the specified folder.
-	 * @param personId The local ID of the person to invite.
+	 * @param emails The email addresses of the collaborators to invite.
 	 * @param targetId The ID of the folder to share.
 	 * @throws Exception If an error occurs while inviting.
 	 */
-	private void inviteCollaborator(long personId, long targetId) throws Exception {
-		Person collaborator = Entity.getEntity(Person.class, personId, mResolver);
-		
+	private void inviteCollaborators(String[] emails, long targetId) throws Exception {
 		String status = mBoxInstance.inviteCollaborators(
 				mAuthToken,
 				Box.TYPE_FOLDER,
 				targetId,
 				null,
-				new String[] { collaborator.getUserName() },
+				emails,
 				Box.ITEM_ROLE_EDITOR,
 				false,
 				true,
