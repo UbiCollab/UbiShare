@@ -47,22 +47,20 @@ public class ServiceActivity extends Entity {
 	@Expose private String globalIdFeedOwner;
 	
 	/**
-	 * Gets a list of all service activities that have been updates since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all "dirty" service activities.
 	 * @param resolver The content resolver.
 	 * @return A list of updated service activities.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<ServiceActivity> getUpdatedServiceActivities(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				ServiceActivity.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				CREATION_DATE + " > ?", // TODO: Maybe use last modified date?
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 	}
 	

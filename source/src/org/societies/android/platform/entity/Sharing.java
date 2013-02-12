@@ -52,22 +52,20 @@ public class Sharing extends Entity {
 	@Expose private String globalIdCommunity;
 	
 	/**
-	 * Gets a list of all the sharings that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" sharings.
 	 * @param resolver The content resolver.
 	 * @return A list of updated sharings.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Sharing> getUpdatedSharings(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		List<Sharing> sharings = Entity.getEntities(
 				Sharing.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 		
 		for (Sharing sharing : sharings)

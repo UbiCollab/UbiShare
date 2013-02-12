@@ -121,16 +121,16 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			processDeletedEntities();
 			
-			syncCommunities(lastSync);
+			syncCommunities();
 			
 			Log.i(TAG, "Waiting for community sync to complete...");
 			mBoxHandler.waitForRunningOperationsToComplete(false);
 			
-			syncCommunityActivities(lastSync);
+			syncCommunityActivities();
 			
-			syncMemberships(lastSync);
+			syncMemberships();
 			
-			syncSharings(lastSync);
+			syncSharings();
 			
 			Log.i(TAG, "Waiting for operations to complete...");
 			mBoxHandler.waitForRunningOperationsToComplete(true);
@@ -188,15 +188,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the people.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncPeople(long lastSync) throws Exception {
+	private void syncPeople() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started People Sync");
 		
-		List<Person> people = Person.getUpdatedPeople(0, mResolver);
+		List<Person> people = Person.getUpdatedPeople(mResolver);
 		
 		Log.i(TAG, "Syncing people: " + people.size());
 		
@@ -206,16 +205,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the people activities.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncPeopleActivities(long lastSync) throws Exception {
+	private void syncPeopleActivities() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Person Activities Sync");
 		
 		List<PersonActivity> activities =
-				PersonActivity.getUpdatedPersonActivities(lastSync, mResolver);
+				PersonActivity.getUpdatedPersonActivities(mResolver);
 		
 		Log.i(TAG, "Syncing person activities: " + activities.size());
 		
@@ -225,16 +223,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the communities.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncCommunities(long lastSync) throws Exception {
+	private void syncCommunities() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Communities Sync");
 		
 		List<Community> communities =
-				Community.getUpdatedCommunities(lastSync, mResolver);
+				Community.getUpdatedCommunities(mResolver);
 		
 		Log.i(TAG, "Syncing communities: " + communities.size());
 		
@@ -244,16 +241,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the community activities.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncCommunityActivities(long lastSync) throws Exception {
+	private void syncCommunityActivities() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Community Activities Sync");
 		
 		List<CommunityActivity> activities =
-				CommunityActivity.getUpdatedCommunityActivities(lastSync, mResolver);
+				CommunityActivity.getUpdatedCommunityActivities(mResolver);
 		
 		Log.i(TAG, "Syncing community activities: " + activities.size());
 		
@@ -263,16 +259,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the memberships.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncMemberships(long lastSync) throws Exception {
+	private void syncMemberships() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Memberships Sync");
 		
 		List<Membership> memberships =
-				Membership.getUpdatedMemberships(lastSync, mResolver);
+				Membership.getUpdatedMemberships(mResolver);
 		
 		Log.i(TAG, "Syncing memberships: " + memberships.size());
 		
@@ -282,16 +277,15 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the relationships.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncRelationships(long lastSync) throws Exception {
+	private void syncRelationships() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Relationships Sync");
 		
 		List<Relationship> relationships =
-				Relationship.getUpdatedRelationships(lastSync, mResolver);
+				Relationship.getUpdatedRelationships(mResolver);
 		
 		Log.i(TAG, "Syncing relationships: " + relationships.size());
 		
@@ -302,15 +296,14 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	/**
 	 * Synchronizes the sharings.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
 	 * @throws Exception If an error occurs while syncing.
 	 */
-	private void syncSharings(long lastSync) throws Exception {
+	private void syncSharings() throws Exception {
 		if (mIsCancelled) return;
 		
 		Log.i(TAG, "Started Sharing Sync");
 		
-		List<Sharing> sharings = Sharing.getUpdatedSharings(lastSync, mResolver);
+		List<Sharing> sharings = Sharing.getUpdatedSharings(mResolver);
 		
 		Log.i(TAG, "Syncing sharings: " + sharings.size());
 		

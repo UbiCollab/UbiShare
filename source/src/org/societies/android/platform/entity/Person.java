@@ -43,22 +43,20 @@ public class Person extends Entity {
 	@Expose private long lastModifiedDate = System.currentTimeMillis() / 1000;
 	
 	/**
-	 * Gets a list of all the people that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" people.
 	 * @param resolver The content resolver.
 	 * @return A list of updated people.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Person> getUpdatedPeople(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				Person.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 	}
 	

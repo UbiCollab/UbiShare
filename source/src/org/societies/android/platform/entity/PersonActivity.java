@@ -47,22 +47,20 @@ public class PersonActivity extends Entity {
 	@Expose private String globalIdFeedOwner;
 	
 	/**
-	 * Gets a list of all the person activities that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all the "dirty" person activities.
 	 * @param resolver The content resolver.
 	 * @return A list of updated person activities.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<PersonActivity> getUpdatedPersonActivities(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				PersonActivity.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				CREATION_DATE + " > ?", // TODO: Maybe use last modified date?
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 	}
 
