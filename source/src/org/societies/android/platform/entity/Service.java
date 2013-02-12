@@ -51,22 +51,20 @@ public class Service extends Entity {
 	@Expose private String globalIdOwner;
 	
 	/**
-	 * Gets a list of all services that have been updated since the last
-	 * synchronization.
-	 * @param lastSync The Unix time (in seconds) of the last synchronization.
+	 * Gets a list of all "dirty" services.
 	 * @param resolver The content resolver.
 	 * @return A list of updated services.
 	 * @throws Exception If an error occurs while fetching.
 	 */
 	public static List<Service> getUpdatedServices(
-			long lastSync, ContentResolver resolver) throws Exception {
+			ContentResolver resolver) throws Exception {
 		return Entity.getEntities(
 				Service.class,
 				resolver,
 				CONTENT_URI,
 				null,
-				LAST_MODIFIED_DATE + " > ?",
-				new String[] { String.valueOf(lastSync) },
+				DIRTY + " = 1",
+				null,
 				null);
 	}
 	
