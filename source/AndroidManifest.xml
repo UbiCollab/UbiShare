@@ -45,27 +45,12 @@
             </intent-filter>
         </activity>
         <activity android:name="org.societies.android.account.box.BoxLoginActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name="com.box.androidlib.activities.BoxAuthentication" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="org.societies.android.account.box.BoxPreferencesActivity"
             android:label="@string/title_activity_box_preferences" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
