@@ -161,6 +161,7 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 		deletedEntities.addAll(Entity.getDeletedEntities(Community.class, mResolver));
 		deletedEntities.addAll(Entity.getDeletedEntities(CommunityActivity.class, mResolver));
 		deletedEntities.addAll(Entity.getDeletedEntities(Membership.class, mResolver));
+		deletedEntities.addAll(Entity.getDeletedEntities(Sharing.class, mResolver));
 		// TODO: add the rest
 		
 		Log.i(TAG, "Deleting entities: " + deletedEntities.size());
