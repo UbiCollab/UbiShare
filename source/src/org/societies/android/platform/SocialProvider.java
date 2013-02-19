@@ -25,6 +25,7 @@
 package org.societies.android.platform;
 
 import org.societies.android.api.cis.SocialContract;
+import org.societies.android.api.cis.SupportedAccountTypes;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -120,9 +121,11 @@ public class SocialProvider extends ContentProvider{
     	//Outsourcing initial data set to a separate class:
     	//If this is the first time, populate the DB:
     	if(adapter.firstRun()){
-    		SocialDataSet dataSet = new SocialDataSet(adapter);
-        	dataSet.populate();
-        	android.util.Log.d(TAG, ": Data set created.");
+    		ContentValues localAccountValues = new ContentValues();
+    		localAccountValues.put(SocialContract.Me.ACCOUNT_NAME, SocialContract.VALUE_NOT_DEFINED);
+    		localAccountValues.put(SocialContract.Me.ACCOUNT_TYPE, SupportedAccountTypes.LOCAL);
+    		adapter.insertMe(localAccountValues);
+        	android.util.Log.d(TAG, ": Local account created.");
     	}
      	return true;	
     }

@@ -25,10 +25,6 @@
 package org.societies.android.platform;
 
 
-import java.util.Date;
-
-import org.societies.android.api.cis.SocialContract;
-import java.util.Date;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
