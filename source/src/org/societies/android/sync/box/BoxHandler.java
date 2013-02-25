@@ -174,6 +174,8 @@ public class BoxHandler {
 	public void uploadMemberships(List<Membership> memberships) throws Exception {
 		if (!mInitialized)
 			throw new IllegalStateException("Not initialized.");
+		else if (memberships.size() == 0)
+			return;
 		else {
 			Community community = Entity.getEntity(
 					Community.class, memberships.get(0).getCommunityId(), mResolver);
