@@ -193,7 +193,8 @@ public class BoxHandler {
 				}
 			}
 			
-			inviteCollaborators(emails.toArray(new String[emails.size()]), targetId);
+			if (emails.size() > 0)
+				inviteCollaborators(emails.toArray(new String[emails.size()]), targetId);
 		}
 	}
 	
