@@ -114,10 +114,6 @@ public class BoxUploadOperation extends Thread {
 			
 			mEntity.setDirty(0);
 			mEntity.update(mResolver);
-		} else if (response.getStatus().equals(FileUploadListener.STATUS_FILE_DELETED)) {
-			// This will only occur when debugging.
-			mEntity.setGlobalId(null);
-			uploadEntity();
 		} else {
 			throw new IOException("Failed to upload entity: " + response.getStatus());
 		}

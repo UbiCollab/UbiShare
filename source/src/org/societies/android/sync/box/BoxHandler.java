@@ -209,14 +209,11 @@ public class BoxHandler {
 			fetchAllEntities();
 		else {
 			for (Update update : updates) {
-				if (update.getUpdateType().equals(Update.UPDATE_FILE_ADDED) ||
-					update.getUpdateType().equals(Update.UPDATE_FILE_UPDATED)) {
-					if (update.getFiles().size() > 0) {
-						for (BoxFile file : update.getFiles())
-							downloadEntity(file);
-					} else {
-						downloadAllEntities(update.getFolderId());
-					}
+				if (update.getFiles().size() > 0) {
+					for (BoxFile file : update.getFiles())
+						downloadEntity(file);
+				} else {
+					downloadAllEntities(update.getFolderId());
 				}
 			}
 		}
