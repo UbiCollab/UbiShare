@@ -45,13 +45,13 @@ public class SocialDataSet {
 	public boolean populate(){
    		//populateMe();
    		populatePeople();
-   		//populateCommunities();
+   		populateCommunities();
    		//populateServices();
    		//populateRelationships();
-   		//populateMemberships();
+   		populateMemberships();
    		//populateSharing();
    		//populatePeopleActivities();
-   		//populateCommunityActivities();
+   		populateCommunityActivities();
    		//populateServiceActivities();
    		return true;
 	}
@@ -75,7 +75,7 @@ public class SocialDataSet {
 	}
 	private void populatePeople() {
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SocialContract.People.GLOBAL_ID , "kato.stoelen@gmail.com");
+		initialValues.put(SocialContract.People.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
 		initialValues.put(SocialContract.People.NAME , "Kato Stølen");
 		initialValues.put(SocialContract.People.EMAIL , "kato.stoelen@gmail.com");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Kato@BOX");
@@ -84,18 +84,8 @@ public class SocialDataSet {
 		adapter.insertPeople(initialValues);
 		
 		initialValues.clear();
-		
-		initialValues.put(SocialContract.People.GLOBAL_ID , "ubishare.test@gmail.com");
-		initialValues.put(SocialContract.People.NAME , "UbiShare Test");
-		initialValues.put(SocialContract.People.EMAIL , "ubishare.test@gmail.com");
-		initialValues.put(SocialContract.People.DESCRIPTION , "UbiShare@BOX");
-		initialValues.put(SocialContract.People.CREATION_DATE, new Date().getTime() / 1000);
-		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
-		adapter.insertPeople(initialValues);
-		
-		initialValues.clear();
 
-		initialValues.put(SocialContract.People.GLOBAL_ID , "babak@farshchian.com");
+		initialValues.put(SocialContract.People.GLOBAL_ID , SocialContract.GLOBAL_ID_PENDING);
 		initialValues.put(SocialContract.People.NAME , "Babak Farshchian");
 		initialValues.put(SocialContract.People.EMAIL , "babak@farshchian.com");
 		initialValues.put(SocialContract.People.DESCRIPTION , "Babak@BOX");
@@ -103,7 +93,6 @@ public class SocialDataSet {
 		initialValues.put(SocialContract.People.LAST_MODIFIED_DATE, new Date().getTime() / 1000);
 		adapter.insertPeople(initialValues);
 	}
-	
 	private void populateCommunities(){
 		ContentValues initialValues = new ContentValues();
 		
