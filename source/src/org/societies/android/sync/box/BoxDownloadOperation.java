@@ -17,8 +17,11 @@ package org.societies.android.sync.box;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.societies.android.box.BoxConstants;
+import org.societies.android.platform.entity.Community;
 import org.societies.android.platform.entity.Entity;
 
 import android.content.ContentResolver;
@@ -41,17 +44,17 @@ public class BoxDownloadOperation extends Thread {
 	private BoxSynchronous mBoxInstance;
 	private String mAuthToken;
 	private ContentResolver mResolver;
-	private BoxFile mFile;
+	private List<? extends BoxFile> mFiles;
 	
 	/**
 	 * Initializes a new download operation.
-	 * @param file The file to download.
+	 * @param files The files to download.
 	 * @param authToken The authentication token.
 	 * @param resolver The content resolver.
 	 */
 	public BoxDownloadOperation(
-			BoxFile file, String authToken, ContentResolver resolver) {
-		mFile = file;
+			List<? extends BoxFile> files, String authToken, ContentResolver resolver) {
+		mFiles = files;
 		mAuthToken = authToken;
 		mResolver = resolver;
 		mBoxInstance = BoxSynchronous.getInstance(BoxConstants.API_KEY);
@@ -60,36 +63,56 @@ public class BoxDownloadOperation extends Thread {
 	@Override
 	public void run() {
 		try {
-			Class<? extends Entity> entityClass = getEntityClass();
-			if (entityClass == null)
-				return;
+			LinkedList<BoxFile> downloadQueue = new LinkedList<BoxFile>();
 			
-			if (isDeletedFile()) {
-				Entity.deleteEntity(
-						entityClass, String.valueOf(mFile.getId()), mResolver);
-			} else {
-				String serialized = downloadFileContents();
-				Entity entity = getEntity(serialized, entityClass);
-				entity.setAccountName(Entity.SELECTION_ACCOUNT_NAME);
-				entity.setAccountType(Entity.SELECTION_ACCOUNT_TYPE);
-				
-				if (entity.getId() == -1)
-					entity.insert(mResolver);
+			for (BoxFile boxFile : mFiles) {
+				if (getEntityClass(boxFile) == Community.class)
+					downloadQueue.addFirst(boxFile);
 				else
-					entity.update(mResolver);
+					downloadQueue.addLast(boxFile);
 			}
+			
+			for (BoxFile boxFile : downloadQueue)
+				processFile(boxFile);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 	
 	/**
+	 * Processes the specified Box file.
+	 * @param boxFile The file to process.
+	 * @throws Exception If an error occurs while processing file.
+	 */
+	private void processFile(BoxFile boxFile) throws Exception {
+		Class<? extends Entity> entityClass = getEntityClass(boxFile);
+		if (entityClass == null)
+			return;
+		
+		if (isDeletedFile(boxFile)) {
+			Entity.deleteEntity(
+					entityClass, String.valueOf(boxFile.getId()), mResolver);
+		} else {
+			String serialized = downloadFileContents(boxFile);
+			Entity entity = getEntity(boxFile, serialized, entityClass);
+			entity.setAccountName(Entity.SELECTION_ACCOUNT_NAME);
+			entity.setAccountType(Entity.SELECTION_ACCOUNT_TYPE);
+			
+			if (entity.getId() == -1)
+				entity.insert(mResolver);
+			else
+				entity.update(mResolver);
+		}
+	}
+
+	/**
 	 * Gets the entity class of the file to download.
+	 * @param boxFile The file to get entity class of.
 	 * @return The entity class of the file to download.
 	 * @throws ClassCastException If the class is not a subclass of {@link Entity}.
 	 */
-	private Class<? extends Entity> getEntityClass() throws ClassCastException {
-		String fileName = mFile.getFileName();
+	private Class<? extends Entity> getEntityClass(BoxFile boxFile) throws ClassCastException {
+		String fileName = boxFile.getFileName();
 		int separatorIndex = fileName.indexOf(BoxHandler.ENTITY_FILE_NAME_SEPARATOR);
 		
 		if (separatorIndex != -1) {
@@ -107,19 +130,20 @@ public class BoxDownloadOperation extends Thread {
 
 	/**
 	 * Gets the entity represented by the specified string.
+	 * @param boxFile The file currently in progress.
 	 * @param serialized The serialized entity.
 	 * @param entityClass The class of the entity.
 	 * @return The entity represented by the specified string, or <code>null</code>
 	 * if the entity cannot be deserialized.
 	 * @throws ClassNotFoundException If the entity class is not found.
 	 */
-	private Entity getEntity(String serialized, Class<? extends Entity> entityClass)
+	private Entity getEntity(BoxFile boxFile, String serialized, Class<? extends Entity> entityClass)
 			throws ClassNotFoundException {
 		Entity entity = Entity.deserialize(serialized, entityClass);
 		
 		if (entity != null) {
 			if (entity.getGlobalId() == null || entity.getGlobalId().length() == 0)
-				entity.setGlobalId(String.valueOf(mFile.getId()));
+				entity.setGlobalId(String.valueOf(boxFile.getId()));
 			
 			entity.fetchLocalId(mResolver);
 		}
@@ -129,18 +153,20 @@ public class BoxDownloadOperation extends Thread {
 	
 	/**
 	 * Checks whether the file to be downloaded is deleted.
+	 * @param boxFile The file to check.
 	 * @return Whether or not the file to be downloaded is deleted.
 	 */
-	private boolean isDeletedFile() {
-		return mFile.getFileName().endsWith(BoxHandler.ENTITY_DELETED_EXTENSION);
+	private boolean isDeletedFile(BoxFile boxFile) {
+		return boxFile.getFileName().endsWith(BoxHandler.ENTITY_DELETED_EXTENSION);
 	}
 
 	/**
 	 * Downloads the content of the file into a string.
+	 * @param boxFile The file to download.
 	 * @return A string containing the contents of the file.
 	 * @throws IOException If an error occurs while downloading.
 	 */
-	private String downloadFileContents() throws IOException {
+	private String downloadFileContents(BoxFile boxFile) throws IOException {
 		String fileContents = null;
 		
 		ByteArrayOutputStream outStream = null;
@@ -148,7 +174,7 @@ public class BoxDownloadOperation extends Thread {
 			outStream = new ByteArrayOutputStream();
 			
 			DefaultResponseParser response = mBoxInstance.download(
-					mAuthToken, mFile.getId(), outStream, null, null, null);
+					mAuthToken, boxFile.getId(), outStream, null, null, null);
 			
 			if (!response.getStatus().equals(FileDownloadListener.STATUS_DOWNLOAD_OK))
 				throw new IOException(

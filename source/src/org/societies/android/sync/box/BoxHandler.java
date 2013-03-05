@@ -38,6 +38,7 @@ import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFile;
 import com.box.androidlib.DAO.BoxFolder;
+import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.Update;
 import com.box.androidlib.ResponseListeners.CreateFolderListener;
 import com.box.androidlib.ResponseListeners.GetAccountTreeListener;
@@ -210,9 +211,15 @@ public class BoxHandler {
 		else {
 			for (Update update : updates) {
 				if (update.getFiles().size() > 0) {
+					Log.i(TAG, "Update contains the following files:");
+					
 					for (BoxFile file : update.getFiles())
-						downloadEntity(file);
+						Log.i(TAG, file.getFileName());
+					
+					downloadEntities(update.getFiles());
 				} else {
+					Log.i(TAG, "Update does not contain files. Fetching all files in folder.");
+					
 					downloadAllEntities(update.getFolderId());
 				}
 			}
@@ -226,7 +233,8 @@ public class BoxHandler {
 	 * @throws IOException If an error occurs while fetching updates.
 	 */
 	public List<Update> getUpdatesSince(long timestamp) throws IOException {
-		long unixTimeNow = new Date().getTime() / 1000;
+		long unixTimeNow = (new Date().getTime() / 1000) + (30 * 60); // TODO: FIX THIS HACK
+		timestamp = timestamp - (20); // TODO: FIX THIS HACK
 		
 		UpdatesResponseParser response = mBoxInstance.getUpdates(
 				mAuthToken, timestamp, unixTimeNow, null);
@@ -373,17 +381,13 @@ public class BoxHandler {
 			return null;
 	}
 	
-	/**
-	 * Downloads the specified entity.
-	 * @param file The file to download.
-	 */
-	private void downloadEntity(BoxFile file) {
-		BoxDownloadOperation operation = new BoxDownloadOperation(
-				file,
-				mAuthToken,
-				mResolver);
-		
-		mThreadPool.execute(operation);
+	private void downloadEntities(List<? extends BoxFile> files) {
+		if (files.size() > 0) {
+			BoxDownloadOperation operation = new BoxDownloadOperation(
+					files, mAuthToken, mResolver);
+			
+			mThreadPool.execute(operation);
+		}
 	}
 	
 	/**
@@ -392,8 +396,7 @@ public class BoxHandler {
 	 * @param rootFolder The root folder.
 	 */
 	private void downloadAllEntities(BoxFolder rootFolder) {
-		for (BoxFile file : rootFolder.getFilesInFolder())
-			downloadEntity(file);
+		downloadEntities(rootFolder.getFilesInFolder());
 		
 		for (BoxFolder subFolder : rootFolder.getFoldersInFolder())
 			downloadAllEntities(subFolder);
