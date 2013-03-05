@@ -174,6 +174,8 @@ public class BoxHandler {
 	public void uploadMemberships(List<Membership> memberships) throws Exception {
 		if (!mInitialized)
 			throw new IllegalStateException("Not initialized.");
+		else if (memberships.size() == 0)
+			return;
 		else {
 			Community community = Entity.getEntity(
 					Community.class, memberships.get(0).getCommunityId(), mResolver);
@@ -191,7 +193,8 @@ public class BoxHandler {
 				}
 			}
 			
-			inviteCollaborators(emails.toArray(new String[emails.size()]), targetId);
+			if (emails.size() > 0)
+				inviteCollaborators(emails.toArray(new String[emails.size()]), targetId);
 		}
 	}
 	
@@ -206,14 +209,11 @@ public class BoxHandler {
 			fetchAllEntities();
 		else {
 			for (Update update : updates) {
-				if (update.getUpdateType().equals(Update.UPDATE_FILE_ADDED) ||
-					update.getUpdateType().equals(Update.UPDATE_FILE_UPDATED)) {
-					if (update.getFiles().size() > 0) {
-						for (BoxFile file : update.getFiles())
-							downloadEntity(file);
-					} else {
-						downloadAllEntities(update.getFolderId());
-					}
+				if (update.getFiles().size() > 0) {
+					for (BoxFile file : update.getFiles())
+						downloadEntity(file);
+				} else {
+					downloadAllEntities(update.getFolderId());
 				}
 			}
 		}
