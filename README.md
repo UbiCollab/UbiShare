@@ -6,7 +6,9 @@ Share ubiquitously!
 In order to use UbiShare see [this wiki](https://github.com/UbiCollab/UbiCollabSDK/wiki).
 
 #Change log
-
+##Version 0.4.2
+* Added pull request from Kato with some Box fixes.
+* Using SDK 0.4.2.
 ##Version 0.4.1
 * New: Removed initial population of database. Now you need to run [PopulateUbiShare](https://github.com/UbiCollab/Examples) to populate the DB.
 * New: Add a default local account to Me the first time UbiShare is installed. The only fields that are set are ACCOUNT_TYPE (set to not defined) and ACCOUNT_NAME (set to local). The idea is that you can use UbiShare locally also before you add Box or other accounts. Fixes #43.
