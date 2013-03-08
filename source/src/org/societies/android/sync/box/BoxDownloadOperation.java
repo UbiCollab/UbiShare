@@ -17,6 +17,7 @@ package org.societies.android.sync.box;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class BoxDownloadOperation extends Thread {
 	private String mAuthToken;
 	private ContentResolver mResolver;
 	private List<? extends BoxFile> mFiles;
+	private List<String> mMissingCommunities;
 	
 	/**
 	 * Initializes a new download operation.
@@ -58,6 +60,7 @@ public class BoxDownloadOperation extends Thread {
 		mAuthToken = authToken;
 		mResolver = resolver;
 		mBoxInstance = BoxSynchronous.getInstance(BoxConstants.API_KEY);
+		mMissingCommunities = new ArrayList<String>();
 	}
 	
 	@Override
@@ -98,10 +101,16 @@ public class BoxDownloadOperation extends Thread {
 			entity.setAccountName(Entity.SELECTION_ACCOUNT_NAME);
 			entity.setAccountType(Entity.SELECTION_ACCOUNT_TYPE);
 			
-			if (entity.getId() == -1)
-				entity.insert(mResolver);
-			else
-				entity.update(mResolver);
+			if (Community.communityExists(entity.getGlobalId(), mResolver)) {
+				if (entity.getId() == -1)
+					entity.insert(mResolver);
+				else
+					entity.update(mResolver);
+			} else {
+				synchronized (mMissingCommunities) {
+					mMissingCommunities.add(entity.getGlobalId()); // TODO: THIS DOES NOT WORK
+				}
+			}
 		}
 	}
 

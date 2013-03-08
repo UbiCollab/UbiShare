@@ -407,7 +407,7 @@ public class BoxHandler {
 	 * @param folderId The ID of the folder.
 	 * @throws IOException If an error occurs while downloading.
 	 */
-	private void downloadAllEntities(long folderId) throws IOException {
+	public void downloadAllEntities(long folderId) throws IOException {
 		downloadAllEntities(getDirectoryTree(folderId));
 	}
 	
