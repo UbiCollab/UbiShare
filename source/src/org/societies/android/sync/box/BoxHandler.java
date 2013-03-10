@@ -210,9 +210,15 @@ public class BoxHandler {
 		else {
 			for (Update update : updates) {
 				if (update.getFiles().size() > 0) {
+					Log.i(TAG, "Update contains the following files:");
+					
 					for (BoxFile file : update.getFiles())
-						downloadEntity(file);
+						Log.i(TAG, file.getFileName());
+					
+					downloadEntities(update.getFiles());
 				} else {
+					Log.i(TAG, "Update does not contain files. Fetching all files in folder.");
+					
 					downloadAllEntities(update.getFolderId());
 				}
 			}
@@ -221,15 +227,16 @@ public class BoxHandler {
 	
 	/**
 	 * Gets a list of updates since the specified timestamp.
-	 * @param timestamp The Unix time (in seconds) of the oldest updates to get.
+	 * @param beginTimestamp The Unix time (in seconds) of the oldest updates to get.
 	 * @return A list of updates since the specified timestamp.
 	 * @throws IOException If an error occurs while fetching updates.
 	 */
-	public List<Update> getUpdatesSince(long timestamp) throws IOException {
-		long unixTimeNow = new Date().getTime() / 1000;
+	public List<Update> getUpdatesSince(long beginTimestamp) throws IOException {
+		long endTimeStamp = (new Date().getTime() / 1000) + (30 * 60);
+		beginTimestamp = beginTimestamp - (20);
 		
 		UpdatesResponseParser response = mBoxInstance.getUpdates(
-				mAuthToken, timestamp, unixTimeNow, null);
+				mAuthToken, beginTimestamp, endTimeStamp, null);
 		
 		if (response.getStatus().equals(GetUpdatesListener.STATUS_S_GET_UPDATES))
 			return response.getUpdates();
@@ -374,16 +381,35 @@ public class BoxHandler {
 	}
 	
 	/**
-	 * Downloads the specified entity.
-	 * @param file The file to download.
+	 * Downloads the specified Box files.
+	 * @param files The list of files to download.
 	 */
-	private void downloadEntity(BoxFile file) {
-		BoxDownloadOperation operation = new BoxDownloadOperation(
-				file,
-				mAuthToken,
-				mResolver);
+	private void downloadEntities(List<? extends BoxFile> files) {
+		if (files.size() > 0) {
+			BoxDownloadOperation operation = new BoxDownloadOperation(
+					files, mAuthToken, this, mResolver);
+			
+			mThreadPool.execute(operation);
+		}
+	}
+	
+	/**
+	 * Gets the files in the specified Box folder.
+	 * @param folderId The ID of the folder.
+	 * @return The list of files in the specified folder.
+	 */
+	public List<BoxFile> getFilesInFolder(long folderId) {
+		List<BoxFile> files = new ArrayList<BoxFile>();
+		try {
+			BoxFolder root = getDirectoryTree(folderId);
+			
+			for (BoxFile file : root.getFilesInFolder())
+				files.add(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		mThreadPool.execute(operation);
+		return files;
 	}
 	
 	/**
@@ -392,8 +418,7 @@ public class BoxHandler {
 	 * @param rootFolder The root folder.
 	 */
 	private void downloadAllEntities(BoxFolder rootFolder) {
-		for (BoxFile file : rootFolder.getFilesInFolder())
-			downloadEntity(file);
+		downloadEntities(rootFolder.getFilesInFolder());
 		
 		for (BoxFolder subFolder : rootFolder.getFoldersInFolder())
 			downloadAllEntities(subFolder);

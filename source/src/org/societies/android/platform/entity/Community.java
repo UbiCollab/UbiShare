@@ -70,6 +70,30 @@ public class Community extends Entity {
 		return updatedCommunities;
 	}
 	
+	/**
+	 * Checks whether a community with the specified global ID exists.
+	 * @param globalId The global ID of the community.
+	 * @param resolver The content resolver.
+	 * @return Whether or not the specified community exists.
+	 * @throws Exception If an error occurs while fetching.
+	 */
+	public static boolean communityExists(
+			String globalId, ContentResolver resolver) throws Exception {
+		if (globalId == null)
+			return false;
+		
+		List<Community> communities = Entity.getEntities(
+				Community.class,
+				resolver,
+				CONTENT_URI,
+				null,
+				GLOBAL_ID + " = ?",
+				new String[] { globalId },
+				null);
+		
+		return communities.size() > 0;
+	}
+	
 	@Override
 	protected void populate(Cursor cursor) {
 		super.populate(cursor);

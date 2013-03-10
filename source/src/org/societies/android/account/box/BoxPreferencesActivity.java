@@ -16,9 +16,15 @@
 package org.societies.android.account.box;
 
 import org.societies.android.platform.R;
+import org.societies.android.sync.box.BoxSyncAdapter;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 
 public class BoxPreferencesActivity extends Activity {
 
@@ -26,5 +32,22 @@ public class BoxPreferencesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_box_preferences);
+    }
+    
+    public void fullSync(View view) {
+    	requestFullSync();
+    	
+    	Toast.makeText(this, "Full Sync Requested.", Toast.LENGTH_LONG).show();
+    }
+    
+    private void requestFullSync() {
+    	AccountManager manager = AccountManager.get(this);
+    	Account[] boxAccounts = manager.getAccountsByType(getString(R.string.box_account_type));
+    	String authority = getString(R.string.provider_authority);
+    	Bundle extras = new Bundle();
+    	extras.putBoolean(BoxSyncAdapter.EXTRA_FULL_SYNC, true);
+    	
+    	for (Account account : boxAccounts)
+    		ContentResolver.requestSync(account, authority, extras);
     }
 }
