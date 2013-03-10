@@ -125,6 +125,9 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			processBoxUpdates(lastSync);
 			
+			Log.i(TAG, "Waiting for update processing to complete...");
+			mBoxHandler.waitForRunningOperationsToComplete(false);
+			
 			processDeletedEntities();
 			
 			syncCommunities();

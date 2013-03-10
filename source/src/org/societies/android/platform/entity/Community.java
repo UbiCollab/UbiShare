@@ -79,11 +79,14 @@ public class Community extends Entity {
 	 */
 	public static boolean communityExists(
 			String globalId, ContentResolver resolver) throws Exception {
+		if (globalId == null)
+			return false;
+		
 		List<Community> communities = Entity.getEntities(
 				Community.class,
 				resolver,
 				CONTENT_URI,
-				new String[] { _ID },
+				null,
 				GLOBAL_ID + " = ?",
 				new String[] { globalId },
 				null);

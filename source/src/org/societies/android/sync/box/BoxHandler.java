@@ -38,7 +38,6 @@ import com.box.androidlib.Box;
 import com.box.androidlib.BoxSynchronous;
 import com.box.androidlib.DAO.BoxFile;
 import com.box.androidlib.DAO.BoxFolder;
-import com.box.androidlib.DAO.DAO;
 import com.box.androidlib.DAO.Update;
 import com.box.androidlib.ResponseListeners.CreateFolderListener;
 import com.box.androidlib.ResponseListeners.GetAccountTreeListener;
@@ -228,16 +227,16 @@ public class BoxHandler {
 	
 	/**
 	 * Gets a list of updates since the specified timestamp.
-	 * @param timestamp The Unix time (in seconds) of the oldest updates to get.
+	 * @param beginTimestamp The Unix time (in seconds) of the oldest updates to get.
 	 * @return A list of updates since the specified timestamp.
 	 * @throws IOException If an error occurs while fetching updates.
 	 */
-	public List<Update> getUpdatesSince(long timestamp) throws IOException {
-		long unixTimeNow = (new Date().getTime() / 1000) + (30 * 60); // TODO: FIX THIS HACK
-		timestamp = timestamp - (20); // TODO: FIX THIS HACK
+	public List<Update> getUpdatesSince(long beginTimestamp) throws IOException {
+		long endTimeStamp = (new Date().getTime() / 1000) + (30 * 60);
+		beginTimestamp = beginTimestamp - (20);
 		
 		UpdatesResponseParser response = mBoxInstance.getUpdates(
-				mAuthToken, timestamp, unixTimeNow, null);
+				mAuthToken, beginTimestamp, endTimeStamp, null);
 		
 		if (response.getStatus().equals(GetUpdatesListener.STATUS_S_GET_UPDATES))
 			return response.getUpdates();
@@ -381,13 +380,36 @@ public class BoxHandler {
 			return null;
 	}
 	
+	/**
+	 * Downloads the specified Box files.
+	 * @param files The list of files to download.
+	 */
 	private void downloadEntities(List<? extends BoxFile> files) {
 		if (files.size() > 0) {
 			BoxDownloadOperation operation = new BoxDownloadOperation(
-					files, mAuthToken, mResolver);
+					files, mAuthToken, this, mResolver);
 			
 			mThreadPool.execute(operation);
 		}
+	}
+	
+	/**
+	 * Gets the files in the specified Box folder.
+	 * @param folderId The ID of the folder.
+	 * @return The list of files in the specified folder.
+	 */
+	public List<BoxFile> getFilesInFolder(long folderId) {
+		List<BoxFile> files = new ArrayList<BoxFile>();
+		try {
+			BoxFolder root = getDirectoryTree(folderId);
+			
+			for (BoxFile file : root.getFilesInFolder())
+				files.add(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return files;
 	}
 	
 	/**
@@ -407,7 +429,7 @@ public class BoxHandler {
 	 * @param folderId The ID of the folder.
 	 * @throws IOException If an error occurs while downloading.
 	 */
-	public void downloadAllEntities(long folderId) throws IOException {
+	private void downloadAllEntities(long folderId) throws IOException {
 		downloadAllEntities(getDirectoryTree(folderId));
 	}
 	
