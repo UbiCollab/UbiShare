@@ -50,6 +50,7 @@ import android.util.Log;
  */
 public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 	
+	public static final String EXTRA_FULL_SYNC = "full_sync";
 	private static final String TAG = "BoxSyncAdapter";
 	
 	/** The minimum amount of time between each sync, in seconds. */
@@ -108,7 +109,11 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			Log.i(TAG, "Initializing...");
 			mBoxHandler.initialize(authToken);
 			
-			long lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
+			boolean isFullSync = extras.getBoolean(EXTRA_FULL_SYNC);
+			long lastSync = 0;
+			if (!isFullSync)
+				lastSync = mPreferences.getLong(BoxConstants.PREFERENCE_LAST_SYNC, 0);
+			
 			Log.i(TAG, "Last Sync: " + new Date(lastSync * 1000) + " (" + lastSync + ")");
 			
 			if ((new Date().getTime() / 1000) - lastSync < MIN_SYNC_INTERVAL) {
@@ -119,6 +124,9 @@ public class BoxSyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 			
 			processBoxUpdates(lastSync);
+			
+			Log.i(TAG, "Waiting for update processing to complete...");
+			mBoxHandler.waitForRunningOperationsToComplete(false);
 			
 			processDeletedEntities();
 			
