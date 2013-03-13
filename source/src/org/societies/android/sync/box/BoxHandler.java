@@ -209,17 +209,21 @@ public class BoxHandler {
 			fetchAllEntities();
 		else {
 			for (Update update : updates) {
-				if (update.getFiles().size() > 0) {
-					Log.i(TAG, "Update contains the following files:");
-					
-					for (BoxFile file : update.getFiles())
-						Log.i(TAG, file.getFileName());
-					
-					downloadEntities(update.getFiles());
-				} else {
-					Log.i(TAG, "Update does not contain files. Fetching all files in folder.");
-					
-					downloadAllEntities(update.getFolderId());
+				if (update.getUpdateType().equals("added") ||
+					update.getUpdateType().equals("updated")) {
+					if (update.getFiles().size() > 0) {
+						Log.i(TAG, "Update contains the following files:");
+
+						for (BoxFile file : update.getFiles())
+							Log.i(TAG, file.getFileName());
+
+						downloadEntities(update.getFiles());
+					} else {
+						Log.i(TAG,
+								"Update does not contain files. Fetching all files in folder.");
+
+						downloadAllEntities(update.getFolderId());
+					}
 				}
 			}
 		}
