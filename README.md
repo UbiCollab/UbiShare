@@ -6,6 +6,9 @@ Share ubiquitously!
 In order to use UbiShare see [this wiki](https://github.com/UbiCollab/UbiCollabSDK/wiki).
 
 #Change log
+##Version 0.4.4
+* Fixed Box.com synching. Fixed rouge updates. Only fetch updates that has type "added" or "updated".
+
 ##Version 0.4.3
 * Fixed community synchronization bug where Box.com does not give you updates when a community is created.
 * Added a full sync button to Box.com account page.
